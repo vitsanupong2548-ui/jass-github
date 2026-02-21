@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chiang Mai Jazz City</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Special+Gothic+Expanded+One&family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'hero': ['"Special Gothic Expanded One"', '"Prompt"', 'sans-serif'],
+                        'header': ['"Zalando Sans Expanded"', '"Prompt"', 'sans-serif'], 
+                        'menu': ['"Zalando Sans Expanded"', '"Google Sans"', 'sans-serif'], 
+                        'body': ['"Google Sans"', 'sans-serif'], 
+                    },
+                    colors: {
+                        brand: { bg: '#050505', blue: '#0c32f9', yellow: '#ffc107', green: '#10a349', grey: '#b2b2b2', orange: '#ef5f4d', pink: '#fa87ce' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#050505] text-white p-4 sm:p-6 md:p-8 font-body min-h-screen flex flex-col">
+
+    <div id="mobile-menu-container" class="hidden fixed inset-0 z-[200]">
+        <div id="menu-backdrop" class="absolute inset-0 bg-black bg-opacity-75 transition-opacity duration-300 ease-in-out opacity-0"></div>
+        <div id="menu-panel" class="absolute top-0 right-0 h-full w-full max-w-sm bg-[#050505] p-8 flex flex-col shadow-xl transition-transform duration-300 ease-in-out transform translate-x-full border-l border-white/10 overflow-y-auto">
+             <div class="flex justify-between items-center mb-12">
+                 <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More.png" alt="Logo" class="h-10 w-auto object-contain">
+                 <button id="close-menu-btn" class="w-10 h-10 border border-gray-600 rounded-full flex items-center justify-center hover:bg-white/10 transition">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                 </button>
+             </div>
+             <nav class="flex-grow">
+                 <ul class="space-y-6">
+                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300 border-b border-white/20 pb-2">Festival</a></li>
+                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Event</a></li>
+                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Booking</a></li>
+                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Artists</a></li>
+                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Network</a></li>
+                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Courses</a></li>
+                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Big Band</a></li>
+                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Forum</a></li>
+                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Store</a></li>
+                 </ul>
+             </nav>
+        </div>
+    </div>
+    
+    <div id="main-content" class="max-w-7xl mx-auto w-full flex-grow">
+        <header class="flex justify-between items-center mb-12 md:mb-16">
+            <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More.png" class="h-12 w-auto object-contain cursor-pointer">
+            <div class="hidden lg:flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-2 w-1/3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                <input type="text" placeholder="What are you looking for today?" class="bg-transparent w-full focus:outline-none text-sm font-body">
+            </div>
+            <nav class="flex items-center space-x-4 md:space-x-6">
+                <button class="hidden sm:block border border-gray-400 text-white font-menu font-light px-6 py-2 rounded-full hover:bg-white hover:text-black transition-colors">Book Now</button>
+                <a href="#" id="login-button" class="font-menu font-light text-xl hover:text-gray-300">Log in</a>
+                <button id="menu-toggle" class="p-2 hover:bg-white/10 rounded-full transition-colors">
+                    <svg class="w-7 h-7" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect y="10" width="2" height="12" rx="1" fill="white"/><rect x="4" y="6" width="2" height="20" rx="1" fill="white"/><rect x="8" width="2" height="32" rx="1" fill="white"/><rect x="12" y="13" width="2" height="6" rx="1" fill="white"/><rect x="16" width="2" height="32" rx="1" fill="white"/><rect x="20" y="6" width="2" height="20" rx="1" fill="white"/><rect x="24" y="10" width="2" height="12" rx="1" fill="white"/></svg>
+                </button>
+            </nav>
+        </header>
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 mb-12 md:mb-16 items-start">
+            <div class="flex flex-col items-start gap-8">
+                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-header font-normal leading-[1] tracking-tight">The Soul of Lanna,<br>The Heart of Jazz</h1>
+                <a href="#" class="inline-flex items-center gap-3 text-lg font-body font-normal hover:text-gray-300 group">
+                    Learn More 
+                    <div class="w-8 h-8 rounded-full border border-white flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </div>
+                </a>
+            </div>
+            <div class="text-gray-400 space-y-8 font-body lg:pt-4">
+                <p class="text-base sm:text-lg leading-relaxed max-w-lg">Chiang Mai Jazz City: Where ancient melodies meet global rhythms. An innovative project to elevate Lanna and ethnic music to the world stage through the creative language of jazz.</p>
+                <div class="flex flex-wrap items-center gap-4">
+                    <button class="flex items-center gap-3 border border-white/20 rounded-full px-5 py-2.5 hover:bg-white/10 transition-colors text-white">
+                        <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/></svg>
+                        <div class="flex flex-col items-start leading-none font-body">
+                            <span class="text-[9px] uppercase">Available on</span>
+                            <span class="text-sm font-normal">Google Play</span>
+                        </div>
+                    </button>
+                    <button class="flex items-center gap-3 border border-white/20 rounded-full px-5 py-2.5 hover:bg-white/10 transition-colors text-white">
+                        <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C39.2 141.6 0 184.2 0 241.2c0 61.6 31.5 118.8 80.7 152.9 22.9 15.7 50.9 24.8 77.8 24.8 26.9 0 49.2-12.7 73.9-12.7 24.3 0 47.7 12.7 72.9 12.7 29.9 0 58.1-10.7 82.3-31.1-3.8-2.3-52.2-31.9-52.2-86.4zM245.3 101.5c13-15.8 21.8-36.5 21.8-59.2 0-5.4-1.2-10.7-3.6-15.4-15.3 1.5-35.2 10.2-49.4 22.6-13.6 11.4-24.3 31.5-21.8 51.6 2.3 18.2 17.3 32.5 35.2 32.5 19.9 0 33.3-15.1 37.8-32.5z"/></svg>
+                        <div class="flex flex-col items-start leading-none font-body">
+                            <span class="text-[9px] uppercase">Available on</span>
+                            <span class="text-sm font-normal">Apple Store</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <main class="card-section-body">
+            <div class="main-container bg-brand-bg border-white/10">
+                <div class="grid-container">
+                    <div class="card card-blue" data-target="#festival-content">
+                        <div>
+                            <div class="card-header">
+                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Fes-icon@2x.png" class="w-14 h-14 object-contain filter brightness-0 invert">
+                                <h2 class="font-header font-medium">Festival<br>& Event</h2>
+                            </div>
+                            <p class="font-body text-sm leading-relaxed text-white/80">Experience the vibrant energy of Lanna-Jazz fusion live on stage. Discover our seasonal music festivals, see the event calendar, and book your tickets.</p>
+                        </div>
+                        <a href="#" class="arrow-link"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></a>
+                    </div>
+                    <div class="card card-yellow" data-target="#artists-content">
+                        <div>
+                            <div class="card-header">
+                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Artist-Icon.png" class="w-14 h-14 object-contain">
+                                <h2 class="font-header font-medium">Musician<br>Network</h2>
+                            </div>
+                            <p class="font-body text-sm leading-relaxed text-black/80">Explore our roster of talented local and international artists. Read their biographies, listen to their music, and discover the faces behind the innovative Lanna-Jazz sound.</p>
+                        </div>
+                        <a href="#" class="arrow-link text-black border-black/30 hover:bg-black hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></a>
+                    </div>
+                    <div class="card card-green" data-target="#courses-content">
+                        <div>
+                            <div class="card-header">
+                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/course-icon.png" class="w-14 h-14 object-contain">
+                                <h2 class="font-header font-medium">Courses<br>Library</h2>
+                            </div>
+                            <p class="font-body text-sm leading-relaxed text-white/90">Unlock your potential with our groundbreaking curriculum. Learn to blend traditional Lanna instruments with jazz theory through our modular online courses.</p>
+                        </div>
+                        <a href="#" class="arrow-link"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></a>
+                    </div>
+                    <div class="card card-gray" data-target="#bigband-content">
+                        <div>
+                            <div class="card-header">
+                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Cm-bigband-icon.png" class="w-14 h-14 object-contain">
+                                <h2 class="font-header font-medium">CMSJ<br>Bigband</h2>
+                            </div>
+                            <p class="font-body text-sm leading-relaxed text-black/80">Meet Chiang Mai's one-and-only big band. As our flagship ensemble, we fuse the soul of Lanna music with the power of a modern jazz orchestra.</p>
+                        </div>
+                        <a href="#" class="arrow-link text-black border-black/30 hover:bg-black hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></a>
+                    </div>
+                    <div class="card card-orange" data-target="#forum-content">
+                        <div>
+                            <div class="card-header">
+                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Forum-icon.png" class="w-14 h-14 object-contain">
+                                <h2 class="font-header font-medium">Forum<br>Q&A</h2>
+                            </div>
+                            <p class="font-body text-sm leading-relaxed text-white/90">Join the conversation in our online community. This is a space for artists, students, and music lovers to ask questions and share knowledge.</p>
+                        </div>
+                        <a href="#" class="arrow-link"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></a>
+                    </div>
+                    <div class="card card-pink" data-target="#store-content">
+                        <div>
+                            <div class="card-header">
+                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Store-Icon.png" class="w-14 h-14 object-contain">
+                                <h2 class="font-header font-medium">Store<br>& Merch</h2>
+                            </div>
+                            <p class="font-body text-sm leading-relaxed text-white/90">Take a piece of the festival home with you. Browse our exclusive collection of apparel, albums, and unique merchandise.</p>
+                        </div>
+                        <a href="#" class="arrow-link text-black border-black/30 hover:bg-black hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></a>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="mt-24 pt-8 border-t border-white/10 pb-12">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-8 md:gap-0">
+                <div>
+                    <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More.png" alt="Chiang Mai Jazz City" class="h-12 md:h-16 w-auto object-contain">
+                </div>
+                
+                <div class="flex flex-col items-center md:items-end">
+                    <span class="text-xs text-gray-500 uppercase tracking-widest mb-2">Powered by</span>
+                    <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More-1.png" class="h-10 md:h-14 w-auto object-contain filter brightness-0 invert" alt="NIA Logo">
+                </div>
+            </div>
+
+            <nav class="flex justify-center flex-wrap gap-x-8 gap-y-4 mb-10 text-sm font-menu font-light text-gray-400">
+                <a href="#" class="hover:text-white transition-colors">Festival</a>
+                <a href="#" class="hover:text-white transition-colors">Event</a>
+                <a href="#" class="hover:text-white transition-colors">Booking</a>
+                <a href="#" class="hover:text-white transition-colors">Artists</a>
+                <a href="#" class="hover:text-white transition-colors">Network</a>
+                <a href="#" class="hover:text-white transition-colors">Courses</a>
+                <a href="#" class="hover:text-white transition-colors">CMSJ Bigband</a>
+                <a href="#" class="hover:text-white transition-colors">Forum</a>
+                <a href="#" class="hover:text-white transition-colors">Store</a>
+            </nav>
+
+            <div class="flex justify-center space-x-8 mb-12">
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24"><path d="M9.197 21.5h4v-8.01h2.669l.398-3.11h-3.067V8.41c0-.897.248-1.508 1.533-1.508h1.636V4.148c-.284-.038-1.255-.122-2.386-.122-2.361 0-3.978 1.442-3.978 4.09v2.296H6.348v3.11h2.849v8.01Z"/></svg>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 0 1 1.772 1.153 4.902 4.902 0 0 1 1.153 1.772c.247.636.316 1.363.364 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 0 1-1.153 1.772 4.902 4.902 0 0 1-1.772 1.153c-.636.247-1.363.316-2.427.364-1.024.048-1.378.06-3.808.06s-2.784-.012-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 0 1-1.772-1.153 4.902 4.902 0 0 1-1.153-1.772c-.247-.636-.316-1.363-.364-2.427C2.013 14.784 2 14.43 2 12s.013-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 0 1 1.153-1.772A4.902 4.902 0 0 1 5.45 2.525c.636-.247 1.363-.316 2.427-.364C8.901 2.013 9.256 2 11.685 2h.63ZM12 6.865A5.135 5.135 0 1 0 12 17.135 5.135 5.135 0 0 0 12 6.865Zm0 8.468A3.333 3.333 0 1 1 12 8.667a3.333 3.333 0 0 1 0 6.666Zm5.338-9.87a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Z" clip-rule="evenodd"/></svg>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+            </div>
+
+            <div class="text-center text-gray-600 text-xs tracking-wide">
+                <p>&copy; 2025 Chiang Mai Jazz City. All Rights Reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <div id="hidden-card-content" class="hidden">
+        <div id="festival-content" data-include="content-festival.html"></div>
+        <div id="artists-content" data-include="content-artists.html"></div>
+        <div id="courses-content" data-include="content-courses.html"></div>
+        <div id="bigband-content" data-include="content-bigband.html"></div>
+        <div id="forum-content" data-include="content-forum.html"></div>
+        <div id="store-content" data-include="content-store.html"></div>
+        
+        <div id="event-detail-template" class="hidden">
+            <div class="event-detail-content"> 
+                 <main>
+                    <div class="mb-8"><img src="https://placehold.co/1200x400/cccccc/333333?text=Chiang+Mai+Street+Jazz+Festival+2025+Banner" alt="Chiang Mai Street Jazz Festival 2025 Banner" class="w-full rounded-2xl object-cover h-64 md:h-80"></div>
+                    <div class="flex justify-center items-center space-x-2 sm:space-x-4 mb-12">
+                        <button class="nav-button" data-section="book-now">BOOK NOW</button>
+                        <button class="nav-button" data-section="line-up">LINE UP</button>
+                        <button class="nav-button" data-section="venue">VENUE</button>
+                        <button class="nav-button" data-section="gallery">GALLERY</button>
+                    </div>
+                    <div id="event-detail-content-area"></div>
+                 </main>
+            </div>
+        </div>
+
+        <div id="default-detail-content" class="hidden">
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                <div class="md:col-span-1"><img src="https://placehold.co/400x560/dddddd/555555?text=Event+Poster" alt="Event Poster" class="w-full rounded-2xl"></div>
+                <div class="md:col-span-2">
+                    <h1 class="text-3xl sm:text-4xl font-bold mb-1">Chiang Mai Street Jazz 2025</h1>
+                    <h2 class="text-xl sm:text-2xl text-gray-700 font-semibold mb-4">Chiangmai Jazz City</h2>
+                    <p class="text-base sm:text-lg mb-6 text-gray-600">01 - 04 Dec Jazz On Street | 05-06 Mini Stage at 4 Jazz Bars<br>07 December 2025 at Old Chiangmai Cultural Center</p>
+                    <div class="prose prose-sm sm:prose-base max-w-none text-gray-700"><p class="font-semibold">Chiang Mai Street Jazz Festival 2025<br>The 7th Chiang Mai Street Jazz Festival<br>"Chiang Mai Jazz City: Let the City Play its Jazz"</p><p>What if a place wasn't remembered by its sights, but instead by its sounds? Chiang Mai is discovering its identity through a new melody, and that language is "Jazz."</p></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="book-now-content" class="hidden">
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                <div class="md:col-span-1"><img src="https://placehold.co/400x560/dddddd/555555?text=Event+Poster" alt="Event Poster" class="w-full rounded-2xl"></div>
+                <div class="md:col-span-2 space-y-4">
+                    <h2 class="text-2xl font-semibold mb-4">Ticket Options</h2>
+                    <div class="flex justify-between items-center border-b pb-3"><div><h3 class="font-semibold">Music Supporter</h3></div><div class="flex items-center space-x-3"><span class="font-semibold text-lg">1,000 THB</span><button class="w-6 h-6 bg-gray-200 rounded text-lg">-</button><span>1</span><button class="w-6 h-6 bg-gray-200 rounded text-lg">+</button></div></div>
+                    <div class="flex items-center space-x-2 pt-4"><input type="checkbox" id="agree-checkbox" class="h-4 w-4"><label for="agree-checkbox" class="text-sm text-gray-600">By checking this box, I hereby agree that my information will be shared to our Event Organizers</label></div>
+                    <button class="w-full bg-black text-white py-3 rounded-lg mt-6 font-semibold hover:bg-gray-800 transition-colors">BUY TICKET</button>
+                </div>
+            </div>
+        </div>
+        <div id="line-up-content" class="hidden"><div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12"><div class="md:col-span-1"><img src="https://placehold.co/400x560/dddddd/555555?text=Event+Poster" alt="Event Poster" class="w-full rounded-2xl"></div><div class="md:col-span-2"><h2>Line Up Content Placeholder</h2></div></div></div>
+        <div id="venue-content" class="hidden"><div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12"><div class="md:col-span-1"><img src="https://placehold.co/400x560/dddddd/555555?text=Event+Poster" alt="Event Poster" class="w-full rounded-2xl"></div><div class="md:col-span-2"><h2>Venue Content Placeholder</h2></div></div></div>
+        <div id="gallery-content" class="hidden"><div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12"><div class="md:col-span-1"><img src="https://placehold.co/400x560/dddddd/555555?text=Event+Poster" alt="Event Poster" class="w-full rounded-2xl"></div><div class="md:col-span-2"><h2>Gallery Content Placeholder</h2></div></div></div>
+    </div>
+
+    <div id="login-modal" class="hidden fixed inset-0 z-[150] flex items-center justify-center p-4">
+        <div id="login-backdrop" class="absolute inset-0 bg-black bg-opacity-75"></div>
+        <div class="bg-gray-800 p-8 rounded-lg shadow-xl z-10 relative w-full max-w-md">
+            <button id="close-login-modal" class="absolute top-3 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+            <h2 class="text-2xl font-bold mb-6 text-center text-white">Log In</h2>
+            <form id="login-form">
+                <div class="mb-4"><label class="block text-sm font-medium text-gray-300 mb-1">Username</label><input type="text" id="username" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"></div>
+                <div class="mb-6"><label class="block text-sm font-medium text-gray-300 mb-1">Password</label><input type="password" id="password" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"></div>
+                <p id="login-error-message" class="text-sm text-red-400 text-center mb-4"></p>
+                <button type="submit" class="w-full bg-brand-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition-colors">Log In</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        async function loadIncludes() {
+            const includes = document.querySelectorAll('[data-include]');
+            const promises = [];
+            for (const el of includes) {
+                const file = el.getAttribute('data-include');
+                promises.push(fetch(file).then(res => {
+                    if (res.ok) return res.text().then(text => el.innerHTML = text);
+                    else console.error('Error loading:', file);
+                }).catch(err => console.error('Fetch error:', err)));
+            }
+            await Promise.all(promises);
+        }
+        loadIncludes();
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const menuToggle = document.getElementById('menu-toggle');
+            const closeMenuBtn = document.getElementById('close-menu-btn');
+            const mobileMenuContainer = document.getElementById('mobile-menu-container');
+            const menuBackdrop = document.getElementById('menu-backdrop');
+            const menuPanel = document.getElementById('menu-panel');
+            function openMenu() { if (!mobileMenuContainer) return; mobileMenuContainer.classList.remove('hidden'); requestAnimationFrame(() => { if (menuBackdrop) menuBackdrop.classList.remove('opacity-0'); if (menuPanel) menuPanel.classList.remove('translate-x-full'); }); }
+            function closeMenu() { if (!mobileMenuContainer) return; if (menuBackdrop) menuBackdrop.classList.add('opacity-0'); if (menuPanel) menuPanel.classList.add('translate-x-full'); setTimeout(() => { mobileMenuContainer.classList.add('hidden'); }, 300); }
+            if (menuToggle) menuToggle.addEventListener('click', openMenu); if (closeMenuBtn) closeMenuBtn.addEventListener('click', closeMenu); if (menuBackdrop) menuBackdrop.addEventListener('click', closeMenu);
+        });
+    </script>
+    
+    <script src="script.js"></script>
+</body>
+</html>

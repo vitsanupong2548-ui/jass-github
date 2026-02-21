@@ -1,0 +1,863 @@
+  <!-- Embed Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Special+Gothic+Expanded+One&family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'hero': ['"Special Gothic Expanded One"', '"Prompt"', 'sans-serif'],
+                        'header': ['"Zalando Sans Expanded"', '"Prompt"', 'sans-serif'], 
+                        'menu': ['"Zalando Sans Expanded"', '"Google Sans"', 'sans-serif'], 
+                        'body': ['"Google Sans"', 'sans-serif'], 
+                    },
+                    colors: {
+                        brand: { bg: '#050505', blue: '#0c32f9', yellow: '#ffc107', green: '#10a349', grey: '#b2b2b2', orange: '#ef5f4d', pink: '#fa87ce' }
+                    }
+                }
+            }
+        }
+    </script>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chiang Mai Jazz City</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Embed Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Special+Gothic+Expanded+One&family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Config setup
+        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+        const appIdStr = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        let db, auth; 
+        try {
+            const config = JSON.parse(firebaseConfigStr);
+            if (Object.keys(config).length > 0) {
+                const app = initializeApp(config);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                initApp();
+            }
+        } catch (e) { console.warn("Running in offline mode"); }
+
+        // --- DATA SEEDING (MOCK DATA) ---
+        const initialEvents = [
+            { id: 'static-1', title: "Chiang Mai Street Jazz", date: "2025-12-01", dateDisplay: "01 DEC", year: "2025", shortDesc: "The annual celebration of street music culture across the old city.", imageUrl: "http://chiangmaijazz.com/wp-content/uploads/2025/09/ST009.jpg" },
+            { id: 'static-2', title: "Jazz in the Garden", date: "2026-02-14", dateDisplay: "14 FEB", year: "2026", shortDesc: "A romantic evening of smooth jazz under the stars.", imageUrl: "http://chiangmaijazz.com/wp-content/uploads/2024/11/TKM_1296-scaled.jpg" },
+            { id: 'static-3', title: "Lanna Fusion Night", date: "2026-03-20", dateDisplay: "20 MAR", year: "2026", shortDesc: "Experimental sounds mixing traditional Lanna instruments.", imageUrl: "http://chiangmaijazz.com/wp-content/uploads/2025/09/ST017.jpg" },
+            { id: 'static-4', title: "Songkran Jazz Splash", date: "2026-04-10", dateDisplay: "10 APR", year: "2026", shortDesc: "Celebrate the Thai New Year with upbeat jazz.", imageUrl: "http://chiangmaijazz.com/wp-content/uploads/2024/09/Screen-Shot-2566-11-27-at-18.36.18.jpg" },
+            { id: 'static-5', title: "Nimman Art & Jazz", date: "2026-05-15", dateDisplay: "15 MAY", year: "2026", shortDesc: "Art exhibitions meet live jazz performances.", imageUrl: "http://chiangmaijazz.com/wp-content/uploads/2023/08/street-jazz-2022_1-57-scaled.jpg" },
+            { id: 'static-6', title: "River Jazz Cruise", date: "2026-06-21", dateDisplay: "21 JUN", year: "2026", shortDesc: "Sunset jazz sessions floating down the Ping River.", imageUrl: "http://chiangmaijazz.com/wp-content/uploads/2023/08/129752918_1082317502205877_4418105056960994683_n.jpg" },
+            { id: 'static-7', title: "Rainy Season Blues", date: "2026-07-04", dateDisplay: "04 JUL", year: "2026", shortDesc: "Deep blues for the cozy rainy evenings.", imageUrl: "http://chiangmaijazz.com/wp-content/uploads/2023/08/street-jazz-2022_2-30-scaled.jpg" },
+            { id: 'static-8', title: "Mother's Day Special", date: "2026-08-12", dateDisplay: "12 AUG", year: "2026", shortDesc: "A special tribute concert celebrating mothers.", imageUrl: "http://chiangmaijazz.com/wp-content/uploads/2023/08/CM-Street-Jazz-2020-North-Gate-84-scaled.jpg" }
+        ];
+
+        let events = [];
+        let deletedStaticIds = new Set(); 
+        let currentEventId = null;
+
+        async function initApp() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) { console.error("Auth Error", error); }
+            
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const q = collection(db, 'artifacts', appIdStr, 'public', 'data', 'events');
+                    onSnapshot(q, (snapshot) => {
+                        const dbEvents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        events = [
+                            ...initialEvents.filter(e => !deletedStaticIds.has(e.id)),
+                            ...dbEvents
+                        ];
+                        
+                        renderDynamicCards(); 
+                        renderAdminEventList();
+                    });
+                }
+            });
+        }
+
+        window.renderDynamicCards = function() {
+            const container = document.getElementById('festival-cards-container');
+            if (!container) return;
+            container.innerHTML = ''; 
+            
+            events.forEach(event => {
+                const card = document.createElement('div');
+                card.className = "bg-[#111] h-[150px] rounded-[1rem] p-6 relative flex justify-between items-center group hover:-translate-y-2 transition-transform duration-300 border border-white/5 cursor-pointer";
+                card.onclick = () => openEventDetail(event.id);
+                
+                const bgImage = event.posterUrl || event.coverUrl || event.imageUrl || 'https://via.placeholder.com/800x400';
+                
+                card.innerHTML = `
+                    <div class="absolute inset-0 rounded-[1rem] overflow-hidden opacity-30 group-hover:opacity-40 transition-opacity">
+                       <img src="${bgImage}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
+                    </div>
+                    <div class="relative z-10 self-end mt-auto">
+                        <div class="text-white text-4xl font-header font-medium tracking-tight uppercase leading-none mb-1">${event.dateDisplay || 'TBA'}</div>
+                        <div class="text-white/60 text-xl font-header font-light">${event.year || '2025'}</div>
+                    </div>
+                    <div class="relative z-10 flex flex-col items-end text-right h-full justify-center w-2/3 pl-8">
+                        <div class="flex items-center justify-end gap-3 w-full mb-2">
+                            <h3 class="text-2xl font-header font-medium text-white line-clamp-1">${event.title}</h3>
+                            <div class="w-8 h-8 border border-white rounded-full flex-shrink-0 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm font-body line-clamp-2">${event.shortDesc || ''}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.renderAdminEventList = function() {
+            const list = document.getElementById('admin-event-list-body');
+            if (!list) return;
+            list.innerHTML = '';
+            events.forEach(event => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b hover:bg-gray-50";
+                const img = event.imageUrl || event.posterUrl || event.coverUrl;
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${img}" class="w-10 h-10 object-cover rounded bg-gray-200">
+                            <span class="font-body text-sm font-medium text-gray-900 line-clamp-1">${event.title}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 font-body text-sm text-gray-500">${event.dateDisplay || '-'}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="showStats('${event.id}')" class="text-green-600 mr-4 font-medium hover:underline">Stats</button>
+                        <button onclick="editEvent('${event.id}')" class="text-blue-600 mr-4 font-medium hover:underline">Edit</button>
+                        <button onclick="deleteEvent('${event.id}')" class="text-red-600 font-medium hover:underline">Delete</button>
+                    </td>
+                `;
+                list.appendChild(tr);
+            });
+        }
+
+        // --- PAYMENT LOGIC ---
+        window.processPayment = async function() {
+            const name = document.getElementById('buyer-name').value;
+            const email = document.getElementById('buyer-email').value;
+            const tel = document.getElementById('buyer-tel').value;
+
+            if(!name || !email || !tel) return showToast("Please fill in all details.", true);
+            
+            const totalTickets = Object.values(window.ticketQuantities).reduce((a,b) => a+b, 0);
+            if(totalTickets === 0) return showToast("No tickets selected.", true);
+
+            const bookingData = {
+                buyer: { name, email, tel },
+                tickets: window.ticketQuantities,
+                total: document.getElementById('total-price').innerText,
+                timestamp: Date.now(),
+                status: 'paid' 
+            };
+
+            try {
+                const btn = document.getElementById('btn-confirm-pay');
+                btn.innerText = "Processing...";
+                btn.disabled = true;
+
+                if (db) {
+                    await addDoc(collection(db, 'artifacts', appIdStr, 'public', 'data', 'bookings'), bookingData);
+                }
+
+                setTimeout(() => {
+                    document.getElementById('payment-overlay').classList.add('overlay-hidden');
+                    document.getElementById('payment-overlay').classList.remove('overlay-visible');
+                    
+                    const successOverlay = document.getElementById('success-overlay');
+                    document.getElementById('booking-id').innerText = "#" + Math.floor(Math.random()*100000);
+                    successOverlay.classList.remove('overlay-hidden');
+                    successOverlay.classList.add('overlay-visible');
+                    
+                    btn.innerText = "Confirm & Pay";
+                    btn.disabled = false;
+                }, 1500);
+
+            } catch (e) {
+                console.error(e);
+                showToast("Booking failed.", true);
+            }
+        }
+
+        // --- ACTIONS ---
+        window.openEventDetail = function(idOrEvent) {
+            const event = events.find(e => e.id === idOrEvent);
+            if (!event) return;
+
+            const img = document.querySelector('#event-detail-overlay .header-img');
+            const posterUrl = event.posterUrl || event.imageUrl;
+            if(img) img.src = event.coverUrl || posterUrl;
+            
+            const poster = document.querySelector('#event-detail-overlay .poster-img');
+            if(poster) poster.src = posterUrl;
+
+            document.getElementById('tab-details').innerHTML = `
+                <h1 class="text-4xl md:text-4xl font-header font-medium leading-tight mb-6">${event.title}</h1>
+                <div class="flex flex-col gap-1 mb-8">
+                    <p class="text-xl font-body text-gray-800 font-medium">${event.dateDisplay} ${event.year}</p>
+                    <p class="text-lg font-body text-gray-500">${event.location || 'Chiang Mai, Thailand'}</p>
+                </div>
+                <hr class="border-gray-200 mb-8">
+                <div class="prose max-w-none text-gray-600 font-body leading-relaxed space-y-6 text-base">
+                    <p class="text-lg font-medium text-black">${event.shortDesc || ''}</p>
+                    <p>${event.fullDesc || 'No additional details.'}</p>
+                </div>
+            `;
+
+            let lineupHTML = '<h2 class="text-3xl font-header font-medium mb-8">Event Schedule</h2><div class="space-y-6"><div class="bg-gray-50 p-6 rounded-lg"><ul class="space-y-3 font-body text-gray-600">';
+            if(event.lineup && event.lineup.length > 0) {
+                event.lineup.forEach(l => { lineupHTML += `<li class="flex justify-between items-center"><span class="font-bold text-black bg-gray-200 px-2 py-1 rounded text-sm">${l.time}</span> <span>${l.artist}</span></li>`; });
+            } else { lineupHTML += '<li>No lineup info.</li>'; }
+            lineupHTML += '</ul></div></div>';
+            document.getElementById('tab-lineup').innerHTML = lineupHTML;
+
+            let galleryHTML = '<div class="grid grid-cols-3 gap-4">';
+            if(event.gallery && event.gallery.length > 0) {
+                event.gallery.forEach(url => { galleryHTML += `<div class="aspect-square bg-gray-100 rounded-lg overflow-hidden"><img src="${url}" class="w-full h-full object-cover"></div>`; });
+            } else { galleryHTML += '<p class="col-span-3 text-gray-500">No photos.</p>'; }
+            galleryHTML += '</div>';
+            document.getElementById('tab-gallery').innerHTML = galleryHTML;
+
+            const overlay = document.getElementById('event-detail-overlay');
+            overlay.classList.remove('overlay-hidden');
+            overlay.classList.add('overlay-visible');
+            switchTab('details');
+        }
+
+        // --- ADMIN ---
+        window.addLineupItem = function(time='', artist='') {
+            const div = document.createElement('div');
+            div.className = "flex gap-2 mb-2 lineup-item";
+            div.innerHTML = `<input type="time" class="form-input w-1/3" value="${time}"><input type="text" placeholder="Artist" class="form-input w-2/3" value="${artist}"><button type="button" onclick="this.parentElement.remove()" class="text-red-500 px-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
+            document.getElementById('lineup-container').appendChild(div);
+            lucide.createIcons();
+        }
+        window.addGalleryItem = function(url='') {
+            const div = document.createElement('div');
+            div.className = "flex gap-2 mb-2 gallery-item";
+            div.innerHTML = `<input type="url" placeholder="URL" class="form-input w-full" value="${url}"><button type="button" onclick="this.parentElement.remove()" class="text-red-500 px-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
+            document.getElementById('gallery-container').appendChild(div);
+            lucide.createIcons();
+        }
+        window.addTicketItem = function(name='', price='', capacity='', desc='') {
+            const div = document.createElement('div');
+            div.className = "flex flex-col gap-2 mb-4 ticket-item border-b pb-4";
+            div.innerHTML = `
+                <div class="flex gap-2">
+                    <input type="text" placeholder="Type" class="form-input w-1/3" value="${name}">
+                    <input type="number" placeholder="Price" class="form-input w-1/3" value="${price}">
+                    <input type="number" placeholder="Cap" class="form-input w-1/3" value="${capacity}">
+                    <button type="button" onclick="this.closest('.ticket-item').remove()" class="text-red-500 px-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                </div>
+                <input type="text" placeholder="Description" class="form-input w-full text-sm text-gray-600" value="${desc}">
+            `;
+            document.getElementById('ticket-container').appendChild(div);
+            lucide.createIcons();
+        }
+
+        function formatDateToShort(dateString) {
+            if(!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }).toUpperCase();
+        }
+
+        window.saveFullEvent = async function() {
+            if (!auth || !auth.currentUser) return showToast("Auth required", true);
+            const title = document.getElementById('adm-title').value;
+            if(!title) return showToast("Title required", true);
+            
+            const rawDate = document.getElementById('adm-date').value; 
+            const dateDisplay = formatDateToShort(rawDate);
+
+            const lineup = Array.from(document.querySelectorAll('.lineup-item')).map(d => ({time: d.children[0].value, artist: d.children[1].value}));
+            const gallery = Array.from(document.querySelectorAll('.gallery-item')).map(d => d.children[0].value);
+            const tickets = Array.from(document.querySelectorAll('.ticket-item')).map(d => ({
+                name: d.querySelector('input:nth-child(1)').value,
+                price: parseFloat(d.querySelector('input:nth-child(2)').value)||0,
+                capacity: parseInt(d.querySelector('input:nth-child(3)').value)||0,
+                description: d.querySelector('input:last-child').value
+            }));
+
+            const data = {
+                title, dateRaw: rawDate, dateDisplay, year: document.getElementById('adm-year').value,
+                location: document.getElementById('adm-location').value, coverUrl: document.getElementById('adm-cover').value,
+                posterUrl: document.getElementById('adm-poster').value, imageUrl: document.getElementById('adm-poster').value,
+                shortDesc: document.getElementById('adm-short').value, fullDesc: document.getElementById('adm-full').value, 
+                lineup, gallery, tickets, timestamp: Date.now()
+            };
+
+            try {
+                if (currentEventId && !currentEventId.startsWith('static-')) {
+                    await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'events', currentEventId), data);
+                } else {
+                    await addDoc(collection(db, 'artifacts', appIdStr, 'public', 'data', 'events'), data);
+                }
+                showToast("Saved!");
+                showAdminHome();
+            } catch(e) { console.error(e); showToast("Error", true); }
+        }
+
+        window.editEvent = function(id) {
+            currentEventId = id;
+            const event = events.find(e => e.id === id);
+            if (!event) return;
+            document.getElementById('admin-home-view').classList.add('hidden');
+            document.getElementById('admin-form-view').classList.remove('hidden');
+            
+            document.getElementById('adm-title').value = event.title||'';
+            document.getElementById('adm-date').value = event.dateRaw || event.date || ''; 
+            document.getElementById('adm-year').value = event.year||'';
+            document.getElementById('adm-location').value = event.location||'';
+            document.getElementById('adm-cover').value = event.coverUrl||'';
+            document.getElementById('adm-poster').value = event.posterUrl || event.imageUrl || '';
+            document.getElementById('adm-short').value = event.shortDesc||'';
+            document.getElementById('adm-full').value = event.fullDesc||'';
+
+            document.getElementById('lineup-container').innerHTML = '';
+            if(event.lineup) event.lineup.forEach(l => addLineupItem(l.time, l.artist));
+            document.getElementById('gallery-container').innerHTML = '';
+            if(event.gallery) event.gallery.forEach(u => addGalleryItem(u));
+            document.getElementById('ticket-container').innerHTML = '';
+            if(event.tickets) event.tickets.forEach(t => addTicketItem(t.name, t.price, t.capacity, t.description));
+        }
+
+        window.deleteEvent = async function(id) {
+            if (id.startsWith('static-')) {
+                deletedStaticIds.add(id);
+                const container = document.getElementById('festival-cards-container');
+                if(container) container.innerHTML = '';
+                renderDynamicCards(); 
+                renderAdminEventList();
+                showToast("Hidden (Mock)");
+                return;
+            }
+            if(confirm("Delete?")) {
+                await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'events', id));
+                showToast("Deleted");
+            }
+        }
+        
+        window.createNewEvent = function() {
+            currentEventId = null;
+            document.getElementById('admin-full-form').reset();
+            document.getElementById('lineup-container').innerHTML = '';
+            document.getElementById('gallery-container').innerHTML = '';
+            document.getElementById('ticket-container').innerHTML = '';
+            document.getElementById('admin-home-view').classList.add('hidden');
+            document.getElementById('admin-form-view').classList.remove('hidden');
+        }
+
+        window.showAdminHome = function() {
+            document.getElementById('admin-form-view').classList.add('hidden');
+            document.getElementById('admin-stats-view').classList.add('hidden');
+            document.getElementById('admin-home-view').classList.remove('hidden');
+        }
+
+        initApp();
+    </script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'hero': ['"Special Gothic Expanded One"', '"Prompt"', 'sans-serif'],
+                        'header': ['"Zalando Sans Expanded"', '"Prompt"', 'sans-serif'], 
+                        'menu': ['"Zalando Sans Expanded"', '"Google Sans"', 'sans-serif'], 
+                        'body': ['"Google Sans"', 'sans-serif'], 
+                    },
+                    colors: {
+                        brand: { bg: '#050505', blue: '#0c32f9', yellow: '#ffc107', green: '#10a349', grey: '#b2b2b2', orange: '#ef5f4d', pink: '#fa87ce' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; color: white; overflow-x: hidden; }
+        html { scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .card-transition:hover { transform: translateY(-8px); filter: brightness(1.1); transition: all 0.3s ease; }
+        .pattern-diagonal { background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px); }
+        #mobile-menu, #festival-overlay, #artists-overlay, #event-detail-overlay, #booking-overlay, #payment-overlay, #admin-overlay, #success-overlay { transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); transform-origin: center center; }
+        .menu-open { transform: translateX(0); } .menu-closed { transform: translateX(100%); }
+        .overlay-hidden { opacity: 0; pointer-events: none; transform: scale(0.95); }
+        .overlay-visible { opacity: 1; pointer-events: auto; transform: scale(1); }
+        .tab-btn.active { background-color: black; color: white; border-color: black; }
+        .tab-content { display: none; } .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .form-input { width: 100%; padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: "Google Sans", sans-serif; outline: none; transition: border-color 0.2s; color: black; }
+        .form-input:focus { border-color: black; }
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 200; left: 50%; bottom: 30px; transform: translateX(-50%); }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-body font-normal">
+
+    <div id="toast"></div>
+
+    <!-- 1. MOBILE MENU OVERLAY -->
+    <div id="mobile-menu" class="fixed inset-y-0 right-0 w-full md:w-1/2 bg-[#050505] z-[70] border-l border-white/10 flex flex-col menu-closed shadow-2xl">
+        <div class="flex items-center justify-between p-6 border-b border-white/10">
+            <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More.png" alt="Logo" class="h-12 w-auto object-contain">
+            <button onclick="toggleMenu()" class="p-2 hover:bg-white/10 rounded-full text-white transition-colors"><i data-lucide="x" class="w-8 h-8"></i></button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-8 flex flex-col justify-center gap-6">
+            <a href="#" class="text-3xl md:text-4xl font-menu font-light text-white hover:underline decoration-1 underline-offset-8 block">Festival</a>
+            <a href="#" class="text-3xl md:text-4xl font-menu font-light text-white hover:underline decoration-1 underline-offset-8 block">Event</a>
+            <a href="#" class="text-3xl md:text-4xl font-menu font-light text-white hover:underline decoration-1 underline-offset-8 block">Booking</a>
+            <a href="#" class="text-3xl md:text-4xl font-menu font-light text-white hover:underline decoration-1 underline-offset-8 block">Artists</a>
+            <a href="#" class="text-3xl md:text-4xl font-menu font-light text-white hover:underline decoration-1 underline-offset-8 block">Network</a>
+            <a href="#" class="text-3xl md:text-4xl font-menu font-light text-white hover:underline decoration-1 underline-offset-8 block">Courses</a>
+            <a href="#" class="text-3xl md:text-4xl font-menu font-light text-white hover:underline decoration-1 underline-offset-8 block">Big Band</a>
+            <a href="#" class="text-3xl md:text-4xl font-menu font-light text-white hover:underline decoration-1 underline-offset-8 block">Forum</a>
+            <a href="#" class="text-3xl md:text-4xl font-menu font-light text-white hover:underline decoration-1 underline-offset-8 block">Store</a>
+        </div>
+    </div>
+
+    <!-- 2. PAYMENT OVERLAY -->
+    <div id="payment-overlay" class="fixed top-20 left-0 right-0 bottom-0 z-[70] bg-black/80 backdrop-blur-sm overlay-hidden flex justify-center overflow-y-auto py-8">
+        <div class="bg-white w-full max-w-[1200px] h-fit min-h-full rounded-xl overflow-hidden flex flex-col relative text-black shadow-2xl mx-4">
+            <div class="px-8 py-6 border-b border-gray-200 flex justify-between items-center bg-white sticky top-0 z-10">
+                <div class="flex items-center gap-4">
+                    <button onclick="togglePayment()" class="p-2 hover:bg-gray-100 rounded-full transition-colors border border-gray-200"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                    <h2 class="text-3xl font-header font-medium tracking-tight">Checkout</h2>
+                </div>
+                <button onclick="closeAllOverlays()" class="p-2 hover:bg-gray-100 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="flex flex-col md:flex-row flex-1">
+                <!-- Order Summary -->
+                <div class="w-full md:w-[30%] bg-gray-50 p-8 border-r border-gray-200 flex flex-col gap-6">
+                    <h3 class="text-xl font-header font-medium mb-4">Order Summary</h3>
+                    <div class="flex justify-between items-start pb-4 border-b border-gray-200">
+                        <div><p class="font-header font-medium text-lg">Music Supporter</p><p class="text-sm text-gray-500 font-body">x1</p></div>
+                        <p class="font-body font-medium">1,000 THB</p>
+                    </div>
+                    <div class="mt-auto">
+                        <div class="flex justify-between items-center mb-2"><span class="text-gray-500 font-body">Subtotal</span><span class="font-body">1,000 THB</span></div>
+                        <div class="flex justify-between items-center mb-6"><span class="text-gray-500 font-body">Fees</span><span class="font-body">0 THB</span></div>
+                        <div class="flex justify-between items-center pt-4 border-t border-gray-300"><span class="text-xl font-header font-medium">Total</span><span class="text-2xl font-header font-medium text-brand-blue">1,000 THB</span></div>
+                    </div>
+                </div>
+                <!-- Buyer Details -->
+                <div class="w-full md:w-[70%] p-8 flex flex-col gap-8">
+                    <div>
+                        <h3 class="text-xl font-header font-medium mb-6 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-black text-white text-xs flex items-center justify-center font-bold">1</span> Buyer Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1 font-body">Full Name</label><input id="buyer-name" type="text" class="form-input" placeholder="Enter your full name"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1 font-body">Email</label><input id="buyer-email" type="email" class="form-input" placeholder="name@example.com"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1 font-body">Phone Number</label><input id="buyer-tel" type="tel" class="form-input" placeholder="+66 XX XXX XXXX"></div>
+                        </div>
+                    </div>
+                    <hr class="border-gray-100">
+                    <div>
+                        <h3 class="text-xl font-header font-medium mb-6 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-black text-white text-xs flex items-center justify-center font-bold">2</span> Payment Method</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-black transition-colors flex items-center gap-4 relative group">
+                                <input type="radio" name="payment" class="w-4 h-4 text-black focus:ring-black" checked>
+                                <div><p class="font-header font-medium">Credit / Debit Card</p><p class="text-xs text-gray-500 font-body">Visa, Mastercard, JCB</p></div>
+                                <i data-lucide="credit-card" class="w-5 h-5 ml-auto text-gray-400 group-hover:text-black"></i>
+                            </label>
+                            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-black transition-colors flex items-center gap-4 relative group">
+                                <input type="radio" name="payment" class="w-4 h-4 text-black focus:ring-black">
+                                <div><p class="font-header font-medium">QR PromptPay</p><p class="text-xs text-gray-500 font-body">Scan via Bank App</p></div>
+                                <i data-lucide="qr-code" class="w-5 h-5 ml-auto text-gray-400 group-hover:text-black"></i>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-4 flex justify-end">
+                        <button id="btn-confirm-pay" onclick="processPayment()" class="bg-brand-blue text-white font-menu font-medium text-lg px-12 py-4 rounded-full hover:bg-blue-800 transition-colors uppercase tracking-wide shadow-lg shadow-blue-900/20">Confirm & Pay</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. SUCCESS OVERLAY (Z-80) -->
+    <div id="success-overlay" class="fixed inset-0 z-[80] bg-black/90 backdrop-blur-md overlay-hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-12 text-center max-w-md mx-4 shadow-2xl relative text-black">
+            <button onclick="closeAllOverlays()" class="absolute top-4 right-4 text-gray-400 hover:text-black"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i data-lucide="check" class="w-10 h-10 text-green-600"></i>
+            </div>
+            <h2 class="text-3xl font-header font-bold mb-2">Payment Successful!</h2>
+            <p class="text-gray-500 font-body mb-6">Thank you for your purchase. Your tickets have been sent to your email.</p>
+            <div class="bg-gray-50 rounded-lg p-4 mb-8">
+                <p class="text-sm text-gray-500 mb-1">Booking Reference</p>
+                <p id="booking-id" class="text-2xl font-header font-bold tracking-widest text-brand-blue">#123456</p>
+            </div>
+            <button onclick="closeAllOverlays()" class="bg-black text-white font-medium px-8 py-3 rounded-full hover:bg-gray-800 transition-colors w-full">Return to Home</button>
+        </div>
+    </div>
+
+    <!-- 4. BOOKING OVERLAY -->
+    <div id="booking-overlay" class="fixed top-20 left-0 right-0 bottom-0 z-[60] bg-black/80 backdrop-blur-sm overlay-hidden flex justify-center overflow-y-auto py-8">
+        <div class="bg-white w-full max-w-[1200px] h-fit min-h-full rounded-xl overflow-hidden flex flex-col relative text-black shadow-2xl mx-4">
+            <div class="px-8 py-6 border-b border-gray-200 flex justify-between items-center bg-white sticky top-0 z-10">
+                <h2 class="text-3xl font-header font-medium tracking-tight">Select Tickets</h2>
+                <button onclick="toggleBooking()" class="p-2 hover:bg-gray-100 rounded-full transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="flex flex-col md:flex-row flex-1">
+                <div class="w-full md:w-[30%] bg-gray-50 p-8 border-r border-gray-200 flex flex-col gap-6">
+                    <div class="aspect-[2/3] rounded-lg overflow-hidden shadow-md"><img src="http://chiangmaijazz.com/wp-content/uploads/2025/09/ST009.jpg" class="w-full h-full object-cover"></div>
+                    <div><h3 class="text-2xl font-header font-medium mb-2">Chiang Mai Street Jazz 2025</h3><p class="text-gray-500 text-sm">Old Chiangmai Cultural Center</p><div class="flex items-center gap-2 text-brand-blue font-header font-medium"><i data-lucide="calendar" class="w-4 h-4"></i> 07 DEC 2025</div></div>
+                </div>
+                <div class="w-full md:w-[70%] p-8 flex flex-col">
+                    <div class="space-y-4 flex-1">
+                        <!-- Supporter -->
+                        <div class="border border-gray-200 rounded-xl p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div class="flex-1"><h4 class="text-xl font-header font-medium">Music Supporter</h4><p class="text-gray-500 text-sm">Includes Souvenir. <a href="#" class="underline hover:text-black">Learn more.</a></p></div>
+                            <div class="flex flex-col items-end gap-3 min-w-[140px]">
+                                <span class="text-2xl font-header font-medium">1,000 THB</span>
+                                <div class="flex items-center justify-between border border-gray-300 rounded-full px-2 py-1 w-32">
+                                    <button onclick="updateTicket('supporter', -1)" class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 pb-1">-</button>
+                                    <span id="qty-supporter" class="text-base font-header font-medium text-center w-8">1</span>
+                                    <button onclick="updateTicket('supporter', 1)" class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 pb-1">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Adult -->
+                        <div class="border border-gray-200 rounded-xl p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div class="flex-1"><h4 class="text-xl font-header font-medium">Adult</h4><p class="text-gray-500 text-sm">Valid for 7th Dec 2025</p></div>
+                            <div class="flex flex-col items-end gap-3 min-w-[140px]">
+                                <span class="text-2xl font-header font-medium">590 THB</span>
+                                <div class="flex items-center justify-between border border-gray-300 rounded-full px-2 py-1 w-32">
+                                    <button onclick="updateTicket('adult', -1)" class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 pb-1">-</button>
+                                    <span id="qty-adult" class="text-base font-header font-medium text-center w-8">0</span>
+                                    <button onclick="updateTicket('adult', 1)" class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 pb-1">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Youth -->
+                        <div class="border border-gray-200 rounded-xl p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div class="flex-1"><h4 class="text-xl font-header font-medium">Youth</h4><p class="text-gray-500 text-sm">Valid for 7th Dec 2025</p></div>
+                            <div class="flex flex-col items-end gap-3 min-w-[140px]">
+                                <span class="text-2xl font-header font-medium">350 THB</span>
+                                <div class="flex items-center justify-between border border-gray-300 rounded-full px-2 py-1 w-32">
+                                    <button onclick="updateTicket('youth', -1)" class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 pb-1">-</button>
+                                    <span id="qty-youth" class="text-base font-header font-medium text-center w-8">0</span>
+                                    <button onclick="updateTicket('youth', 1)" class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 pb-1">+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Couple -->
+                        <div class="border border-gray-200 rounded-xl p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div class="flex-1"><h4 class="text-xl font-header font-medium">Couple Adult</h4><p class="text-gray-500 text-sm">Valid for 7th Dec 2025 (Admit 2)</p></div>
+                            <div class="flex flex-col items-end gap-3 min-w-[140px]">
+                                <span class="text-2xl font-header font-medium">1,100 THB</span>
+                                <div class="flex items-center justify-between border border-gray-300 rounded-full px-2 py-1 w-32">
+                                    <button onclick="updateTicket('couple', -1)" class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 pb-1">-</button>
+                                    <span id="qty-couple" class="text-base font-header font-medium text-center w-8">0</span>
+                                    <button onclick="updateTicket('couple', 1)" class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 pb-1">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center">
+                        <div><p class="text-sm text-gray-500">Total</p><p id="total-price" class="text-3xl font-header font-medium text-black">1,000 THB</p></div>
+                        <button onclick="togglePayment()" class="bg-black text-white font-menu font-medium text-lg px-12 py-4 rounded-full hover:bg-gray-800 uppercase tracking-wide">BUY TICKET</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. EVENT DETAIL OVERLAY -->
+    <div id="event-detail-overlay" class="fixed top-20 left-0 right-0 bottom-0 z-50 bg-black/80 backdrop-blur-sm overlay-hidden flex justify-center overflow-y-auto py-8">
+        <div class="bg-white w-full max-w-[1400px] h-fit min-h-full rounded-xl overflow-hidden flex flex-col relative text-black shadow-2xl mx-4">
+            <div class="h-[180px] w-full relative flex-shrink-0">
+                <img id="detail-img" src="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                <button onclick="toggleEventDetail()" class="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black rounded-full text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="border-b border-gray-200 bg-white sticky top-0 z-10 px-8 py-4">
+                <div class="flex justify-center gap-4 overflow-x-auto no-scrollbar">
+                    <button onclick="switchTab('details')" id="btn-details" class="tab-btn active bg-black text-white px-6 py-2 rounded-full text-sm font-menu uppercase tracking-wide border border-gray-300">Details</button>
+                    <button onclick="toggleBooking()" class="bg-white border border-gray-300 text-black hover:bg-black hover:text-white px-6 py-2 rounded-full text-sm font-menu uppercase tracking-wide transition-colors">Book Now</button>
+                    <button onclick="switchTab('lineup')" id="btn-lineup" class="tab-btn bg-white border border-gray-300 text-black hover:bg-black hover:text-white px-6 py-2 rounded-full text-sm font-menu uppercase tracking-wide transition-colors">Line Up</button>
+                    <button onclick="switchTab('venue')" id="btn-venue" class="tab-btn bg-white border border-gray-300 text-black hover:bg-black hover:text-white px-6 py-2 rounded-full text-sm font-menu uppercase tracking-wide transition-colors">Venue</button>
+                    <button onclick="switchTab('gallery')" id="btn-gallery" class="tab-btn bg-white border border-gray-300 text-black hover:bg-black hover:text-white px-6 py-2 rounded-full text-sm font-menu uppercase tracking-wide transition-colors">Gallery</button>
+                </div>
+            </div>
+            <div class="flex-1">
+                <div class="px-8 py-8 flex flex-col md:flex-row gap-12">
+                    <div class="w-full md:w-[30%] flex flex-col gap-8">
+                        <div class="w-full aspect-[2/3] rounded-lg overflow-hidden shadow-lg border border-gray-100"><img id="detail-poster" src="" class="w-full h-full object-cover"></div>
+                        <button onclick="toggleEventDetail()" class="flex items-center gap-3 text-gray-600 hover:text-black transition-colors group"><div class="w-10 h-10 border border-gray-300 rounded-full flex items-center justify-center group-hover:border-black"><i data-lucide="arrow-left" class="w-5 h-5"></i></div><span class="text-sm font-menu font-medium uppercase">Go Back</span></button>
+                    </div>
+                    <div class="w-full md:w-[70%] pb-16">
+                        <div id="tab-details" class="tab-content active"></div>
+                        <div id="tab-lineup" class="tab-content"></div>
+                        <div id="tab-venue" class="tab-content"></div>
+                        <div id="tab-gallery" class="tab-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. FESTIVAL OVERLAY -->
+    <div id="festival-overlay" class="fixed top-20 left-0 right-0 bottom-0 z-40 bg-[#050505] overlay-hidden flex flex-col md:flex-row overflow-hidden">
+        <div class="w-full md:w-[30%] bg-brand-blue p-8 flex flex-col relative h-full">
+            <button onclick="toggleFestival()" class="absolute top-6 right-6 w-10 h-10 border border-white rounded-full flex items-center justify-center hover:bg-white hover:text-brand-blue transition-colors z-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <div class="flex-1 flex flex-col justify-center">
+                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Fes-icon@2x.png" alt="Festival Icon" class="w-24 h-24 object-contain mb-8">
+                <h2 class="text-5xl font-header font-medium leading-none tracking-tight mb-6">Festival<br>& Event</h2>
+                <p class="text-white/90 text-base font-body font-normal leading-relaxed">Experience the vibrant energy of Lanna-Jazz fusion live on stage. Discover our seasonal music festivals, see the event calendar, and book your tickets to the heart of Chiang Mai's creative music scene.</p>
+            </div>
+        </div>
+        <div class="w-full md:w-[70%] p-8 overflow-y-auto bg-[#050505]">
+            <div id="festival-cards-container" class="space-y-4 max-w-5xl mx-auto">
+                <div id="festival-dynamic-container"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 7. Musician OVERLAY -->
+    <div id="artists-overlay" class="fixed top-20 left-0 right-0 bottom-0 z-40 bg-[#050505] overlay-hidden flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- Left Column (30%) -->
+        <div class="w-full md:w-[30%] bg-brand-yellow p-8 flex flex-col relative h-full text-black">
+            <button onclick="toggleArtists()" class="absolute top-6 right-6 w-10 h-10 border border-black rounded-full flex items-center justify-center hover:bg-black hover:text-brand-yellow transition-colors z-50">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex-1 flex flex-col justify-center">
+                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Artist-Icon.png" alt="Artist Icon" class="w-24 h-24 object-contain mb-8">
+                <h2 class="text-5xl font-header font-medium leading-none tracking-tight mb-6">Musician<br>Network</h2>
+                <p class="text-black/80 text-base font-body font-normal leading-relaxed">
+                    Explore the "Digital Portfolio" of musicians in our network. Discover the talented artists shaping the unique sound of Chiang Mai.
+                </p>
+            </div>
+        </div>
+
+        <!-- Right Column (70%) - 2 Sub Cards (4:3 Ratio) -->
+        <div class="w-full md:w-[70%] p-8 overflow-y-auto bg-[#050505]">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto h-full items-center">
+                
+                <!-- Card 1: Artist Library -->
+                <div class="h-[400px] w-[280px] relative rounded-[0.5rem] overflow-hidden group cursor-pointer border border-white/10 w-full max-w-md mx-auto">
+                    <!-- Background Image -->
+                    <img src="http://chiangmaijazz.com/wp-content/uploads/2023/08/CM-Street-Jazz-2020-North-Gate-63-scaled.jpg" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    
+                    <!-- Gradient Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+                    
+                    <!-- Content (Bottom Left) -->
+                    <div class="absolute bottom-0 left-0 p-8 w-full flex flex-col gap-4">
+                        <!-- Icon -->
+                        <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Artist-Lib.png" class="w-12 h-12 object-contain filter brightness-0 invert">
+                        
+                        <div>
+                            <h3 class="text-3xl font-header font-medium text-white mb-2">Artist Library</h3>
+                            <p class="text-gray-300 font-body text-sm leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all">
+                                Discover the talented musicians driving Chiang Mai's jazz scene in our digital library. Connect with artists, find collaborators, and see showcases from our network.
+                            </p>
+                        </div>
+                        
+                        <!-- Arrow Button -->
+                        <div class="w-12 h-12 border border-white rounded-full flex items-center justify-center text-white mt-2 group-hover:bg-white group-hover:text-black transition-colors">
+                            <i data-lucide="arrow-right" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Jazz Network -->
+                <div class="h-[400px] w-[280px] relative rounded-[0.5rem] overflow-hidden group cursor-pointer border border-white/10 w-full max-w-md mx-auto">
+                    <!-- Background Image -->
+                    <img src="http://chiangmaijazz.com/wp-content/uploads/2025/09/ST011.jpg" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    
+                    <!-- Gradient Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+                    
+                    <!-- Content (Bottom Left) -->
+                    <div class="absolute bottom-0 left-0 p-8 w-full flex flex-col gap-4">
+                        <!-- Icon -->
+                        <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More-2.png" class="w-12 h-12 object-contain filter brightness-0 invert">
+                        
+                        <div>
+                            <h3 class="text-3xl font-header font-medium text-white mb-2">Jazz Network</h3>
+                            <p class="text-gray-300 font-body text-sm leading-relaxed">
+                                Searching our Jazz partner in Chiang Mai and our partners all over the world.
+                            </p>
+                        </div>
+                        
+                        <!-- Arrow Button -->
+                        <div class="w-12 h-12 border border-white rounded-full flex items-center justify-center text-white mt-2 group-hover:bg-white group-hover:text-black transition-colors">
+                            <i data-lucide="arrow-right" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. ADMIN OVERLAY -->
+    <div id="admin-overlay" class="fixed inset-0 z-[100] bg-white overlay-hidden flex flex-col overflow-y-auto">
+        <div class="bg-black text-white p-6 flex justify-between items-center sticky top-0 z-10">
+            <h2 class="text-2xl font-header">Admin Dashboard</h2>
+            <button onclick="toggleAdmin()" class="p-2 hover:bg-gray-800 rounded-full"><i data-lucide="x" class="w-6 h-6"></i></button>
+        </div>
+        <div class="p-8 max-w-6xl mx-auto w-full text-black h-full">
+            <div id="admin-home-view" class="space-y-6">
+                <div class="flex justify-between items-center"><h3 class="text-3xl font-header font-medium">Manage Events</h3><button onclick="createNewEvent()" class="bg-brand-blue text-white px-6 py-2 rounded-lg font-medium">Add New</button></div>
+                <div class="bg-white rounded-xl border border-gray-200"><table class="w-full text-left"><tbody id="admin-event-list-body" class="divide-y divide-gray-100"></tbody></table></div>
+            </div>
+            
+            <!-- STATS VIEW -->
+            <div id="admin-stats-view" class="hidden space-y-6">
+                <button onclick="showAdminHome()" class="text-gray-500 mb-4 flex items-center gap-2"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to List</button>
+                <div class="flex justify-between items-end">
+                    <div>
+                        <p class="text-sm text-gray-500 uppercase tracking-wide font-bold">Analytics for</p>
+                        <h3 id="stats-event-title" class="text-4xl font-header font-medium mt-1">Event Title</h3>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-3xl font-bold font-header text-green-600" id="stat-total-revenue">0 THB</p>
+                        <p class="text-sm text-gray-500">Total Revenue</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-blue-50 p-6 rounded-xl border border-blue-100"><p class="text-blue-600 font-bold text-lg mb-2">Tickets Sold</p><p class="text-4xl font-header" id="stat-total-sold">0</p></div>
+                    <div class="bg-purple-50 p-6 rounded-xl border border-purple-100"><p class="text-purple-600 font-bold text-lg mb-2">Check-ins</p><p class="text-4xl font-header">0</p></div>
+                    <div class="bg-orange-50 p-6 rounded-xl border border-orange-100"><p class="text-orange-600 font-bold text-lg mb-2">Remaining</p><p class="text-4xl font-header">150</p></div>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 p-6"><h4 class="font-bold text-lg mb-4">Recent Bookings</h4><ul id="stats-booking-list" class="divide-y divide-gray-100"></ul></div>
+            </div>
+
+            <div id="admin-form-view" class="hidden space-y-8">
+                <button onclick="showAdminHome()" class="text-gray-500 mb-4">Back</button>
+                <form id="admin-full-form" onsubmit="event.preventDefault(); saveFullEvent();" class="space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input id="adm-title" type="text" placeholder="Title" class="form-input" required>
+                        <input id="adm-date" type="date" class="form-input">
+                        <input id="adm-year" type="text" placeholder="Year" class="form-input">
+                        <input id="adm-location" type="text" placeholder="Location" class="form-input">
+                        <input id="adm-cover" type="url" placeholder="Cover URL" class="form-input">
+                        <input id="adm-poster" type="url" placeholder="Poster URL" class="form-input">
+                        <input id="adm-short" type="text" placeholder="Short Desc" class="form-input md:col-span-2">
+                        <textarea id="adm-full" rows="3" placeholder="Full Desc" class="form-input md:col-span-2"></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-gray-50 p-4"><h4 class="mb-2">Line Up <button type="button" onclick="addLineupItem()" class="text-xs bg-black text-white px-2 rounded">Add</button></h4><div id="lineup-container"></div></div>
+                        <div class="bg-gray-50 p-4"><h4 class="mb-2">Gallery <button type="button" onclick="addGalleryItem()" class="text-xs bg-black text-white px-2 rounded">Add</button></h4><div id="gallery-container"></div></div>
+                        <div class="bg-gray-50 p-4"><h4 class="mb-2">Tickets <button type="button" onclick="addTicketItem()" class="text-xs bg-black text-white px-2 rounded">Add</button></h4><div id="ticket-container"></div></div>
+                    </div>
+                    <button id="btn-save-full" type="submit" class="bg-brand-blue text-white px-8 py-3 rounded-lg w-full">Save Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-[#050505]/90 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex-shrink-0 cursor-pointer"><img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More.png" class="h-16 w-auto object-contain"></div>
+                <div class="hidden md:flex flex-1 max-w-sm mx-8 relative"><input type="text" placeholder="Search" class="w-full bg-transparent border border-white/30 rounded-full py-2 pl-5 pr-10 text-sm text-white"><button class="absolute right-3 top-1/2 -translate-y-1/2"><i data-lucide="search" class="w-4 h-4 text-white/70"></i></button></div>
+                <div class="hidden md:flex items-center gap-6"><button onclick="toggleBooking()" class="border border-white/30 px-6 py-2 rounded-full text-sm font-menu font-light hover:bg-white hover:text-black">Book Now</button><a href="#" class="text-2xl font-menu font-light hover:text-gray-300">Log in</a><button onclick="toggleMenu()" class="p-2 hover:bg-white/10 rounded-full"><i data-lucide="menu" class="w-6 h-6"></i></button></div>
+            </div>
+        </div>
+    </nav>
+    <header class="relative pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div class="grid lg:grid-cols-2 gap-16 items-start">
+            <div class="flex flex-col items-start gap-10"><h1 class="text-6xl sm:text-5xl lg:text-5xl font-header font-normal leading-[1] tracking-tight">The Soul of Lanna,<br>The Heart of Jazz</h1><a href="#" class="inline-flex items-center gap-3 text-lg font-body font-normal hover:text-gray-300 group">Learn More <div class="w-8 h-8 rounded-full border border-white flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all"><i data-lucide="chevron-right" class="w-5 h-5 ml-0.5"></i></div></a></div>
+            <div class="flex flex-col gap-10 lg:pt-4"><p class="text-gray-400 text-base sm:text-lg font-body font-normal leading-relaxed max-w-lg">Chiang Mai Jazz City: Where ancient melodies meet global rhythms. An innovative project to elevate Lanna and ethnic music to the world stage through the creative language of jazz.</p><div class="flex flex-wrap gap-4"><button class="flex items-center gap-3 border border-white/20 rounded-full px-5 py-2.5 hover:bg-white/10"><i data-lucide="play" class="w-5 h-5 fill-current"></i><div class="flex flex-col items-start leading-none font-body"><span class="text-[9px] uppercase">Available on</span><span class="text-sm font-normal">Google Play</span></div></button><button class="flex items-center gap-3 border border-white/20 rounded-full px-5 py-2.5 hover:bg-white/10"><i data-lucide="apple" class="w-5 h-5 fill-current"></i><div class="flex flex-col items-start leading-none font-body"><span class="text-[9px] uppercase">Available on</span><span class="text-sm font-normal">Apple Store</span></div></button></div></div>
+        </div>
+    </header>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div onclick="toggleFestival()" class="bg-brand-blue h-[250px] rounded-[0.5rem] p-8 flex flex-col card-transition cursor-pointer relative overflow-hidden group"><div class="flex items-center gap-4 mb-4"><img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Fes-icon@2x.png" class="w-14 h-14 object-contain"><h2 class="text-3xl font-header font-medium leading-none">Festival<br>& Event</h2></div><div class="relative z-10 flex-1"><p class="text-white/80 text-sm font-body font-normal leading-relaxed max-h-0 opacity-0 group-hover:max-h-[150px] group-hover:opacity-100 transition-all duration-500 overflow-hidden delay-75 pr-16">Experience the vibrant energy of Lanna-Jazz fusion live on stage. Discover our seasonal music festivals, see the event calendar, and book your tickets to the heart of Chiang Mai's creative music scene.</p></div><div class="absolute bottom-8 right-8 w-12 h-12 border border-white rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-brand-blue transition-colors z-20"><i data-lucide="arrow-right" class="w-6 h-6"></i></div></div>
+            <div onclick="toggleArtists()" class="bg-brand-yellow h-[250px] rounded-[0.5rem] p-8 flex flex-col card-transition cursor-pointer relative overflow-hidden group text-black"><div class="flex items-center gap-4 mb-4"><img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Artist-Icon.png" class="w-14 h-14 object-contain"><h2 class="text-3xl font-header font-medium leading-none">Musician<br>Network</h2></div><div class="relative z-10 flex-1"><p class="text-black/80 text-sm font-body font-normal leading-relaxed max-h-0 opacity-0 group-hover:max-h-[150px] group-hover:opacity-100 transition-all duration-500 overflow-hidden delay-75 pr-16">Explore the "Digital Portfolio" of musicians in our network. Discover the talented artists shaping the unique sound of Chiang Mai, listen to their work, and connect with collaborators for your next project.</p></div><div class="absolute bottom-8 right-8 w-12 h-12 border border-black rounded-full flex items-center justify-center group-hover:bg-black group-hover:text-brand-yellow transition-colors z-20"><i data-lucide="arrow-right" class="w-6 h-6"></i></div></div>
+            <div class="bg-brand-green h-[250px] rounded-[0.5rem] p-8 flex flex-col card-transition cursor-pointer relative overflow-hidden group"><div class="flex items-center gap-4 mb-4"><img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/course-icon.png" class="w-14 h-14 object-contain"><h2 class="text-3xl font-header font-medium leading-none">Courses<br>Library</h2></div><div class="relative z-10 flex-1"><p class="text-white/90 text-sm font-body font-normal leading-relaxed max-h-0 opacity-0 group-hover:max-h-[150px] group-hover:opacity-100 transition-all duration-500 overflow-hidden delay-75 pr-16">Unlock your potential with our groundbreaking curriculum. Learn to blend traditional Lanna instruments with jazz theory through our modular online courses, designed to create "musically bilingual artists"</p></div><div class="absolute bottom-8 right-8 w-12 h-12 border border-white rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-brand-green transition-colors z-20"><i data-lucide="arrow-right" class="w-6 h-6"></i></div></div>
+            <div class="bg-brand-grey h-[250px] rounded-[0.5rem] p-8 flex flex-col card-transition cursor-pointer relative overflow-hidden group text-black"><div class="flex items-center gap-4 mb-4"><img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Cm-bigband-icon.png" class="w-14 h-14 object-contain"><h2 class="text-3xl font-header font-medium leading-none">Chiang Mai<br>Bigband</h2></div><div class="relative z-10 flex-1"><p class="text-black/80 text-sm font-body font-normal leading-relaxed max-h-0 opacity-0 group-hover:max-h-[150px] group-hover:opacity-100 transition-all duration-500 overflow-hidden delay-75 pr-16">Meet Chiang Mai's one-and-only big band. As our flagship ensemble, we fuse the soul of Lanna music with the power of a modern jazz orchestra to create the new sound of the city.</p></div><div class="absolute bottom-8 right-8 w-12 h-12 border border-black rounded-full flex items-center justify-center group-hover:bg-black group-hover:text-brand-grey transition-colors z-20"><i data-lucide="arrow-right" class="w-6 h-6"></i></div></div>
+            <div class="bg-brand-orange h-[250px] rounded-[0.5rem] p-8 flex flex-col card-transition cursor-pointer relative overflow-hidden group text-white"><div class="flex items-center gap-4 mb-4"><img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Forum-icon.png" class="w-14 h-14 object-contain"><h2 class="text-3xl font-header font-medium leading-none">Forum<br>Q&A</h2></div><div class="relative z-10 flex-1"><p class="text-white/90 text-sm font-body font-normal leading-relaxed max-h-0 opacity-0 group-hover:max-h-[150px] group-hover:opacity-100 transition-all duration-500 overflow-hidden delay-75 pr-16">Join the conversation in our online community. This is a space for artists, students, and music lovers to ask questions, share knowledge, and build connections within the Lanna-Jazz ecosystem.</p></div><div class="absolute bottom-8 right-8 w-12 h-12 border border-white rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-brand-orange transition-colors z-20"><i data-lucide="arrow-right" class="w-6 h-6"></i></div></div>
+            <div class="bg-brand-pink h-[250px] rounded-[0.5rem] p-8 flex flex-col card-transition cursor-pointer relative overflow-hidden group text-black"><div class="flex items-center gap-4 mb-4"><img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Store-Icon.png" class="w-14 h-14 object-contain"><h2 class="text-3xl font-header font-medium leading-none">Store<br>& Merch</h2></div><div class="relative z-10 flex-1"><p class="text-black/90 text-sm font-body font-normal leading-relaxed max-h-0 opacity-0 group-hover:max-h-[150px] group-hover:opacity-100 transition-all duration-500 overflow-hidden delay-75 pr-16">Shop exclusive goods. Support local artisans and take a piece of the Chiang Mai Jazz City spirit home with you. From tote bags to limited edition vinyls.</p></div><div class="absolute bottom-8 right-8 w-12 h-12 border border-white rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-brand-pink transition-colors z-20"><i data-lucide="arrow-right" class="w-6 h-6"></i></div></div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/10 pt-16 pb-8 bg-[#050505]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-start gap-12">
+                <div class="flex-1"><div class="grid grid-cols-2 sm:grid-cols-4 gap-y-4 gap-x-8 text-sm text-gray-400 font-menu font-light"><a href="#" class="hover:text-white hover:underline decoration-1 underline-offset-4">Festival</a><a href="#" class="hover:text-white hover:underline decoration-1 underline-offset-4">Event</a><a href="#" class="hover:text-white hover:underline decoration-1 underline-offset-4">Booking</a><a href="#" class="hover:text-white hover:underline decoration-1 underline-offset-4">Artists</a><a href="#" class="hover:text-white hover:underline decoration-1 underline-offset-4">Network</a><a href="#" class="hover:text-white hover:underline decoration-1 underline-offset-4">Courses</a><a href="#" class="hover:text-white hover:underline decoration-1 underline-offset-4">Big Band</a><a href="#" class="hover:text-white hover:underline decoration-1 underline-offset-4">Forum</a><a href="#" class="hover:text-white hover:underline decoration-1 underline-offset-4">Store</a></div></div>
+                <div class="text-right flex flex-col items-end"><span class="text-xs text-gray-500 mb-2 font-body font-normal">Powered by</span><img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More-1.png" class="h-12 w-auto object-contain"><button onclick="toggleAdmin()" class="mt-4 text-xs text-gray-600 hover:text-white">Admin Login</button></div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        function toggleMenu() { const e=document.getElementById('mobile-menu'); e.classList.toggle('menu-closed'); e.classList.toggle('menu-open'); }
+        function toggleFestival() { const e=document.getElementById('festival-overlay'); e.classList.toggle('overlay-hidden'); e.classList.toggle('overlay-visible'); }
+        function toggleArtists() { const e=document.getElementById('artists-overlay'); e.classList.toggle('overlay-hidden'); e.classList.toggle('overlay-visible'); }
+        function toggleEventDetail() { const e=document.getElementById('event-detail-overlay'); e.classList.toggle('overlay-hidden'); e.classList.toggle('overlay-visible'); }
+        function toggleBooking() { const e=document.getElementById('booking-overlay'); e.classList.toggle('overlay-hidden'); e.classList.toggle('overlay-visible'); }
+        function togglePayment() { const e=document.getElementById('payment-overlay'); e.classList.toggle('overlay-hidden'); e.classList.toggle('overlay-visible'); }
+        function toggleAdmin() { const e=document.getElementById('admin-overlay'); e.classList.toggle('overlay-hidden'); e.classList.toggle('overlay-visible'); }
+        function closeAllOverlays() { ['payment-overlay', 'booking-overlay', 'event-detail-overlay', 'festival-overlay', 'artists-overlay', 'admin-overlay', 'success-overlay'].forEach(id=>{ const e=document.getElementById(id); if(e){e.classList.add('overlay-hidden'); e.classList.remove('overlay-visible');} }); }
+        
+        function switchTab(name) {
+            document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b=>{ b.classList.remove('active'); b.classList.replace('bg-black','bg-white'); b.classList.replace('text-white','text-black'); });
+            const c=document.getElementById('tab-'+name); if(c) c.classList.add('active');
+            const b=document.getElementById('btn-'+name); if(b) { b.classList.add('active'); b.classList.replace('bg-white','bg-black'); b.classList.replace('text-black','text-white'); }
+        }
+
+        window.ticketPrices = { 'supporter': 1000, 'adult': 590, 'youth': 350, 'couple': 1100 };
+        window.ticketQuantities = { 'supporter': 1, 'adult': 0, 'youth': 0, 'couple': 0 };
+        function updateTicket(type, change) {
+            let n = window.ticketQuantities[type] + change;
+            if(n<0) n=0; if(n>20) n=20;
+            window.ticketQuantities[type]=n;
+            document.getElementById('qty-'+type).innerText = n;
+            let tot=0; for(const[t,q] of Object.entries(window.ticketQuantities)) tot+=q*window.ticketPrices[t];
+            document.getElementById('total-price').innerText = tot.toLocaleString() + ' THB';
+        }
+
+        function showToast(m, isError) {
+            const t = document.getElementById('toast');
+            t.innerText = m;
+            t.className = isError ? 'show error' : 'show';
+            setTimeout(() => { t.className = t.className.replace('show', ''); }, 3000);
+        }
+    </script>
+</body>
+</html>
+
