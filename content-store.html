@@ -1,21 +1,33 @@
-<div class="clone-content">
+<div class="clone-content overflow-y-auto hide-scrollbar h-full">
     <div class="flex justify-end space-x-4 mb-8 clone-main-content">
-        <button class="border border-white px-4 py-2 rounded-lg">Your Cart</button>
-        <button class="border border-white px-4 py-2 rounded-lg">Wish List</button>
+        <button class="border border-white px-4 py-2 rounded-lg opacity-50 cursor-not-allowed">Your Cart</button>
+        <button class="border border-white px-4 py-2 rounded-lg opacity-50 cursor-not-allowed">Wish List</button>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12">
         <div class="md:col-span-1">
            <svg class="w-32 h-32 mb-6" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 0H80V40H0V0Z" fill="white" /><path d="M0 40H40V80H0V40Z" fill="white" /><path d="M40 40H80V80H40V40Z" fill="white" /></svg>
             <h2 class="text-6xl mb-4">Store<br>&Merch</h2>
             <p class="text-lg">Take a piece of the festival home with you. Browse our exclusive collection of apparel, albums, and unique merchandise.</p>
         </div>
-        <div class="md:col-span-3 grid grid-cols-2 lg:grid-cols-3 gap-6 clone-main-content">
-            <div class="bg-white/10 rounded-lg p-2 relative group"><button class="absolute top-3 right-3 text-red-500 text-2xl opacity-0 group-hover:opacity-100 transition-opacity">&hearts;</button><img src="https://placehold.co/300x300/e06f64/fff?text=Cup" alt="Cup" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>CUP<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
-            <div class="bg-white/10 rounded-lg p-2 relative group"><button class="absolute top-3 right-3 text-red-500 text-2xl opacity-0 group-hover:opacity-100 transition-opacity">&hearts;</button><img src="https://placehold.co/300x300/efefef/000?text=Bottle" alt="Bottle" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>THERMO BOTTLE<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
-            <div class="bg-white/10 rounded-lg p-2 relative group"><button class="absolute top-3 right-3 text-red-500 text-2xl opacity-0 group-hover:opacity-100 transition-opacity">&hearts;</button><img src="https://placehold.co/300x300/00a86b/fff?text=Poster" alt="Poster" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>POSTER<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
-            <div class="bg-white/10 rounded-lg p-2 relative group"><button class="absolute top-3 right-3 text-red-500 text-2xl opacity-0 group-hover:opacity-100 transition-opacity">&hearts;</button><img src="https://placehold.co/300x300/8c3d9b/fff?text=Yeti" alt="Yeti Cup" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>YETI CUP<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
-            <div class="bg-white/10 rounded-lg p-2 relative group"><button class="absolute top-3 right-3 text-red-500 text-2xl opacity-0 group-hover:opacity-100 transition-opacity">&hearts;</button><img src="https://placehold.co/300x300/f72585/fff?text=Bag" alt="Tote Bag" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>TOTE BAG<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
-            <div class="bg-white/10 rounded-lg p-2 relative group"><button class="absolute top-3 right-3 text-red-500 text-2xl opacity-0 group-hover:opacity-100 transition-opacity">&hearts;</button><img src="https://placehold.co/300x300/ffd166/000?text=Gift" alt="Gift Set" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>GIFT SET<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
+        
+        <div class="md:col-span-3 clone-main-content relative rounded-3xl overflow-hidden min-h-[400px]">
+            
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 pointer-events-none">
+                <div class="bg-white/10 rounded-lg p-2 relative group"><img src="https://placehold.co/300x300/e06f64/fff?text=Cup" alt="Cup" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>CUP<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
+                <div class="bg-white/10 rounded-lg p-2 relative group"><img src="https://placehold.co/300x300/efefef/000?text=Bottle" alt="Bottle" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>THERMO BOTTLE<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
+                <div class="bg-white/10 rounded-lg p-2 relative group"><img src="https://placehold.co/300x300/00a86b/fff?text=Poster" alt="Poster" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>POSTER<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
+                <div class="bg-white/10 rounded-lg p-2 relative group"><img src="https://placehold.co/300x300/8c3d9b/fff?text=Yeti" alt="Yeti Cup" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>YETI CUP<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
+                <div class="bg-white/10 rounded-lg p-2 relative group"><img src="https://placehold.co/300x300/f72585/fff?text=Bag" alt="Tote Bag" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>TOTE BAG<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
+                <div class="bg-white/10 rounded-lg p-2 relative group"><img src="https://placehold.co/300x300/ffd166/000?text=Gift" alt="Gift Set" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p>GIFT SET<br><b>450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
+            </div>
+
+            <div class="absolute inset-0 bg-black/70 backdrop-blur-sm z-10 pointer-events-none"></div>
+
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-full text-center px-4 pointer-events-none">
+                <h3 class="text-5xl sm:text-6xl md:text-7xl font-header font-bold text-white uppercase tracking-widest drop-shadow-2xl leading-tight">Coming<br>Soon</h3>
+                <p class="text-white/80 mt-4 text-xl font-body tracking-wider">Our exclusive merchandise is on its way.</p>
+            </div>
+
         </div>
     </div>
 </div>

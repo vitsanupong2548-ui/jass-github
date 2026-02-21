@@ -275,3 +275,11 @@ body {
 .content-visible {
     opacity: 1;
 }
+/* ซ่อน Scrollbar แต่ยังให้เลื่อนได้ปกติ */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none; /* สำหรับ Chrome, Safari และ Opera */
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;  /* สำหรับ IE และ Edge */
+    scrollbar-width: none;  /* สำหรับ Firefox */
+}
