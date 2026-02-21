@@ -1,86 +1,87 @@
 <div class="clone-content">
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 h-full">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 h-full items-center relative max-w-5xl mx-auto">
         
-        <div class="lg:col-span-1 flex flex-col justify-start">
-            <svg class="w-24 h-24 mb-6 fill-current text-[#050505]" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="14" /> <circle cx="50" cy="16" r="14" /> <circle cx="84" cy="16" r="14" />
-                <circle cx="16" cy="50" r="14" /> <circle cx="50" cy="50" r="14" /> <circle cx="84" cy="50" r="14" />
-                <circle cx="16" cy="84" r="14" /> <circle cx="50" cy="84" r="14" /> <circle cx="84" cy="84" r="14" />
+        <div class="lg:col-span-1 flex flex-col justify-center">
+            <svg class="w-16 h-16 md:w-20 md:h-20 mb-4 md:mb-6 fill-current text-[#050505]" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="14" /><circle cx="50" cy="16" r="14" /><circle cx="84" cy="16" r="14" />
+                <circle cx="16" cy="50" r="14" /><circle cx="50" cy="50" r="14" /><circle cx="84" cy="50" r="14" />
+                <circle cx="16" cy="84" r="14" /><circle cx="50" cy="84" r="14" /><circle cx="84" cy="84" r="14" />
             </svg>
 
-            <h2 class="text-5xl lg:text-6xl font-header font-bold leading-[1.1] mb-4 text-[#050505]">
+            <h2 class="text-4xl lg:text-5xl font-header font-bold leading-[1] mb-4 text-[#050505] tracking-tight">
                 Artists<br>Library
             </h2>
             
-            <p class="text-base lg:text-lg font-body text-[#050505]/90 leading-relaxed font-medium">
+            <p class="text-xs lg:text-sm font-body text-[#050505] leading-relaxed font-semibold pr-2">
                 Explore the "Digital Portfolio" of musicians in our network. Discover the talented artists shaping the unique sound of Chiang Mai, listen to their work, and connect with collaborators for your next project.
             </p>
         </div>
 
-        <div class="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-4 lg:gap-6 clone-main-content overflow-y-auto pr-2 hide-scrollbar pb-12" style="max-height: 75vh;">
-            
-            <a href="#" class="artist-link group relative rounded-2xl overflow-hidden aspect-[4/5] lg:aspect-square cursor-pointer">
-                <img src="./png/Chiangmai Blue.png" alt="Chiangmai Blue" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                <div class="absolute bottom-0 left-0 w-full p-4 lg:p-5 flex justify-between items-end">
-                    <h3 class="text-xl lg:text-2xl font-header font-bold text-white leading-[1.1]">Chiangmai<br>Blue</h3>
-                    <div class="w-8 h-8 lg:w-10 lg:h-10 border border-white rounded-full flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 lg:h-5 lg:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                    </div>
+        <div class="lg:col-span-2 flex flex-col sm:flex-row gap-4 lg:gap-6 clone-main-content w-full">
+    
+    <a href="#" id="category-artists-library" class="flex-1 group relative rounded-3xl overflow-hidden cursor-pointer block w-full aspect-[3/4] shadow-xl">
+        <img src="./png/Chiangmai Blue.png" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-500"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+        
+        <div class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between">
+            <svg class="w-12 h-12 md:w-16 md:h-16 fill-white" viewBox="0 0 100 100">
+                <circle cx="15" cy="15" r="12"/><circle cx="45" cy="15" r="12"/><polygon points="65,3 95,3 65,33"/>
+                <circle cx="15" cy="45" r="12"/><circle cx="45" cy="45" r="12"/><polygon points="65,35 95,35 95,65"/>
+                <circle cx="15" cy="75" r="12"/><circle cx="45" cy="75" r="12"/><polygon points="65,67 95,67 65,97"/>
+            </svg>
+            <div>
+                <h3 class="text-2xl md:text-3xl lg:text-4xl font-header font-bold text-white leading-[1.1] mb-2">Artists<br>Library</h3>
+                <p class="text-[10px] md:text-xs text-white/90 font-medium leading-relaxed mb-3 md:mb-4 line-clamp-3">Discover the talented musicians driving Chiang Mai's jazz scene in our digital library. Connect with artists, find collaborators, and see showcases from our network.</p>
+                <div class="w-8 h-8 md:w-10 md:h-10 border border-white rounded-full flex items-center justify-center text-white transition-colors duration-300 group-hover:bg-white group-hover:text-black">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                 </div>
-            </a>
+            </div>
+        </div>
+    </a>
 
-            <a href="#" class="group relative rounded-2xl overflow-hidden aspect-[4/5] lg:aspect-square">
-                <img src="https://placehold.co/400x400/333/fff?text=Band" alt="Chiangmai Blue" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                <div class="absolute bottom-0 left-0 w-full p-4 lg:p-5 flex justify-between items-end">
-                    <h3 class="text-xl lg:text-2xl font-header font-bold text-white leading-[1.1]">Chiangmai<br>Blue</h3>
-                    <div class="w-8 h-8 lg:w-10 lg:h-10 border border-white rounded-full flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 lg:h-5 lg:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                    </div>
+    <a href="#" id="category-jazz-network" class="flex-1 group relative rounded-3xl overflow-hidden cursor-pointer block w-full aspect-[3/4] shadow-xl">
+        <img src="./png/Jazz Arabica Vol.3.png" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+        <div class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-500"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+        
+        <div class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between">
+            <svg class="w-12 h-12 md:w-16 md:h-16 fill-white" viewBox="0 0 100 100">
+                 <path d="M50 50 L50 5 A45 45 0 0 1 95 50 Z" />
+                 <path d="M50 50 L95 50 A45 45 0 0 1 50 95 Z" />
+                 <path d="M50 50 L50 95 A45 45 0 0 1 5 50 Z" />
+                 <path d="M50 50 L5 50 A45 45 0 0 1 50 5 Z" />
+            </svg>
+            <div>
+                <h3 class="text-2xl md:text-3xl lg:text-4xl font-header font-bold text-white leading-[1.1] mb-2">Jazz<br>Network</h3>
+                <p class="text-[10px] md:text-xs text-white/90 font-medium leading-relaxed mb-3 md:mb-4 line-clamp-3">Searching our Jazz partner in Chiang Mai and out partners all over the world.</p>
+                <div class="w-8 h-8 md:w-10 md:h-10 border border-white rounded-full flex items-center justify-center text-white transition-colors duration-300 group-hover:bg-white group-hover:text-black">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                 </div>
-            </a>
+            </div>
+        </div>
+    </a>
 
-            <a href="#" class="group relative rounded-2xl overflow-hidden aspect-[4/5] lg:aspect-square">
-                <img src="https://placehold.co/400x400/333/fff?text=Band" alt="Chiangmai Blue" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                <div class="absolute bottom-0 left-0 w-full p-4 lg:p-5 flex justify-between items-end">
-                    <h3 class="text-xl lg:text-2xl font-header font-bold text-white leading-[1.1]">Chiangmai<br>Blue</h3>
-                    <div class="w-8 h-8 lg:w-10 lg:h-10 border border-white rounded-full flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 lg:h-5 lg:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                    </div>
-                </div>
-            </a>
+</div>
 
-             <a href="#" class="group relative rounded-2xl overflow-hidden aspect-[4/5] lg:aspect-square">
-                <img src="https://placehold.co/400x400/333/fff?text=Band" alt="Chiangmai Blue" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                <div class="absolute bottom-0 left-0 w-full p-4 lg:p-5 flex justify-between items-end">
-                    <h3 class="text-xl lg:text-2xl font-header font-bold text-white leading-[1.1]">Chiangmai<br>Blue</h3>
-                    <div class="w-8 h-8 lg:w-10 lg:h-10 border border-white rounded-full flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 lg:h-5 lg:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                    </div>
-                </div>
-            </a>
-
-            <a href="#" class="group relative rounded-2xl overflow-hidden aspect-[4/5] lg:aspect-square">
-                <img src="https://placehold.co/400x400/333/fff?text=Band" alt="Chiangmai Blue" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                <div class="absolute bottom-0 left-0 w-full p-4 lg:p-5 flex justify-between items-end">
-                    <h3 class="text-xl lg:text-2xl font-header font-bold text-white leading-[1.1]">Chiangmai<br>Blue</h3>
-                    <div class="w-8 h-8 lg:w-10 lg:h-10 border border-white rounded-full flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 lg:h-5 lg:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                    </div>
-                </div>
-            </a>
-
-            <a href="#" class="group relative rounded-2xl overflow-hidden aspect-[4/5] lg:aspect-square">
-                <img src="https://placehold.co/400x400/333/fff?text=Band" alt="Chiangmai Blue" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                <div class="absolute bottom-0 left-0 w-full p-4 lg:p-5 flex justify-between items-end">
-                    <h3 class="text-xl lg:text-2xl font-header font-bold text-white leading-[1.1]">Chiangmai<br>Blue</h3>
-                    <div class="w-8 h-8 lg:w-10 lg:h-10 border border-white rounded-full flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 lg:h-5 lg:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+            <a href="#" class="group relative rounded-3xl overflow-hidden cursor-pointer block w-full aspect-[3/4] shadow-xl">
+                <img src="./png/Jazz Arabica Vol.3.png" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                <div class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-500"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+                
+                <div class="absolute inset-0 p-5 md:p-6 flex flex-col justify-between">
+                    <svg class="w-12 h-12 md:w-16 md:h-16 fill-white" viewBox="0 0 100 100">
+                         <path d="M50 50 L50 5 A45 45 0 0 1 95 50 Z" />
+                         <path d="M50 50 L95 50 A45 45 0 0 1 50 95 Z" />
+                         <path d="M50 50 L50 95 A45 45 0 0 1 5 50 Z" />
+                         <path d="M50 50 L5 50 A45 45 0 0 1 50 5 Z" />
+                    </svg>
+                    <div>
+                        <h3 class="text-2xl md:text-3xl lg:text-4xl font-header font-bold text-white leading-[1.1] mb-2">Jazz<br>Network</h3>
+                        <p class="text-[10px] md:text-xs text-white/90 font-medium leading-relaxed mb-3 md:mb-4 line-clamp-3">Searching our Jazz partner in Chiang Mai and out partners all over the world.</p>
+                        <div class="w-8 h-8 md:w-10 md:h-10 border border-white rounded-full flex items-center justify-center text-white transition-colors duration-300 group-hover:bg-white group-hover:text-black">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                        </div>
                     </div>
                 </div>
             </a>

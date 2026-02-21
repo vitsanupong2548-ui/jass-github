@@ -466,26 +466,27 @@ if (loginForm) {
         }
     });
 }
+
 // ====== ระบบเปลี่ยนหน้าสำหรับ Artists ======
-function showArtistDetailContent() {
-    const template = document.getElementById('artist-detail-template');
+
+// ฟังก์ชัน 1: แสดงหน้า 9 ช่อง
+function showArtistsGridContent() {
+    const template = document.getElementById('artists-library-grid-template');
     if (!activeClone || !template) return;
 
-    // Fade Out ลิสต์ศิลปิน
     activeClone.querySelector('.clone-content')?.classList.remove('content-visible');
-    
+
     setTimeout(() => {
-        // เอาพื้นหลังสีเหลืองออกเพื่อให้เข้ากับหน้าสีขาว
-        activeClone.style.backgroundColor = 'transparent';
+        activeClone.style.backgroundColor = '';
+        activeClone.style.padding = ''; 
         activeClone.innerHTML = template.innerHTML;
         toggleCardNavButtons(false); 
 
-        // Fade In เนื้อหาศิลปิน
         requestAnimationFrame(() => {
-            activeClone.querySelector('.artist-detail-content')?.classList.add('content-visible');
+            activeClone.querySelector('.clone-content')?.classList.add('content-visible');
         });
 
-        // สร้างปุ่มย้อนกลับ (Back) และปิด (Close)
+        // ปุ่มย้อนกลับไปหน้า 2 คอลัมน์
         const backButton = document.createElement('button');
         backButton.innerHTML = '&#8592;';
         backButton.className = 'nav-btn nav-btn-left';
@@ -494,10 +495,6 @@ function showArtistDetailContent() {
         backButton.style.borderColor = '#121212';
         backButton.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (mainContainer.dataset.initialHeight) {
-                 mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`;
-                 delete mainContainer.dataset.initialHeight; 
-            }
             showArtistListContent();
         });
 
@@ -512,24 +509,75 @@ function showArtistDetailContent() {
 
         activeClone.appendChild(backButton);
         activeClone.appendChild(closeBtn);
+
+        addEventDetailListeners(activeClone);
+    }, 300);
+}
+
+// ฟังก์ชัน 2: แสดงหน้าสีขาว (รายละเอียดศิลปิน)
+function showArtistDetailContent() {
+    const template = document.getElementById('artist-detail-template');
+    if (!activeClone || !template) return;
+
+    activeClone.querySelector('.clone-content')?.classList.remove('content-visible');
+    
+    setTimeout(() => {
+        activeClone.style.backgroundColor = 'transparent';
+        activeClone.style.padding = '0'; 
+        activeClone.innerHTML = template.innerHTML;
+        toggleCardNavButtons(false); 
+
+        requestAnimationFrame(() => {
+            activeClone.querySelector('.artist-detail-content')?.classList.add('content-visible');
+        });
+
+        // ปุ่มย้อนกลับไปหน้า 9 ช่อง
+        const backButton = document.createElement('button');
+        backButton.innerHTML = '&#8592;';
+        backButton.className = 'nav-btn nav-btn-left';
+        backButton.style.opacity = 1;
+        backButton.style.color = '#121212';
+        backButton.style.borderColor = '#121212';
+        backButton.style.left = '20px';
+        backButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (mainContainer.dataset.initialHeight) {
+                 mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`;
+                 delete mainContainer.dataset.initialHeight; 
+            }
+            showArtistsGridContent(); // สั่งให้กลับไปหน้า 9 ช่อง
+        });
+
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '&times;';
+        closeBtn.className = 'close-btn';
+        closeBtn.style.opacity = 1;
+        closeBtn.style.top = '20px';
+        closeBtn.style.right = '20px';
+        closeBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            collapseCard(activeClone, activeCard); 
+        });
+
+        activeClone.appendChild(backButton);
+        activeClone.appendChild(closeBtn);
     }, 300); 
 }
 
+// ฟังก์ชัน 3: แสดงหน้า 2 คอลัมน์แรกสุด
 function showArtistListContent() {
     if (!activeClone || !activeCard) return; 
 
-    // Fade Out หน้าเนื้อหา
-    activeClone.querySelector('.artist-detail-content')?.classList.remove('content-visible');
+    activeClone.querySelector('.clone-content')?.classList.remove('content-visible');
 
     const artistsContent = document.getElementById('artists-content');
     if (!artistsContent) return;
     
     setTimeout(() => {
-        // คืนสีพื้นหลังสีเหลืองของการ์ด Artist
         activeClone.style.backgroundColor = '';
+        activeClone.style.padding = '';
         activeClone.innerHTML = artistsContent.innerHTML;
         
-        // Fade In ลิสต์กลับมา
         requestAnimationFrame(() => {
             activeClone.querySelector('.clone-content')?.classList.add('content-visible');
         });
@@ -538,18 +586,28 @@ function showArtistListContent() {
         buttons.forEach(btn => activeClone.appendChild(btn));
         
         toggleCardNavButtons(true); 
-        // สั่งให้ปุ่มกลับมาคลิกได้อีกครั้ง
         addEventDetailListeners(activeClone);
     }, 300);
 }
 
-// อัปเดตฟังก์ชันดักการคลิกเดิม ให้รองรับ .artist-link ด้วย
+// อัปเดตฟังก์ชันดักการคลิก
 const originalAddEventDetailListeners = addEventDetailListeners;
 addEventDetailListeners = function(container) {
-    // เรียกฟังก์ชันเดิมเพื่อให้ event ฝั่ง Festival ยังทำงานได้
     originalAddEventDetailListeners(container);
 
-    // เพิ่ม Event สำหรับ Artist Link
+    // 1. ดักจับปุ่ม Artists Library ในหน้า 2 คอลัมน์ -> ให้ไปหน้า 9 ช่อง
+    const categoryArtistsLib = container.querySelector('#category-artists-library');
+    if (categoryArtistsLib) {
+        const newCatLink = categoryArtistsLib.cloneNode(true);
+        categoryArtistsLib.parentNode.replaceChild(newCatLink, categoryArtistsLib);
+        newCatLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            showArtistsGridContent(); 
+        });
+    }
+
+    // 2. ดักจับปุ่มศิลปิน ในหน้า 9 ช่อง -> ให้ไปหน้ารายละเอียดสีขาว
     const artistLinks = container.querySelectorAll('.artist-link');
     artistLinks.forEach(link => {
         const newLink = link.cloneNode(true);
@@ -565,92 +623,10 @@ addEventDetailListeners = function(container) {
                 mainContainer.dataset.initialHeight = currentHeight;
                 mainContainer.style.height = `${currentHeight}px`;
                 requestAnimationFrame(() => {
-                    mainContainer.style.height = `${currentHeight * 2.5}px`; // ขยายกล่องลงมา
+                    mainContainer.style.height = `${currentHeight * 2.5}px`;
                 });
                 showArtistDetailContent();
             }
         });
     });
-};// ====== ระบบเปลี่ยนหน้าสำหรับ Artists ======
-function showArtistDetailContent() {
-    const template = document.getElementById('artist-detail-template');
-    if (!activeClone || !template) return;
-
-    // Fade Out ลิสต์ศิลปิน
-    activeClone.querySelector('.clone-content')?.classList.remove('content-visible');
-    
-    setTimeout(() => {
-        // เอาพื้นหลังสีเหลืองออก และ **เอา Padding ออก** เพื่อให้กล่องขาวขยายสุดขอบบังการ์ดด้านหลังมิด
-        activeClone.style.backgroundColor = 'transparent';
-        activeClone.style.padding = '0'; 
-        activeClone.innerHTML = template.innerHTML;
-        toggleCardNavButtons(false); 
-
-        // Fade In เนื้อหาศิลปิน
-        requestAnimationFrame(() => {
-            activeClone.querySelector('.artist-detail-content')?.classList.add('content-visible');
-        });
-
-        // สร้างปุ่มย้อนกลับ (Back) และปิด (Close)
-        const backButton = document.createElement('button');
-        backButton.innerHTML = '&#8592;';
-        backButton.className = 'nav-btn nav-btn-left';
-        backButton.style.opacity = 1;
-        backButton.style.color = '#121212';
-        backButton.style.borderColor = '#121212';
-        backButton.style.left = '20px'; // ขยับปุ่ม Back ให้พอดีกับขอบใหม่
-        
-        backButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (mainContainer.dataset.initialHeight) {
-                 mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`;
-                 delete mainContainer.dataset.initialHeight; 
-            }
-            showArtistListContent();
-        });
-
-        const closeBtn = document.createElement('button');
-        closeBtn.innerHTML = '&times;';
-        closeBtn.className = 'close-btn';
-        closeBtn.style.opacity = 1;
-        closeBtn.style.top = '20px'; // ขยับปุ่ม Close ให้พอดีกับขอบใหม่
-        closeBtn.style.right = '20px';
-        
-        closeBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            collapseCard(activeClone, activeCard); 
-        });
-
-        activeClone.appendChild(backButton);
-        activeClone.appendChild(closeBtn);
-    }, 300); 
-}
-
-function showArtistListContent() {
-    if (!activeClone || !activeCard) return; 
-
-    // Fade Out หน้าเนื้อหา
-    activeClone.querySelector('.artist-detail-content')?.classList.remove('content-visible');
-
-    const artistsContent = document.getElementById('artists-content');
-    if (!artistsContent) return;
-    
-    setTimeout(() => {
-        // คืนสีพื้นหลังสีเหลือง และ **คืนค่า Padding กลับมา** เพื่อให้หน้า Grid แสดงผลปกติ
-        activeClone.style.backgroundColor = '';
-        activeClone.style.padding = ''; 
-        activeClone.innerHTML = artistsContent.innerHTML;
-        
-        // Fade In ลิสต์กลับมา
-        requestAnimationFrame(() => {
-            activeClone.querySelector('.clone-content')?.classList.add('content-visible');
-        });
-
-        const buttons = createButtons(activeCard);
-        buttons.forEach(btn => activeClone.appendChild(btn));
-        
-        toggleCardNavButtons(true); 
-        // สั่งให้ปุ่มกลับมาคลิกได้อีกครั้ง
-        addEventDetailListeners(activeClone);
-    }, 300);
-}
+};
