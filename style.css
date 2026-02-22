@@ -283,3 +283,41 @@ body {
     -ms-overflow-style: none;  /* สำหรับ IE และ Edge */
     scrollbar-width: none;  /* สำหรับ Firefox */
 }
+/* ... โค้ดเดิม ... */
+
+/* =========================================
+   ส่วนที่เพิ่มใหม่สำหรับ Visual Admin Banner Image
+   ========================================= */
+
+/* ทำให้ตัว Overlay เป็น Flexbox เพื่อจัดไอคอนให้อยู่ตรงกลาง */
+.edit-bg-trigger {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer; /* เปลี่ยนเคอร์เซอร์เป็นรูปมือ */
+    transition: all 0.3s ease;
+}
+
+/* สร้างไอคอนกล้องถ่ายรูปด้วย CSS Pseudo-element ::after */
+.edit-bg-trigger::after {
+    content: "\f030"; /* รหัส Unicode ของไอคอนกล้อง (fa-camera) ใน Font Awesome */
+    font-family: "Font Awesome 6 Free"; /* เรียกใช้ฟอนต์ไอคอน */
+    font-weight: 900; /* ความหนาสำหรับ Solid icons */
+    font-size: 4rem; /* ขนาดไอคอน */
+    color: rgba(255, 255, 255, 0.8); /* สีขาว โปร่งแสงเล็กน้อย */
+    opacity: 0; /* ซ่อนไว้ก่อนในตอนแรก */
+    transform: scale(0.8); /* ย่อขนาดลงเล็กน้อยตอนซ่อน */
+    transition: all 0.3s ease-in-out;
+    pointer-events: none; /* เพื่อให้แน่ใจว่าการคลิกจะทะลุไปโดนตัว Trigger */
+}
+
+/* เมื่อเอาเมาส์ไปวาง (Hover) ให้ทำสิ่งเหล่านี้... */
+.edit-bg-trigger:hover {
+    background: rgba(0, 0, 0, 0.6) !important; /* ทำให้พื้นหลังมืดลงอีกนิด */
+}
+
+/* ...และแสดงไอคอนขึ้นมา */
+.edit-bg-trigger:hover::after {
+    opacity: 1; /* แสดงไอคอน */
+    transform: scale(1); /* ขยายขนาดกลับมาปกติ */
+}

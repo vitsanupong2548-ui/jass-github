@@ -47,3 +47,17 @@ app.post('/api/login', (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+
+app.post('/api/register', (req, res) => {
+    const { username, email, password } = req.body;
+    
+    console.log('Register attempt:', username, email);
+
+    // ในระบบจริงต้องนำข้อมูลไป INSERT ลงฐานข้อมูล (web_jazz -> ตาราง users)
+    // ตรงนี้เราจำลองให้สมัครผ่านเสมอไปก่อน
+    if(email && password && username) {
+        res.status(200).json({ message: 'User registered successfully' });
+    } else {
+        res.status(400).json({ message: 'Please fill all fields' });
+    }
+});

@@ -1,632 +1,241 @@
-// --- Card Animation Script ---
 const mainContainer = document.querySelector('.main-container');
 const cards = document.querySelectorAll('.card:not(.clone)');
 let activeCard = null;
 let activeClone = null;
 let allCards = Array.from(cards);
 
-mainContainer.addEventListener('click', function(e) {
-    // --- Part A: Handle clicks when NO card is expanded ---
-    if (!activeCard) {
-        const clickedCard = e.target.closest('.card:not(.clone)');
-        if (clickedCard) {
-            if (e.target.closest('a')) return;
-            expandCard(clickedCard); 
-        }
-        return; 
-    }
-
-    // --- Part B: Handle clicks when a card IS expanded (activeClone exists) ---
-    if (activeClone) {
-        const eventLink = e.target.closest('.event-link');
-        if (eventLink && activeClone.contains(eventLink)) {
-            e.preventDefault();
-            e.stopPropagation(); 
-
-            if (eventLink.id === 'jazz-event-link') {
-                const initialHeight = mainContainer.dataset.initialHeight;
-
-                if (!initialHeight) {
-                    const currentHeight = mainContainer.offsetHeight;
-                    mainContainer.dataset.initialHeight = currentHeight; 
-                    mainContainer.style.height = `${currentHeight}px`; 
-                    requestAnimationFrame(() => {
-                        mainContainer.style.height = `${currentHeight * 2.5}px`; 
-                    });
-                    showEventDetailContent(); 
-                } else {
-                    const initialHeightNum = parseFloat(initialHeight);
-                    mainContainer.style.height = `${initialHeightNum}px`; 
-                    delete mainContainer.dataset.initialHeight; 
-                    showEventListContent(); 
-                }
-            } else {
-                showEventDetailContent();
-            }
+if (mainContainer) {
+    mainContainer.addEventListener('click', function(e) {
+        if (!activeCard) {
+            const clickedCard = e.target.closest('.card:not(.clone)');
+            if (clickedCard) { if (e.target.closest('a')) return; expandCard(clickedCard); }
             return; 
         }
-
-        if (!activeClone.contains(e.target)) {
-            collapseCard(activeClone, activeCard); 
+        if (activeClone) {
+            const eventLink = e.target.closest('.event-link');
+            if (eventLink && activeClone.contains(eventLink)) return; 
+            if (!activeClone.contains(e.target)) collapseCard(activeClone, activeCard); 
         }
-    }
-});
-
+    });
+}
 
 function createButtons(card) {
-    const closeBtn = document.createElement('button');
-    closeBtn.innerHTML = '&times;';
-    closeBtn.className = 'close-btn';
-    closeBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        collapseCard(activeClone, activeCard); 
-    });
-
-    const navLeft = document.createElement('button');
-    navLeft.innerHTML = '&#8592;';
-    navLeft.className = 'nav-btn nav-btn-left';
-    navLeft.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navigate('prev');
-    });
-
-    const navRight = document.createElement('button');
-    navRight.innerHTML = '&#8594;';
-    navRight.className = 'nav-btn nav-btn-right';
-    navRight.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navigate('next');
-    });
+    const closeBtn = document.createElement('button'); closeBtn.innerHTML = '&times;'; closeBtn.className = 'close-btn';
+    closeBtn.addEventListener('click', (e) => { e.stopPropagation(); collapseCard(activeClone, activeCard); });
+    const navLeft = document.createElement('button'); navLeft.innerHTML = '&#8592;'; navLeft.className = 'nav-btn nav-btn-left';
+    navLeft.addEventListener('click', (e) => { e.stopPropagation(); navigate('prev'); });
+    const navRight = document.createElement('button'); navRight.innerHTML = '&#8594;'; navRight.className = 'nav-btn nav-btn-right';
+    navRight.addEventListener('click', (e) => { e.stopPropagation(); navigate('next'); });
     
-    if (card.classList.contains('card-yellow') || card.classList.contains('card-gray')) {
-         [closeBtn, navLeft, navRight].forEach(btn => {
-            btn.style.color = '#121212';
-            btn.style.borderColor = '#121212';
-         });
+    if (card.classList.contains('card-yellow') || card.classList.contains('card-gray') || card.classList.contains('card-pink')) {
+         [closeBtn, navLeft, navRight].forEach(btn => { btn.style.color = '#121212'; btn.style.borderColor = '#121212'; });
     }
-    
     return [closeBtn, navLeft, navRight];
 }
 
 function expandCard(card) {
-    activeCard = card;
-    const cardRect = card.getBoundingClientRect();
-    const containerRect = mainContainer.getBoundingClientRect();
-    const targetId = card.dataset.target;
-    const contentSource = document.querySelector(targetId);
+    activeCard = card; const cardRect = card.getBoundingClientRect(); const containerRect = mainContainer.getBoundingClientRect();
+    const targetId = card.dataset.target; const contentSource = document.querySelector(targetId);
+    if (!contentSource) return; 
 
-    if (!contentSource) { 
-        console.error("Content source not found:", targetId);
-        return; 
-    }
-
-    const clone = document.createElement('div');
-    activeClone = clone;
-    clone.className = card.className + ' clone';
+    activeClone = document.createElement('div'); activeClone.className = card.className + ' clone'; activeClone.innerHTML = contentSource.innerHTML;
+    createButtons(card).forEach(btn => activeClone.appendChild(btn));
+    activeClone.style.top = `${cardRect.top - containerRect.top}px`; activeClone.style.left = `${cardRect.left - containerRect.left}px`;
+    activeClone.style.width = `${cardRect.width}px`; activeClone.style.height = `${cardRect.height}px`;
+    mainContainer.appendChild(activeClone); card.classList.add('ghost');
     
-    clone.innerHTML = contentSource.innerHTML;
-
-    const buttons = createButtons(card);
-    buttons.forEach(btn => clone.appendChild(btn));
-    
-    clone.style.top = `${cardRect.top - containerRect.top}px`;
-    clone.style.left = `${cardRect.left - containerRect.left}px`;
-    clone.style.width = `${cardRect.width}px`;
-    clone.style.height = `${cardRect.height}px`;
-    
-    mainContainer.appendChild(clone);
-    card.classList.add('ghost');
-    
-    const onExpansionEnd = (event) => {
-        if (event.target === clone && event.propertyName === 'width') {
-            clone.classList.add('is-expanded');
-            
-            // [Animation Fade In]
-            requestAnimationFrame(() => {
-                clone.querySelector('.clone-content')?.classList.add('content-visible');
-            });
-            
-            addEventDetailListeners(clone); 
-            clone.removeEventListener('transitionend', onExpansionEnd);
+    const onExpansionEnd = (e) => {
+        if (e.target === activeClone && e.propertyName === 'width') {
+            activeClone.classList.add('is-expanded'); 
+            requestAnimationFrame(() => activeClone.querySelector('.clone-content')?.classList.add('content-visible'));
+            addEventDetailListeners(activeClone); activeClone.removeEventListener('transitionend', onExpansionEnd);
         }
     };
-    clone.addEventListener('transitionend', onExpansionEnd);
-    
-    requestAnimationFrame(() => {
-        clone.style.top = '0px';
-        clone.style.left = '0px';
-        clone.style.width = '100%';
-        clone.style.height = '100%';
-    });
+    activeClone.addEventListener('transitionend', onExpansionEnd);
+    requestAnimationFrame(() => { activeClone.style.top = '0px'; activeClone.style.left = '0px'; activeClone.style.width = '100%'; activeClone.style.height = '100%'; });
 }
 
 function collapseCard(clone, originalCard) {
     if (!clone || !originalCard) return;
-
-    if (mainContainer.dataset.initialHeight) {
-        mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`;
-        delete mainContainer.dataset.initialHeight; 
-    }
-
-    clone.classList.remove('is-expanded');
-    
-    // [Animation Fade Out]
-    clone.querySelector('.clone-content, .event-detail-content')?.classList.remove('content-visible');
-
-    const cardRect = originalCard.getBoundingClientRect();
-    const containerRect = mainContainer.getBoundingClientRect();
-
-    const onCollapseEnd = (event) => {
-        if (event.target === clone && event.propertyName === 'width') {
-            if (clone.parentElement) { clone.remove(); }
+    if (mainContainer.dataset.initialHeight) { mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`; delete mainContainer.dataset.initialHeight; }
+    clone.classList.remove('is-expanded'); clone.querySelector('.clone-content, .event-detail-content, .bigband-detail-content, .artist-detail-content')?.classList.remove('content-visible');
+    const onCollapseEnd = (e) => {
+        if (e.target === clone && e.propertyName === 'width') {
+            if (clone.parentElement) clone.remove();
             if(originalCard) originalCard.classList.remove('ghost'); 
-            activeCard = null;
-            activeClone = null;
-            clone.removeEventListener('transitionend', onCollapseEnd);
+            activeCard = null; activeClone = null; clone.removeEventListener('transitionend', onCollapseEnd);
         }
     };
     clone.addEventListener('transitionend', onCollapseEnd);
-
+    const cardRect = originalCard.getBoundingClientRect(); const containerRect = mainContainer.getBoundingClientRect();
     if (cardRect && containerRect) {
-        clone.style.top = `${cardRect.top - containerRect.top}px`;
-        clone.style.left = `${cardRect.left - containerRect.left}px`;
-        clone.style.width = `${cardRect.width}px`;
-        clone.style.height = `${cardRect.height}px`;
-    } else {
-         if (clone.parentElement) { clone.remove(); }
-         if(originalCard) originalCard.classList.remove('ghost');
-         activeCard = null;
-         activeClone = null;
+        clone.style.top = `${cardRect.top - containerRect.top}px`; clone.style.left = `${cardRect.left - containerRect.left}px`;
+        clone.style.width = `${cardRect.width}px`; clone.style.height = `${cardRect.height}px`;
     }
 }
-
 
 function navigate(direction) {
     if (!activeCard) return;
-
-    if (mainContainer.dataset.initialHeight) {
-        mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`;
-        delete mainContainer.dataset.initialHeight;
-    }
-
+    if (mainContainer.dataset.initialHeight) { mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`; delete mainContainer.dataset.initialHeight; }
     const currentIndex = allCards.indexOf(activeCard);
-    let nextIndex;
-
-    if (direction === 'next') {
-        nextIndex = (currentIndex + 1) % allCards.length;
-    } else {
-        nextIndex = (currentIndex - 1 + allCards.length) % allCards.length;
-    }
+    let nextIndex = direction === 'next' ? (currentIndex + 1) % allCards.length : (currentIndex - 1 + allCards.length) % allCards.length;
     const nextCard = allCards[nextIndex];
-    
-    activeClone.classList.remove('is-expanded');
-    
-    // [Animation Fade Out]
-    activeClone.querySelector('.clone-content, .event-detail-content')?.classList.remove('content-visible');
+    activeClone.classList.remove('is-expanded'); activeClone.querySelector('.content-visible')?.classList.remove('content-visible');
     
     setTimeout(() => { 
-        const nextContentSource = document.querySelector(nextCard.dataset.target);
-        if (!nextContentSource) return;
-
-        activeClone.className = nextCard.className + ' clone is-expanded';
-        activeClone.innerHTML = nextContentSource.innerHTML; 
-        
-        // [Animation Fade In]
-        requestAnimationFrame(() => {
-            activeClone.querySelector('.clone-content')?.classList.add('content-visible');
-        });
-        
-        const buttons = createButtons(nextCard);
-        buttons.forEach(btn => activeClone.appendChild(btn));
-        
-        if(activeCard) activeCard.classList.remove('ghost'); 
-        nextCard.classList.add('ghost');
-        activeCard = nextCard;
-        // Re-add event listeners for the new content
+        const nextContentSource = document.querySelector(nextCard.dataset.target); if (!nextContentSource) return;
+        activeClone.className = nextCard.className + ' clone is-expanded'; activeClone.innerHTML = nextContentSource.innerHTML; 
+        requestAnimationFrame(() => activeClone.querySelector('.clone-content')?.classList.add('content-visible'));
+        createButtons(nextCard).forEach(btn => activeClone.appendChild(btn));
+        activeCard.classList.remove('ghost'); nextCard.classList.add('ghost'); activeCard = nextCard;
         addEventDetailListeners(activeClone);
     }, 300); 
 }
 
-function showEventDetailContent() {
-    const template = document.getElementById('event-detail-template');
-    if (!activeClone || !template) return;
-
-    // [Animation Fade Out]
-    activeClone.querySelector('.clone-content')?.classList.remove('content-visible');
-    
-    setTimeout(() => {
-        activeClone.innerHTML = template.innerHTML;
-        toggleCardNavButtons(false); 
-
-        const contentArea = activeClone.querySelector('#event-detail-content-area');
-        const defaultContent = document.getElementById('default-detail-content'); 
-
-        if (contentArea && defaultContent) { 
-            contentArea.innerHTML = defaultContent.innerHTML; 
-        }
-
-        // [Animation Fade In]
-        requestAnimationFrame(() => {
-            activeClone.querySelector('.event-detail-content')?.classList.add('content-visible');
-            contentArea.querySelector(':first-child')?.classList.add('content-visible');
-        });
-
-        if (!activeClone.querySelector('.close-btn')) { 
-            const backButton = document.createElement('button');
-            backButton.innerHTML = '&#8592;';
-            backButton.className = 'nav-btn nav-btn-left';
-            backButton.style.opacity = 1;
-            backButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (mainContainer.dataset.initialHeight && activeCard.classList.contains('card-blue')) {
-                     mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`;
-                     delete mainContainer.dataset.initialHeight; 
-                }
-                showEventListContent();
-            });
-
-            const closeBtn = document.createElement('button');
-            closeBtn.innerHTML = '&times;';
-            closeBtn.className = 'close-btn';
-            closeBtn.style.opacity = 1;
-            closeBtn.addEventListener('click', (event) => {
-                event.stopPropagation();
-                collapseCard(activeClone, activeCard); 
-            });
-
-            activeClone.appendChild(backButton);
-            activeClone.appendChild(closeBtn);
-        }
-
-        const navButtons = activeClone.querySelectorAll('.nav-button');
-        // We use cloneNode trick to remove old listeners from the template
-        const newNavButtons = Array.from(navButtons).map(button => {
-            const newButton = button.cloneNode(true);
-            button.parentNode.replaceChild(newButton, button);
-            return newButton;
-        });
-
-        newNavButtons.forEach(button => {
-            button.addEventListener('click', (e) => { 
-                e.stopPropagation(); 
-                const currentContentArea = activeClone.querySelector('#event-detail-content-area');
-                
-                // [Animation Fade Out]
-                currentContentArea.querySelector(':first-child')?.classList.remove('content-visible');
-
-                if (button.classList.contains('active')) {
-                    const defaultContentTemplate = document.getElementById('default-detail-content');
-                    
-                    setTimeout(() => {
-                        if (currentContentArea && defaultContentTemplate) {
-                            button.classList.remove('active');
-                            currentContentArea.innerHTML = defaultContentTemplate.innerHTML;
-                            // [Animation Fade In]
-                            requestAnimationFrame(() => {
-                                currentContentArea.querySelector(':first-child')?.classList.add('content-visible');
-                            });
-                        }
-                    }, 300);
-
-                } else {
-                    const sectionId = button.dataset.section;
-                    if (!sectionId) return;
-                    const contentTemplate = document.getElementById(`${sectionId}-content`);
-                    
-                    setTimeout(() => {
-                        if (currentContentArea && contentTemplate) {
-                            newNavButtons.forEach(btn => btn.classList.remove('active'));
-                            button.classList.add('active');
-                            currentContentArea.innerHTML = contentTemplate.innerHTML;
-                            // [Animation Fade In]
-                            requestAnimationFrame(() => {
-                                currentContentArea.querySelector(':first-child')?.classList.add('content-visible');
-                            });
-                        }
-                    }, 300);
-                }
-            });
-        });
-    }, 300); 
-}
-
-
-function showEventListContent() {
+function showMainCategoryContent() {
     if (!activeClone || !activeCard) return; 
-
-    // [Animation Fade Out]
-    activeClone.querySelector('.event-detail-content')?.classList.remove('content-visible');
-
-    const festivalContent = document.getElementById('festival-content');
-    if (!festivalContent) return;
-    
+    activeClone.querySelector('.content-visible')?.classList.remove('content-visible');
+    const targetId = activeCard.getAttribute('data-target').substring(1); const mainContent = document.getElementById(targetId);
     setTimeout(() => {
-        activeClone.innerHTML = festivalContent.innerHTML;
-        
-        // [Animation Fade In]
-        requestAnimationFrame(() => {
-            activeClone.querySelector('.clone-content')?.classList.add('content-visible');
-        });
-
-        const buttons = createButtons(activeCard);
-        buttons.forEach(btn => activeClone.appendChild(btn));
-        
-        toggleCardNavButtons(true); 
-        // Re-add listeners for the event list view
+        activeClone.style.backgroundColor = ''; activeClone.style.padding = ''; activeClone.innerHTML = mainContent.innerHTML;
+        requestAnimationFrame(() => activeClone.querySelector('.clone-content')?.classList.add('content-visible'));
+        createButtons(activeCard).forEach(btn => activeClone.appendChild(btn));
         addEventDetailListeners(activeClone);
     }, 300);
 }
 
-function toggleCardNavButtons(show) {
-    if (activeClone) {
-       const navLeft = activeClone.querySelector('.nav-btn-left');
-       const navRight = activeClone.querySelector('.nav-btn-right');
-       if(navLeft && !navLeft.innerHTML.includes('&times;')) { 
-            navLeft.style.display = show ? 'flex' : 'none';
-       }
-        if(navRight) {
-            navRight.style.display = show ? 'flex' : 'none';
-       }
-    }
-}
+// ----------------------------------------------------------------------
+// ระบบเจาะดูข้อมูลศิลปินและงานต่างๆ (ดึงข้อมูลถูกต้อง 100%)
+// ----------------------------------------------------------------------
 
-// ===== This function is crucial for the event list to work =====
-function addEventDetailListeners(container) {
-    const eventLinks = container.querySelectorAll('.event-link');
-    eventLinks.forEach(link => {
-        // Use cloneNode trick to remove any old listeners
-        const newLink = link.cloneNode(true);
-        link.parentNode.replaceChild(newLink, link);
-
-        newLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (newLink.id === 'jazz-event-link') {
-                const initialHeight = mainContainer.dataset.initialHeight;
-                if (!initialHeight) {
-                    const currentHeight = mainContainer.offsetHeight;
-                    mainContainer.dataset.initialHeight = currentHeight;
-                    mainContainer.style.height = `${currentHeight}px`;
-                    requestAnimationFrame(() => {
-                        mainContainer.style.height = `${currentHeight * 2.5}px`;
-                    });
-                    showEventDetailContent();
-                } else {
-                    const initialHeightNum = parseFloat(initialHeight);
-                    mainContainer.style.height = `${initialHeightNum}px`;
-                    delete mainContainer.dataset.initialHeight;
-                    showEventListContent();
-                }
-            } else {
-                showEventDetailContent();
-            }
-        });
-    });
-}
-
-// --- Login Modal Script ---
-const loginButton = document.getElementById('login-button'); 
-const loginModal = document.getElementById('login-modal');
-const closeLoginModalButton = document.getElementById('close-login-modal');
-const loginBackdrop = document.getElementById('login-backdrop');
-const loginForm = document.getElementById('login-form');
-
-function openLoginModal() {
-    if (loginModal) {
-        const errorMessage = document.getElementById('login-error-message');
-        if(errorMessage) errorMessage.textContent = '';
-        if(loginForm) loginForm.reset(); 
-        loginModal.classList.remove('hidden');
-    }
-}
-
-function closeLoginModal() {
-    if (loginModal) loginModal.classList.add('hidden');
-}
-
-if (loginButton) {
-    loginButton.addEventListener('click', (e) => {
-        e.preventDefault(); 
-        openLoginModal();
-    });
-}
-if (closeLoginModalButton) closeLoginModalButton.addEventListener('click', closeLoginModal);
-if (loginBackdrop) loginBackdrop.addEventListener('click', closeLoginModal);
-
-if (loginForm) {
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault(); 
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const errorMessage = document.getElementById('login-error-message');
-        errorMessage.textContent = ''; 
-
-        try {
-            // *** NOTE: You need a server.js running at http://localhost:3000 for this to work ***
-            const response = await fetch('http://localhost:3000/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, password })
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-                alert('Login Successful!');
-                localStorage.setItem('authToken', data.token); 
-                closeLoginModal();
-            } else {
-                errorMessage.textContent = data.message || 'Login failed. Please try again.';
-            }
-        } catch (error) {
-            console.error('Login Error:', error);
-            errorMessage.textContent = 'Could not connect to the server.';
-        }
-    });
-}
-
-// ====== ระบบเปลี่ยนหน้าสำหรับ Artists ======
-
-// ฟังก์ชัน 1: แสดงหน้า 9 ช่อง
-function showArtistsGridContent() {
-    const template = document.getElementById('artists-library-grid-template');
-    if (!activeClone || !template) return;
-
-    activeClone.querySelector('.clone-content')?.classList.remove('content-visible');
-
-    setTimeout(() => {
-        activeClone.style.backgroundColor = '';
-        activeClone.style.padding = ''; 
-        activeClone.innerHTML = template.innerHTML;
-        toggleCardNavButtons(false); 
-
-        requestAnimationFrame(() => {
-            activeClone.querySelector('.clone-content')?.classList.add('content-visible');
-        });
-
-        // ปุ่มย้อนกลับไปหน้า 2 คอลัมน์
-        const backButton = document.createElement('button');
-        backButton.innerHTML = '&#8592;';
-        backButton.className = 'nav-btn nav-btn-left';
-        backButton.style.opacity = 1;
-        backButton.style.color = '#121212';
-        backButton.style.borderColor = '#121212';
-        backButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            showArtistListContent();
-        });
-
-        const closeBtn = document.createElement('button');
-        closeBtn.innerHTML = '&times;';
-        closeBtn.className = 'close-btn';
-        closeBtn.style.opacity = 1;
-        closeBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            collapseCard(activeClone, activeCard); 
-        });
-
-        activeClone.appendChild(backButton);
-        activeClone.appendChild(closeBtn);
-
-        addEventDetailListeners(activeClone);
-    }, 300);
-}
-
-// ฟังก์ชัน 2: แสดงหน้าสีขาว (รายละเอียดศิลปิน)
-function showArtistDetailContent() {
+function showArtistDetailContent(type, num) {
     const template = document.getElementById('artist-detail-template');
     if (!activeClone || !template) return;
-
-    activeClone.querySelector('.clone-content')?.classList.remove('content-visible');
+    activeClone.querySelector('.content-visible')?.classList.remove('content-visible');
     
     setTimeout(() => {
-        activeClone.style.backgroundColor = 'transparent';
-        activeClone.style.padding = '0'; 
-        activeClone.innerHTML = template.innerHTML;
-        toggleCardNavButtons(false); 
-
-        requestAnimationFrame(() => {
-            activeClone.querySelector('.artist-detail-content')?.classList.add('content-visible');
-        });
-
-        // ปุ่มย้อนกลับไปหน้า 9 ช่อง
-        const backButton = document.createElement('button');
-        backButton.innerHTML = '&#8592;';
-        backButton.className = 'nav-btn nav-btn-left';
-        backButton.style.opacity = 1;
-        backButton.style.color = '#121212';
-        backButton.style.borderColor = '#121212';
-        backButton.style.left = '20px';
-        backButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (mainContainer.dataset.initialHeight) {
-                 mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`;
-                 delete mainContainer.dataset.initialHeight; 
-            }
-            showArtistsGridContent(); // สั่งให้กลับไปหน้า 9 ช่อง
-        });
-
-        const closeBtn = document.createElement('button');
-        closeBtn.innerHTML = '&times;';
-        closeBtn.className = 'close-btn';
-        closeBtn.style.opacity = 1;
-        closeBtn.style.top = '20px';
-        closeBtn.style.right = '20px';
-        closeBtn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            collapseCard(activeClone, activeCard); 
-        });
-
-        activeClone.appendChild(backButton);
-        activeClone.appendChild(closeBtn);
-    }, 300); 
-}
-
-// ฟังก์ชัน 3: แสดงหน้า 2 คอลัมน์แรกสุด
-function showArtistListContent() {
-    if (!activeClone || !activeCard) return; 
-
-    activeClone.querySelector('.clone-content')?.classList.remove('content-visible');
-
-    const artistsContent = document.getElementById('artists-content');
-    if (!artistsContent) return;
-    
-    setTimeout(() => {
-        activeClone.style.backgroundColor = '';
-        activeClone.style.padding = '';
-        activeClone.innerHTML = artistsContent.innerHTML;
+        activeClone.style.backgroundColor = 'transparent'; activeClone.style.padding = '0';
+        const tempDiv = document.createElement('div'); tempDiv.innerHTML = template.innerHTML;
         
-        requestAnimationFrame(() => {
-            activeClone.querySelector('.clone-content')?.classList.add('content-visible');
-        });
-
-        const buttons = createButtons(activeCard);
-        buttons.forEach(btn => activeClone.appendChild(btn));
+        // เติมรหัส _artist1 ให้ตรงกับฐานข้อมูล
+        const suffix = `_${type}${num}`;
+        tempDiv.querySelectorAll('[id^="dyn-"]').forEach(el => el.id += suffix);
+        activeClone.innerHTML = tempDiv.innerHTML;
         
-        toggleCardNavButtons(true); 
-        addEventDetailListeners(activeClone);
+        requestAnimationFrame(() => activeClone.querySelector('.artist-detail-content')?.classList.add('content-visible'));
+
+        const backButton = document.createElement('button'); backButton.innerHTML = '&#8592;'; backButton.className = 'nav-btn nav-btn-left'; backButton.style.left = '20px';
+        backButton.addEventListener('click', (e) => { 
+            e.stopPropagation(); 
+            if (mainContainer.dataset.initialHeight) { mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`; delete mainContainer.dataset.initialHeight; }
+            showMainCategoryContent(); 
+        });
+        const closeBtn = document.createElement('button'); closeBtn.innerHTML = '&times;'; closeBtn.className = 'close-btn'; closeBtn.style.top = '20px'; closeBtn.style.right = '20px';
+        closeBtn.addEventListener('click', (e) => { e.stopPropagation(); collapseCard(activeClone, activeCard); });
+        activeClone.appendChild(backButton); activeClone.appendChild(closeBtn);
+        
+        if(window.applyDataToDOM) window.applyDataToDOM(activeClone);
     }, 300);
 }
 
-// อัปเดตฟังก์ชันดักการคลิก
-const originalAddEventDetailListeners = addEventDetailListeners;
-addEventDetailListeners = function(container) {
-    originalAddEventDetailListeners(container);
+function showEventDetailContent(eventIndex) {
+    const template = document.getElementById('event-detail-template');
+    if (!activeClone || !template) return;
+    activeClone.querySelector('.content-visible')?.classList.remove('content-visible');
+    
+    setTimeout(() => {
+        const tempDiv = document.createElement('div'); tempDiv.innerHTML = template.innerHTML;
+        const suffix = `_event${eventIndex}`;
+        tempDiv.querySelectorAll('[id^="dyn-"]').forEach(el => { if(!el.id.endsWith(suffix)) el.id += suffix; });
+        activeClone.innerHTML = tempDiv.innerHTML; 
+        
+        const contentArea = activeClone.querySelector('#event-detail-content-area'); 
+        const defaultContent = document.getElementById('default-detail-content'); 
+        if (contentArea && defaultContent) { 
+            const tabDiv = document.createElement('div'); tabDiv.innerHTML = defaultContent.innerHTML;
+            tabDiv.querySelectorAll('[id^="dyn-"]').forEach(el => { if(!el.id.endsWith(suffix)) el.id += suffix; });
+            contentArea.innerHTML = tabDiv.innerHTML; 
+        }
 
-    // 1. ดักจับปุ่ม Artists Library ในหน้า 2 คอลัมน์ -> ให้ไปหน้า 9 ช่อง
-    const categoryArtistsLib = container.querySelector('#category-artists-library');
-    if (categoryArtistsLib) {
-        const newCatLink = categoryArtistsLib.cloneNode(true);
-        categoryArtistsLib.parentNode.replaceChild(newCatLink, categoryArtistsLib);
-        newCatLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            showArtistsGridContent(); 
-        });
-    }
+        requestAnimationFrame(() => { activeClone.querySelector('.event-detail-content')?.classList.add('content-visible'); contentArea.querySelector(':first-child')?.classList.add('content-visible'); });
+        
+        const backButton = document.createElement('button'); backButton.innerHTML = '&#8592;'; backButton.className = 'nav-btn nav-btn-left';
+        backButton.addEventListener('click', (e) => { e.stopPropagation(); if (mainContainer.dataset.initialHeight) { mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`; delete mainContainer.dataset.initialHeight; } showMainCategoryContent(); });
+        const closeBtn = document.createElement('button'); closeBtn.innerHTML = '&times;'; closeBtn.className = 'close-btn';
+        closeBtn.addEventListener('click', (e) => { e.stopPropagation(); collapseCard(activeClone, activeCard); });
+        activeClone.appendChild(backButton); activeClone.appendChild(closeBtn);
+        
+        setupInnerTabs(activeClone, 'event-detail-content-area', eventIndex);
+        if(window.applyDataToDOM) window.applyDataToDOM(activeClone);
+    }, 300);
+}
 
-    // 2. ดักจับปุ่มศิลปิน ในหน้า 9 ช่อง -> ให้ไปหน้ารายละเอียดสีขาว
-    const artistLinks = container.querySelectorAll('.artist-link');
-    artistLinks.forEach(link => {
-        const newLink = link.cloneNode(true);
-        link.parentNode.replaceChild(newLink, link);
-
-        newLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const initialHeight = mainContainer.dataset.initialHeight;
-            if (!initialHeight) {
-                const currentHeight = mainContainer.offsetHeight;
-                mainContainer.dataset.initialHeight = currentHeight;
-                mainContainer.style.height = `${currentHeight}px`;
-                requestAnimationFrame(() => {
-                    mainContainer.style.height = `${currentHeight * 2.5}px`;
-                });
-                showArtistDetailContent();
+function setupInnerTabs(container, targetAreaId, eventIndex = null) {
+    const buttons = container.querySelectorAll('.nav-button'); const contentArea = container.querySelector('#' + targetAreaId);
+    buttons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault(); e.stopPropagation();
+            buttons.forEach(b => { b.classList.remove('bg-black', 'text-white'); b.classList.add('bg-transparent', 'text-black', 'hover:bg-black', 'hover:text-white'); });
+            btn.classList.remove('bg-transparent', 'text-black', 'hover:bg-black', 'hover:text-white'); btn.classList.add('bg-black', 'text-white');
+            
+            const sectionId = btn.getAttribute('data-section'); 
+            let sourceContent = document.getElementById(sectionId + '-content') || document.getElementById('default-detail-content');
+            
+            if(contentArea && sourceContent) {
+                contentArea.style.opacity = '0';
+                setTimeout(() => {
+                    const tempDiv = document.createElement('div'); tempDiv.innerHTML = sourceContent.innerHTML;
+                    if (eventIndex) {
+                        const suffix = `_event${eventIndex}`;
+                        tempDiv.querySelectorAll('[id^="dyn-"]').forEach(el => { if(!el.id.endsWith(suffix)) el.id += suffix; });
+                    }
+                    contentArea.innerHTML = tempDiv.innerHTML; 
+                    contentArea.style.opacity = '1';
+                    if(window.applyDataToDOM) window.applyDataToDOM(contentArea);
+                }, 200);
             }
         });
     });
-};
+}
+
+function addEventDetailListeners(container) {
+    // ซ่อน Categories หลักไปเลย เมื่อคลิกเจาะเข้าไป
+    container.querySelectorAll('#category-artists-library, #category-jazz-network').forEach(link => {
+        const newLink = link.cloneNode(true); link.parentNode.replaceChild(newLink, link);
+        newLink.addEventListener('click', (e) => { 
+            e.preventDefault(); e.stopPropagation(); 
+            const templateId = newLink.id === 'category-artists-library' ? 'artists-library-grid-template' : 'jazz-network-grid-template';
+            const template = document.getElementById(templateId);
+            if (!template) return;
+            activeClone.querySelector('.content-visible')?.classList.remove('content-visible');
+            setTimeout(() => {
+                activeClone.innerHTML = template.innerHTML;
+                requestAnimationFrame(() => activeClone.querySelector('.clone-content')?.classList.add('content-visible'));
+                const backButton = document.createElement('button'); backButton.innerHTML = '&#8592;'; backButton.className = 'nav-btn nav-btn-left'; backButton.style.color = '#121212'; backButton.style.borderColor = '#121212';
+                backButton.addEventListener('click', (e) => { e.stopPropagation(); showMainCategoryContent(); });
+                const closeBtn = document.createElement('button'); closeBtn.innerHTML = '&times;'; closeBtn.className = 'close-btn';
+                closeBtn.addEventListener('click', (e) => { e.stopPropagation(); collapseCard(activeClone, activeCard); });
+                activeClone.appendChild(backButton); activeClone.appendChild(closeBtn);
+                addEventDetailListeners(activeClone);
+                if(window.applyDataToDOM) window.applyDataToDOM(activeClone);
+            }, 300);
+        });
+    });
+
+    container.querySelectorAll('.artist-link, .event-link').forEach(link => {
+        const newLink = link.cloneNode(true); link.parentNode.replaceChild(newLink, link);
+        newLink.addEventListener('click', (e) => {
+            e.preventDefault(); e.stopPropagation();
+            if (!mainContainer.dataset.initialHeight) { 
+                mainContainer.dataset.initialHeight = mainContainer.offsetHeight; 
+                mainContainer.style.height = `${mainContainer.offsetHeight * 2.5}px`; 
+            }
+            if (newLink.classList.contains('event-link')) {
+                showEventDetailContent(newLink.getAttribute('data-event-index') || '1');
+            } else if (newLink.classList.contains('artist-link')) {
+                const match = newLink.querySelector('img[id^="dyn-"]')?.id.match(/dyn-(artist|partner)(\d+)/);
+                if(match) showArtistDetailContent(match[1], match[2]);
+            }
+        });
+    });
+}
