@@ -211,15 +211,19 @@
         <div id="store-content" data-include="content-store.html"></div>
         
         <div id="event-detail-template" class="hidden">
-            <div class="event-detail-content hide-scrollbar h-full overflow-y-auto pb-12 transition-opacity duration-300"> 
-                 <main class="p-6 md:p-12 lg:p-16">
-                    <div class="mb-8"><img id="dyn-festival_banner" src="https://placehold.co/1200x400/cccccc/333333?text=Chiang+Mai+Street+Jazz+Festival+2025+Banner" alt="Chiang Mai Street Jazz Festival 2025 Banner" class="w-full rounded-2xl object-cover h-64 md:h-80"></div>
-                    
-                    <div class="flex justify-center items-center flex-wrap gap-2 sm:space-x-4 mb-12">
-                        <button class="nav-button border-2 border-black rounded-full px-6 py-2 font-bold transition-colors bg-black text-white" data-section="default">BOOK NOW</button>
-                        <button class="nav-button border-2 border-black rounded-full px-6 py-2 font-bold transition-colors bg-transparent text-black hover:bg-black hover:text-white" data-section="line-up">LINE UP</button>
-                        <button class="nav-button border-2 border-black rounded-full px-6 py-2 font-bold transition-colors bg-transparent text-black hover:bg-black hover:text-white" data-section="venue">VENUE</button>
-                        <button class="nav-button border-2 border-black rounded-full px-6 py-2 font-bold transition-colors bg-transparent text-black hover:bg-black hover:text-white" data-section="gallery">GALLERY</button>
+            <div class="event-detail-content hide-scrollbar h-full overflow-y-auto bg-[#f4f4f4] text-black rounded-2xl pb-12 transition-opacity duration-300 relative"> 
+                 
+                 <div class="w-full h-48 md:h-64 lg:h-[280px] overflow-hidden rounded-t-2xl">
+                     <img id="dyn-festival_banner" src="https://placehold.co/1200x400/cccccc/333333?text=Event+Banner" alt="Banner" class="w-full h-full object-cover object-center">
+                 </div>
+                 
+                 <main class="p-6 md:p-10 lg:p-12">
+                    <div class="flex justify-center items-center flex-wrap gap-3 sm:space-x-4 mb-10">
+                        <button class="nav-button border border-black rounded-full px-6 sm:px-8 py-2 font-bold text-sm transition-colors bg-black text-white" data-section="default">DETAILS</button>
+                        <button class="nav-button border border-black rounded-full px-6 sm:px-8 py-2 font-bold text-sm transition-colors bg-transparent text-black hover:bg-black hover:text-white" data-section="book-now">BOOK NOW</button>
+                        <button class="nav-button border border-black rounded-full px-6 sm:px-8 py-2 font-bold text-sm transition-colors bg-transparent text-black hover:bg-black hover:text-white" data-section="line-up">LINE UP</button>
+                        <button class="nav-button border border-black rounded-full px-6 sm:px-8 py-2 font-bold text-sm transition-colors bg-transparent text-black hover:bg-black hover:text-white" data-section="venue">VENUE</button>
+                        <button class="nav-button border border-black rounded-full px-6 sm:px-8 py-2 font-bold text-sm transition-colors bg-transparent text-black hover:bg-black hover:text-white" data-section="gallery">GALLERY</button>
                     </div>
                     
                     <div id="event-detail-content-area"></div>
@@ -227,31 +231,408 @@
             </div>
         </div>
 
-        <div id="default-detail-content" class="hidden">
-             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-                <div class="md:col-span-1"><img id="dyn-event_poster" src="https://placehold.co/400x560/dddddd/555555?text=Event+Poster" class="w-full rounded-2xl"></div>
-                <div class="md:col-span-2">
-                    <h1 id="dyn-event_title" class="text-3xl sm:text-4xl font-bold mb-1">Chiang Mai Street Jazz 2025</h1>
-                    <h2 id="dyn-event_subtitle" class="text-xl sm:text-2xl text-gray-700 font-semibold mb-4">Chiangmai Jazz City</h2>
-                    <p id="dyn-event_date" class="text-base sm:text-lg mb-6 text-gray-600">01 - 04 Dec Jazz On Street | 05-06 Mini Stage</p>
-                    <div id="dyn-event_desc" class="prose prose-sm sm:prose-base max-w-none text-gray-700">What if a place wasn't remembered by its sights, but instead by its sounds?</div>
+        <div id="event-detail-content-1" class="hidden">
+             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <img src="http://chiangmaijazz.com/wp-content/uploads/2025/09/ST009.jpg" class="w-full rounded-lg shadow-md border border-gray-200">
+                    <button class="flex items-center gap-2 text-lg font-bold hover:text-gray-500 transition-colors w-fit" onclick="document.querySelector('.close-btn').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Go Back
+                    </button>
+                </div>
+                <div class="lg:col-span-8">
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-header font-bold mb-1 tracking-tight">Chiang Mai Street Jazz 2025</h1>
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-header font-bold mb-6 tracking-tight">Chiangmai Jazz City</h2>
+                    
+                    <p class="text-sm sm:text-base font-medium mb-4 text-black">
+                        01 - 04 Dec Jazz On Street | 05-06 Mini Stage at 4 Jazz Bars<br>
+                        07 December 2025 at Old Chiangmai Cultural Center
+                    </p>
+                    <hr class="border-gray-300 border-t-2 mb-6">
+                    
+                    <div class="prose prose-sm sm:prose-base max-w-none text-black font-medium leading-relaxed text-sm">
+                        <p><strong>Chiang Mai Street Jazz Festival 2025<br>The 7th Chiang Mai Street Jazz Festival<br>"Chiang Mai Jazz City: Let the City Play its Jazz"</strong></p>
+                        <p>What if a place wasn't remembered by its sights, but instead by its sounds?<br>Chiang Mai is discovering its identity through a new melody, and that language is 'Jazz.'</p>
+                        <p>'Jazz' isn't just imported music; it is an embraced culture. It is the charm of improvisation, seeping into the daily lives of the city's people. It is a dialogue that arises between cultural heritage and the pulse of the modern era.</p>
+                        <p>A "Jazz City" doesn't mean a city with performance stages, but a city where the entire city becomes the stage. It is a city where the chatter of people, the rhythm of the wind, and the colors of the streets merge and are played out as a single song.</p>
+                        <p>The 7th Chiang Mai Street Jazz Festival is a celebration where the line between artist and audience blurs, and we all become part of a grand orchestra named "Chiang Mai."</p>
+                        <p>We invite you to be part of an experience where the entire city rises to play jazz together. From December 1-4, with street jazz performances in the old town; December 5-6, 2025, with mini-concerts at leading jazz bars across the city: Moment's Notice Jazz Club, The Mellowship Jazz Club, Mahoree City of Music, Karmar Community Space, and The North Gate Jazz Co-op; and on December 7, 2025, the main stage event at the Old Chiang Mai Cultural Center.</p>
+                        <p>Come, let's play our city's song, loud and clear.<br>Early Bird tickets are available at a special price from 20 July until September 30, 2025.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="event-detail-content-2" class="hidden">
+             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <img src="./png/Jazz Arabica Vol.3.png" class="w-full rounded-lg shadow-md border border-gray-200">
+                    <button class="flex items-center gap-2 text-lg font-bold hover:text-gray-500 transition-colors w-fit" onclick="document.querySelector('.close-btn').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Go Back
+                    </button>
+                </div>
+                <div class="lg:col-span-8">
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-header font-bold mb-1 tracking-tight">Jazz Arabica Vol.3</h1>
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-header font-bold mb-6 tracking-tight">Jing Jai Market & North Gate</h2>
+                    
+                    <p class="text-sm sm:text-base font-medium mb-4 text-black">
+                        05 - 07 November 2025
+                    </p>
+                    <hr class="border-gray-300 border-t-2 mb-6">
+                    
+                    <div class="prose prose-sm sm:prose-base max-w-none text-black font-medium leading-relaxed text-sm">
+                        <p>Experience the smooth blend of local coffee culture and soul-stirring jazz music right in the heart of Chiang Mai. This unique festival combines the rich flavors of premium Arabica with the sophisticated sounds of our city's best jazz musicians.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="event-detail-content-3" class="hidden">
+             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <img src="./png/Chiangmai In'l Jazz Week 2026.png" class="w-full rounded-lg shadow-md border border-gray-200">
+                    <button class="flex items-center gap-2 text-lg font-bold hover:text-gray-500 transition-colors w-fit" onclick="document.querySelector('.close-btn').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Go Back
+                    </button>
+                </div>
+                <div class="lg:col-span-8">
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-header font-bold mb-1 tracking-tight">Chiangmai International<br>Jazz Week 2026</h1>
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-header font-bold mb-6 tracking-tight">4 Jazz Bars</h2>
+                    
+                    <p class="text-sm sm:text-base font-medium mb-4 text-black">
+                        24 - 30 April 2026
+                    </p>
+                    <hr class="border-gray-300 border-t-2 mb-6">
+                    
+                    <div class="prose prose-sm sm:prose-base max-w-none text-black font-medium leading-relaxed text-sm">
+                        <p>Join the international jazz celebration right in the heart of Chiang Mai city. The Chiangmai International Jazz Week brings together acclaimed international artists and local virtuosos for an unforgettable week of performances across multiple iconic venues.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="book-now-content" class="hidden">
+             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <img src="http://chiangmaijazz.com/wp-content/uploads/2025/09/ST009.jpg" class="w-full rounded-lg shadow-md border border-gray-200">
+                    <button class="flex items-center gap-2 text-lg font-bold hover:text-gray-500 transition-colors w-fit" onclick="document.querySelector('.close-btn').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Go Back
+                    </button>
+                </div>
+                
+                <div class="lg:col-span-8 flex flex-col gap-4">
+                    
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-300 pb-4">
+                        <div class="mb-4 sm:mb-0 max-w-sm">
+                            <h3 class="text-xl font-bold text-black mb-1">Music Supporter</h3>
+                            <p class="text-xs text-gray-600 font-medium leading-snug">Ticket to festival with Support Chiang Mai's musicians through Chiangmai Touch. You'll also receive a festival souvenir. Learn more at Chiangmaitouch.org.</p>
+                        </div>
+                        <div class="flex items-center justify-between w-full sm:w-auto gap-6">
+                            <span class="text-xl font-bold text-black shrink-0">1,000 THB</span>
+                            <div class="flex items-center border border-black rounded bg-white">
+                                <button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">-</button>
+                                <span class="w-10 text-center font-bold">1</span>
+                                <button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-300 pb-4 pt-2">
+                        <div class="mb-4 sm:mb-0">
+                            <h3 class="text-xl font-bold text-black mb-1">Adult</h3>
+                            <p class="text-xs text-gray-600 font-medium">Valid for 7th December 2025</p>
+                        </div>
+                        <div class="flex items-center justify-between w-full sm:w-auto gap-6">
+                            <span class="text-xl font-bold text-black shrink-0">590 THB</span>
+                            <div class="flex items-center border border-black rounded bg-white">
+                                <button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">-</button>
+                                <span class="w-10 text-center font-bold">0</span>
+                                <button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-300 pb-4 pt-2">
+                        <div class="mb-4 sm:mb-0">
+                            <h3 class="text-xl font-bold text-black mb-1">Youth</h3>
+                            <p class="text-xs text-gray-600 font-medium">Valid for 7th December 2025</p>
+                        </div>
+                        <div class="flex items-center justify-between w-full sm:w-auto gap-6">
+                            <span class="text-xl font-bold text-black shrink-0">350 THB</span>
+                            <div class="flex items-center border border-black rounded bg-white">
+                                <button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">-</button>
+                                <span class="w-10 text-center font-bold">0</span>
+                                <button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-300 pb-4 pt-2">
+                        <div class="mb-4 sm:mb-0">
+                            <h3 class="text-xl font-bold text-black mb-1">Couple Adult</h3>
+                            <p class="text-xs text-gray-600 font-medium">Valid for 7th December 2025</p>
+                        </div>
+                        <div class="flex items-center justify-between w-full sm:w-auto gap-6">
+                            <span class="text-xl font-bold text-black shrink-0">1,100 THB</span>
+                            <div class="flex items-center border border-black rounded bg-white">
+                                <button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">-</button>
+                                <span class="w-10 text-center font-bold">0</span>
+                                <button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex flex-col gap-6">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="checkbox" class="mt-1 w-4 h-4 rounded border-gray-300 text-black focus:ring-black">
+                            <span class="text-[10px] sm:text-xs text-black font-medium leading-relaxed">
+                                By checking this box, I hereby agree that my information will be shared to our Event Organizers
+                            </span>
+                        </label>
+                        <button class="w-full bg-black text-white font-header font-bold text-xl py-4 rounded-full tracking-wider hover:bg-gray-800 transition-colors uppercase">
+                            Buy Ticket
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="line-up-content" class="hidden">
+             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <img src="http://chiangmaijazz.com/wp-content/uploads/2025/09/ST009.jpg" class="w-full rounded-lg shadow-md border border-gray-200">
+                    <button class="flex items-center gap-2 text-lg font-bold hover:text-gray-500 transition-colors w-fit" onclick="document.querySelector('.close-btn').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Go Back
+                    </button>
+                </div>
+                <div class="lg:col-span-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-2xl font-header font-bold mb-4 border-b-2 border-gray-300 pb-2">06 DECEMBER 2025</h3>
+                            <div class="mb-6">
+                                <h4 class="font-bold text-sm mb-2">MOMENT'S NOTICE JAZZ CLUB</h4>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>19:30: J. Lebofsky Quartet ft. Mod Thongsay</li>
+                                    <li>20:40: The Element</li>
+                                    <li>21:50: Nice Guys feat. Roy Rosenberg</li>
+                                    <li>23:00: Young Brothers</li>
+                                    <li>00:00: Eyestyles Open Mic</li>
+                                </ul>
+                            </div>
+                            <div class="mb-6">
+                                <h4 class="font-bold text-sm mb-2">THE MELLOWSHIP JAZZ CLUB</h4>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>19:45: The Stolen Moment</li>
+                                    <li>20:45: Boy Paco</li>
+                                    <li>21:45: Sura Collective</li>
+                                    <li>22:45: Cherie Pops</li>
+                                </ul>
+                            </div>
+                            <div class="mb-6">
+                                <h4 class="font-bold text-sm mb-2">MAHOREE CITY OF MUSIC</h4>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>19:30: JZB</li>
+                                    <li>20:45: Dan Paw</li>
+                                    <li>21:45: Solar System</li>
+                                    <li>23:00: Din Nam Lom Fire</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-header font-bold mb-4 border-b-2 border-gray-300 pb-2">07 DECEMBER 2025</h3>
+                            <div class="mb-6">
+                                <h4 class="font-bold text-sm mb-2">MOMENT'S NOTICE JAZZ CLUB</h4>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>19:30: B35</li>
+                                    <li>20:40: SSKU Big Band</li>
+                                    <li>21:50: Bartosz</li>
+                                    <li>23:00: Abandoned Town</li>
+                                    <li>00:00: Eyestyles Open Mic</li>
+                                </ul>
+                            </div>
+                            <div class="mb-6">
+                                <h4 class="font-bold text-sm mb-2">THE MELLOWSHIP JAZZ CLUB</h4>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>19:45: Chanothai Collective</li>
+                                    <li>20:45: Chiang Mai Swing Dance</li>
+                                    <li>21:45: The Mellowship Quintet feat. Paw</li>
+                                    <li>22:45: Solar System</li>
+                                </ul>
+                            </div>
+                            <div class="mb-6">
+                                <h4 class="font-bold text-sm mb-2">NORTH GATE JAZZ CO-OP</h4>
+                                <ul class="text-sm text-gray-700 space-y-1">
+                                    <li>19:30: Bartosz</li>
+                                    <li>20:30: Nice Guys feat. Roy Rosenberg</li>
+                                    <li>22:00: Chanothai Collective</li>
+                                    <li>23:00: Salin</li>
+                                    <li>00:00: The Air ft. Mod Thongsay</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="venue-content" class="hidden">
+             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <img src="http://chiangmaijazz.com/wp-content/uploads/2025/09/ST009.jpg" class="w-full rounded-lg shadow-md border border-gray-200">
+                    <button class="flex items-center gap-2 text-lg font-bold hover:text-gray-500 transition-colors w-fit" onclick="document.querySelector('.close-btn').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Go Back
+                    </button>
+                </div>
+                <div class="lg:col-span-8">
+                    <img src="https://placehold.co/800x300/e2e8f0/64748b?text=Old+Chiangmai+Cultural+Center+Image" class="w-full h-48 md:h-64 object-cover rounded-lg shadow-md mb-6">
+                    <h2 class="text-3xl font-header font-bold mb-4">Old Chiangmai Cultural Center</h2>
+                    <img src="https://placehold.co/800x400/e2e8f0/64748b?text=Map+Location" class="w-full h-auto rounded-lg shadow-md border border-gray-200">
+                </div>
+            </div>
+        </div>
+
+        <div id="gallery-content" class="hidden">
+             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <img src="http://chiangmaijazz.com/wp-content/uploads/2025/09/ST009.jpg" class="w-full rounded-lg shadow-md border border-gray-200">
+                    <button class="flex items-center gap-2 text-lg font-bold hover:text-gray-500 transition-colors w-fit" onclick="document.querySelector('.close-btn').click()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Go Back
+                    </button>
+                </div>
+                <div class="lg:col-span-8">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <img src="https://placehold.co/400x400/333/fff?text=Jazz+1" class="w-full aspect-square object-cover rounded-lg shadow-sm hover:opacity-80 cursor-pointer transition">
+                        <img src="https://placehold.co/400x400/444/fff?text=Jazz+2" class="w-full aspect-square object-cover rounded-lg shadow-sm hover:opacity-80 cursor-pointer transition">
+                        <img src="https://placehold.co/400x400/555/fff?text=Jazz+3" class="w-full aspect-square object-cover rounded-lg shadow-sm hover:opacity-80 cursor-pointer transition">
+                        <img src="https://placehold.co/400x400/666/fff?text=Jazz+4" class="w-full aspect-square object-cover rounded-lg shadow-sm hover:opacity-80 cursor-pointer transition">
+                        <img src="https://placehold.co/400x400/777/fff?text=Jazz+5" class="w-full aspect-square object-cover rounded-lg shadow-sm hover:opacity-80 cursor-pointer transition">
+                        <img src="https://placehold.co/400x400/888/fff?text=Jazz+6" class="w-full aspect-square object-cover rounded-lg shadow-sm hover:opacity-80 cursor-pointer transition">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       <div id="course-detail-template" class="hidden">
+            <div class="course-detail-content hide-scrollbar h-full overflow-y-auto bg-[#FFFFFF] text-white rounded-2xl pb-12 transition-opacity duration-300"> 
+                 
+                 <div class="w-full h-48 md:h-64 lg:h-[280px] overflow-hidden rounded-t-2xl">
+                     <img id="dyn-course_detail_banner" src="https://placehold.co/1200x400/10a349/ffffff?text=Course+Banner" class="w-full h-full object-cover object-center filter brightness-75">
+                 </div>
+                 
+                 <main class="p-6 md:p-10 lg:p-12">
+                    <div class="flex justify-center items-center flex-wrap gap-3 sm:space-x-4 mb-10">
+                        <button class="nav-button border-2 border-white rounded-full px-6 sm:px-8 py-2 font-bold text-sm transition-colors bg-white text-black" data-section="default">ABOUT COURSE</button>
+                        <button class="nav-button border-2 border-white rounded-full px-6 sm:px-8 py-2 font-bold text-sm transition-colors bg-transparent text-white hover:bg-white hover:text-black" data-section="course-lessons">LESSONS</button>
+                        <button class="nav-button border-2 border-white rounded-full px-6 sm:px-8 py-2 font-bold text-sm transition-colors bg-transparent text-white hover:bg-white hover:text-black" data-section="course-instructor">INSTRUCTOR</button>
+                    </div>
+                    
+                    <div id="course-detail-content-area"></div>
+                 </main>
+            </div>
+        </div>
+
+        <div id="course-detail-content-1" class="hidden">
+            <div class="flex flex-col md:flex-row gap-8 lg:gap-12 items-start">
+                
+                <div class="w-full md:w-1/2 lg:w-2/5 shrink-0">
+                    <div class="w-full aspect-[3/4] bg-[#333333] rounded-xl flex items-center justify-center shadow-lg p-6 relative overflow-hidden group">
+                        <h3 class="text-white font-bold text-xl sm:text-2xl text-center relative z-10 group-hover:scale-105 transition-transform">Jazz for Beginner</h3>
+                    </div>
+                </div>
+                
+                <div class="w-full md:w-1/2 lg:w-3/5 flex flex-col gap-6">
+                    <div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-header font-bold text-[#050505] mb-2 leading-tight">Chiangmai Jazz<br>City</h1>
+                        <hr class="border-[#050505] border-t-2 my-4 w-full">
+                    </div>
+                    
+                    <div class="prose prose-sm sm:prose-base max-w-none text-[#050505] font-medium leading-relaxed">
+                        <p>Unlock your potential with our groundbreaking curriculum. Learn to blend traditional Lanna instruments with jazz theory through our modular online courses, designed to create "musically bilingual" artists.</p>
+                    </div>
+                    
+                    <button class="mt-4 bg-[#10a349] text-white font-bold py-3 px-8 rounded-full hover:bg-green-700 transition-colors uppercase tracking-wider w-fit text-sm">
+                        START LEARNING
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="course-detail-content-2" class="hidden">
+             <div class="flex flex-col md:flex-row gap-8 lg:gap-12 items-start">
+                <div class="w-full md:w-1/2 lg:w-2/5 shrink-0">
+                    <div class="w-full aspect-[3/4] bg-[#444444] rounded-xl flex items-center justify-center shadow-lg p-6 relative overflow-hidden group">
+                        <h3 class="text-white font-bold text-xl sm:text-2xl text-center relative z-10 group-hover:scale-105 transition-transform">Jazz Level Up</h3>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 lg:w-3/5 flex flex-col gap-6">
+                    <div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-header font-bold text-[#050505] mb-2 leading-tight">Intermediate<br>Concepts</h1>
+                        <hr class="border-[#050505] border-t-2 my-4 w-full">
+                    </div>
+                    <div class="prose prose-sm sm:prose-base max-w-none text-[#050505] font-medium leading-relaxed">
+                        <p>Take your jazz skills to the next level. Dive deep into improvisation, complex chord progressions, and performance techniques to sound like a pro.</p>
+                    </div>
+                    <button class="mt-4 bg-[#10a349] text-white font-bold py-3 px-8 rounded-full hover:bg-green-700 transition-colors uppercase tracking-wider w-fit text-sm">START LEARNING</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="course-detail-content-3" class="hidden">
+             <div class="flex flex-col md:flex-row gap-8 lg:gap-12 items-start">
+                <div class="w-full md:w-1/2 lg:w-2/5 shrink-0">
+                    <div class="w-full aspect-[3/4] bg-[#555555] rounded-xl flex items-center justify-center shadow-lg p-6 relative overflow-hidden group">
+                        <h3 class="text-white font-bold text-xl sm:text-2xl text-center relative z-10 group-hover:scale-105 transition-transform">Lanna Instrument</h3>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 lg:w-3/5 flex flex-col gap-6">
+                    <div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-header font-bold text-[#050505] mb-2 leading-tight">Traditional Meets<br>Modern</h1>
+                        <hr class="border-[#050505] border-t-2 my-4 w-full">
+                    </div>
+                    <div class="prose prose-sm sm:prose-base max-w-none text-[#050505] font-medium leading-relaxed">
+                        <p>Learn how to play the Salor, Saw, and Seung in a contemporary context, merging local sounds with global rhythms.</p>
+                    </div>
+                    <button class="mt-4 bg-[#10a349] text-white font-bold py-3 px-8 rounded-full hover:bg-green-700 transition-colors uppercase tracking-wider w-fit text-sm">START LEARNING</button>
+                </div>
+            </div>
+        </div>
+
+         <div id="default-course-content" class="hidden">
+            <div class="flex flex-col md:flex-row gap-8 lg:gap-12 items-start">
+                <div class="w-full md:w-1/2 lg:w-2/5 shrink-0">
+                    <div class="w-full aspect-[3/4] bg-[#222222] rounded-xl flex items-center justify-center shadow-lg p-6 relative overflow-hidden group">
+                        <h3 class="text-white font-bold text-xl sm:text-2xl text-center relative z-10 group-hover:scale-105 transition-transform">Coming Soon</h3>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/2 lg:w-3/5 flex flex-col gap-6">
+                    <div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-header font-bold text-[#050505] mb-2 leading-tight">More Courses</h1>
+                        <hr class="border-[#050505] border-t-2 my-4 w-full">
+                    </div>
+                    <div class="prose prose-sm sm:prose-base max-w-none text-[#050505] font-medium leading-relaxed">
+                        <p>New exciting modules are currently in production. Stay tuned!</p>
+                    </div>
+                    <button class="mt-4 bg-gray-400 text-white font-bold py-3 px-8 rounded-full cursor-not-allowed uppercase tracking-wider w-fit text-sm">COMING SOON</button>
                 </div>
             </div>
         </div>
 
         <div id="bigband-detail-template" class="hidden">
-            <div class="bigband-detail-content hide-scrollbar h-full overflow-y-auto pb-12 transition-opacity duration-300"> 
+           <div class="bigband-detail-content hide-scrollbar h-full overflow-y-auto pb-12 transition-opacity duration-300 bg-gray-100 text-black rounded-2xl">
                  <main class="p-6 md:p-12 lg:p-16">
                     <div class="mb-8">
                         <img id="dyn-bb_main_banner" src="https://placehold.co/1200x400/333333/cccccc?text=CMSJ+Bigband+Cover" class="w-full rounded-2xl object-cover h-64 md:h-80 filter brightness-75">
                     </div>
                     
-                    <div class="flex justify-center items-center flex-wrap gap-2 sm:space-x-4 mb-12">
-                        <button class="nav-button border-2 border-black rounded-full px-6 py-2 font-bold transition-colors bg-black text-white" data-section="bb-about">ABOUT BAND</button>
-                        <button class="nav-button border-2 border-black rounded-full px-6 py-2 font-bold transition-colors bg-transparent text-black hover:bg-black hover:text-white" data-section="bb-members">MEMBERS</button>
-                        <button class="nav-button border-2 border-black rounded-full px-6 py-2 font-bold transition-colors bg-transparent text-black hover:bg-black hover:text-white" data-section="bb-gallery">GALLERY</button>
-                    </div>
-                    
+                  
                     <div id="bigband-detail-content-area"></div>
                  </main>
             </div>
@@ -294,8 +675,8 @@
             </div>
         </div>
 
-        <div id="artists-library-grid-template" class="hidden">
-            <div class="clone-content h-full overflow-y-auto hide-scrollbar">
+       <div id="artists-library-grid-template" class="hidden">
+    <div class="clone-content h-full overflow-y-auto hide-scrollbar bg-[#ffc107]">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 relative pb-24 pt-4 md:pt-0">
                     <div class="lg:col-span-4 flex flex-col justify-start lg:sticky lg:top-8 h-fit">
                         <svg class="w-20 h-20 mb-6 fill-current text-[#050505]" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" /><circle cx="50" cy="16" r="14" /><circle cx="84" cy="16" r="14" /><circle cx="16" cy="50" r="14" /><circle cx="50" cy="50" r="14" /><circle cx="84" cy="50" r="14" /><circle cx="16" cy="84" r="14" /><circle cx="50" cy="84" r="14" /><circle cx="84" cy="84" r="14" /></svg>
@@ -354,7 +735,7 @@
         </div>
 
         <div id="jazz-network-grid-template" class="hidden">
-            <div class="clone-content h-full overflow-y-auto hide-scrollbar">
+    <div class="clone-content h-full overflow-y-auto hide-scrollbar bg-[#ffc107]">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 relative pb-24 pt-4 md:pt-0">
                     <div class="lg:col-span-4 flex flex-col justify-start lg:sticky lg:top-8 h-fit">
                         <svg class="w-20 h-20 mb-6 fill-current text-[#050505]" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 50 L50 5 A45 45 0 0 1 95 50 Z" /><path d="M50 50 L95 50 A45 45 0 0 1 50 95 Z" /><path d="M50 50 L50 95 A45 45 0 0 1 5 50 Z" /><path d="M50 50 L5 50 A45 45 0 0 1 50 5 Z" /></svg>

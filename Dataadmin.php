@@ -114,11 +114,7 @@ $row_count = count($data);
             JASS
         </a>
     </div>
-    <div class="d-flex justify-content-end mb-3">
-        <a href="visual_admin.php" class="btn btn-info" target="_blank">
-             VISUAL ADMIN MODE 
-        </a>
-    </div>
+    
     <h1 class="mb-4 text-center">จัดการข้อมูล</h1>
     <!-- ปรับช่องค้นหาให้อยู่ในแถวเดียวกับเลือกตาราง -->
     <form method="get" class="mb-4 d-flex justify-content-center align-items-center gap-2 flex-wrap">
