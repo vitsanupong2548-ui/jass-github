@@ -57,8 +57,19 @@ function expandCard(card) {
 
 function collapseCard(clone, originalCard) {
     if (!clone || !originalCard) return;
-    if (mainContainer.dataset.initialHeight) { mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`; delete mainContainer.dataset.initialHeight; }
-    clone.classList.remove('is-expanded'); clone.querySelector('.clone-content, .event-detail-content, .bigband-detail-content, .artist-detail-content, .course-detail-content, .forum-detail-content, .store-detail-content')?.classList.remove('content-visible');
+    if (mainContainer.dataset.initialHeight) { 
+        mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`; 
+        delete mainContainer.dataset.initialHeight; 
+    }
+    
+    // 🌟 จุดที่เพิ่มเพื่อแก้บั๊ก: คืนค่าสีพื้นหลัง (เช่นสีเหลือง #ffc107) และ Padding กลับมาทันทีตอนกดกากบาท
+    clone.style.backgroundColor = '';
+    clone.style.padding = '';
+
+    // ซ่อนเนื้อหา
+    clone.classList.remove('is-expanded'); 
+    clone.querySelector('.clone-content, .event-detail-content, .bigband-detail-content, .artist-detail-content, .course-detail-content, .forum-detail-content, .store-detail-content')?.classList.remove('content-visible');
+    
     const onCollapseEnd = (e) => {
         if (e.target === clone && e.propertyName === 'width') {
             if (clone.parentElement) clone.remove();
@@ -67,10 +78,14 @@ function collapseCard(clone, originalCard) {
         }
     };
     clone.addEventListener('transitionend', onCollapseEnd);
-    const cardRect = originalCard.getBoundingClientRect(); const containerRect = mainContainer.getBoundingClientRect();
+    
+    const cardRect = originalCard.getBoundingClientRect(); 
+    const containerRect = mainContainer.getBoundingClientRect();
     if (cardRect && containerRect) {
-        clone.style.top = `${cardRect.top - containerRect.top}px`; clone.style.left = `${cardRect.left - containerRect.left}px`;
-        clone.style.width = `${cardRect.width}px`; clone.style.height = `${cardRect.height}px`;
+        clone.style.top = `${cardRect.top - containerRect.top}px`; 
+        clone.style.left = `${cardRect.left - containerRect.left}px`;
+        clone.style.width = `${cardRect.width}px`; 
+        clone.style.height = `${cardRect.height}px`;
     }
 }
 
