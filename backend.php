@@ -78,7 +78,7 @@ switch($action) {
             } else {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['role'] = $user['role'];
-                echo json_encode(['status' => 'success', 'message' => 'Login successful']);
+                echo json_encode(['status' => 'success', 'message' => 'Login successful', 'role' => $user['role']]);
             }
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Username หรือ Password ไม่ถูกต้อง']);
@@ -406,8 +406,18 @@ switch($action) {
             echo json_encode(['status' => 'error', 'message' => 'เกิดข้อผิดพลาดจากฐานข้อมูล: ' . $e->getMessage()]);
         }
         break;
-
+case 'get_front_events':
+        try {
+            // ดึงข้อมูลอีเวนต์ 4 อันดับแรก เรียงตามวันที่ใกล้ที่สุด
+           $stmt = $pdo->query("SELECT id, title, short_description, start_date, banner_image FROM events ORDER BY id DESC LIMIT 4");
+            $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode(['status' => 'success', 'data' => $events]);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
     default:
+    
         echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
 }
 ?>

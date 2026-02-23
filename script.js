@@ -416,3 +416,76 @@ function addEventDetailListeners(container) {
         });
     });
 }
+// ฟังก์ชันนี้จะถูกเรียกอัตโนมัติเมื่อมีการกดเปิดการ์ดต่างๆ (ใน script.js ตั้งค่าไว้แล้ว)
+// ฟังก์ชันดึงข้อมูลมาแสดงแบบสร้างการ์ดใหม่ตามจำนวนจริง
+window.applyDataToDOM = async function(container) {
+    
+    // หาพื้นที่ที่ใช้แสดงการ์ด Event (Festival)
+    const festivalContainer = container.querySelector('.clone-main-content');
+    
+    // เช็คให้ชัวร์ว่าเป็นหน้า Festival (ที่มี ID dyn-fest_title1 อยู่)
+    if (festivalContainer && container.querySelector('#dyn-fest_title1')) {
+        try {
+            // ดึงข้อมูลล่าสุดจาก Backend
+            const response = await fetch('backend.php?action=get_front_events');
+            const result = await response.json();
+            
+            if (result.status === 'success' && result.data.length > 0) {
+                
+                // 1. ล้างการ์ดจำลองอันเก่าทิ้งให้หมด (เพื่อไม่ให้มันชนกัน)
+                festivalContainer.innerHTML = '';
+                
+                const events = result.data;
+                
+                // 2. วนลูปสร้างการ์ดใหม่เฉพาะข้อมูลที่ "มีชื่ออีเวนต์จริงๆ"
+                events.forEach((event) => {
+                    // ถ้าชื่ออีเวนต์ว่างเปล่า (ข้อมูลขยะ) ให้ข้ามไปเลย ไม่ต้องสร้างการ์ด
+                    if (!event.title || event.title.trim() === '') return; 
+                    
+                    const d = new Date(event.start_date);
+                    const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                    const dateFormatted = `${String(d.getDate()).padStart(2, '0')}<br>${monthNames[d.getMonth()]}<br>${d.getFullYear()}`;
+                    
+                    // ถ้ารูปแบนเนอร์ไม่มี ให้ใช้รูปสีดำๆ เท่ๆ แทนไปก่อน
+                    const imageUrl = event.banner_image ? event.banner_image : 'https://placehold.co/1200x400/1a1a1a/ffffff?text=Jazz+Event';
+                    
+                    // สร้างโครงสร้าง HTML ของการ์ด 1 ใบ
+                    const cardHTML = `
+                        <div data-event-index="${event.id}" class="event-link relative rounded-2xl overflow-hidden group cursor-pointer bg-black/40 border border-white/20 min-h-[140px] md:min-h-[160px] flex items-center p-6 lg:p-8 transition-transform duration-300 hover:scale-[1.02] mb-4">
+                            <img src="${imageUrl}" class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen group-hover:opacity-90 transition-opacity duration-300">
+                            <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-black/80 pointer-events-none"></div>
+                            
+                            <div class="relative z-10 w-full flex items-center justify-between text-white">
+                                <div class="font-header text-3xl lg:text-4xl font-bold leading-none tracking-tight shrink-0 relative z-20 cursor-pointer hover:text-yellow-400 transition-colors">
+                                    ${dateFormatted}
+                                </div>
+                                <div class="flex flex-col items-end gap-1 text-right">
+                                    <div class="flex items-center gap-4">
+                                        <h3 class="font-header text-2xl lg:text-3xl font-bold tracking-tight relative z-20 cursor-pointer hover:text-yellow-400 transition-colors">${event.title}</h3>
+                                        <div class="w-10 h-10 border border-white/50 rounded-full flex items-center justify-center shrink-0 group-hover:bg-white group-hover:text-black transition-colors hidden sm:flex">
+                                            <span class="text-xl leading-none -mt-1">&#8594;</span>
+                                        </div>
+                                    </div>
+                                    <p class="font-body text-sm text-white/80 max-w-[90%] sm:max-w-md relative z-20 cursor-pointer hover:text-yellow-400 transition-colors">${event.short_description || ''}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // นำการ์ดที่สร้างเสร็จแล้ว ไปยัดใส่ในหน้าเว็บ
+                    festivalContainer.innerHTML += cardHTML;
+                });
+                
+                // 3. สำคัญมาก: ผูกระบบให้การ์ดใหม่สามารถกดคลิกเพื่อเข้าไปดู Detail ได้
+                if (typeof addEventDetailListeners === 'function') {
+                    addEventDetailListeners(container);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching events:', error);
+        }
+    }
+};
+
+
+
