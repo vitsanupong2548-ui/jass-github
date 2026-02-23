@@ -408,9 +408,25 @@ switch($action) {
         break;
 case 'get_front_events':
         try {
-            // ดึงข้อมูลอีเวนต์ 4 อันดับแรก เรียงตามวันที่ใกล้ที่สุด
-           $stmt = $pdo->query("SELECT id, title, short_description, start_date, banner_image FROM events ORDER BY id DESC LIMIT 4");
+            // 1. ดึงข้อมูลอีเวนต์
+            $stmt = $pdo->query("SELECT * FROM events WHERE start_date >= CURDATE() ORDER BY start_date ASC LIMIT 4");
             $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // 2. ลูปดึง Ticket และ Line up ของแต่ละอีเวนต์พ่วงไปด้วย
+            foreach ($events as &$event) {
+                $ev_id = $event['id'];
+
+                // ดึงบัตร (Ticket)
+                $stmt_t = $pdo->prepare("SELECT * FROM event_tickets WHERE event_id = ?");
+                $stmt_t->execute([$ev_id]);
+                $event['tickets'] = $stmt_t->fetchAll(PDO::FETCH_ASSOC);
+
+                // ดึงตารางวงดนตรี (Lineup)
+                $stmt_l = $pdo->prepare("SELECT * FROM event_lineups WHERE event_id = ? ORDER BY lineup_date ASC, lineup_time ASC");
+                $stmt_l->execute([$ev_id]);
+                $event['lineups'] = $stmt_l->fetchAll(PDO::FETCH_ASSOC);
+            }
+
             echo json_encode(['status' => 'success', 'data' => $events]);
         } catch (Exception $e) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);

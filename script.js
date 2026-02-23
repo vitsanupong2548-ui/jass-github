@@ -199,7 +199,15 @@ function showEventDetailContent(eventIndex) {
         const suffix = `_event${eventIndex}`;
         tempDiv.querySelectorAll('[id^="dyn-"]').forEach(el => { if(!el.id.endsWith(suffix)) el.id += suffix; });
         activeClone.innerHTML = tempDiv.innerHTML; 
-        
+        // --- ส่วนที่ดึงรูป Banner มาใส่ ---
+if (window.frontendEvents) {
+    const eventData = window.frontendEvents.find(e => e.id == eventIndex);
+    if (eventData && eventData.banner_image) {
+        const bannerImg = activeClone.querySelector('img[id^="dyn-festival_banner"]');
+        if(bannerImg) bannerImg.src = eventData.banner_image;
+    }
+}
+// ------------------------------
         const contentArea = activeClone.querySelector('#event-detail-content-area'); 
         
         let sourceContent = document.getElementById('event-detail-content-' + eventIndex) || document.getElementById('default-detail-content'); 
@@ -341,7 +349,8 @@ function setupInnerTabs(container, targetAreaId, eventIndex = null) {
             if (sectionId === 'default') {
                 sourceContent = document.getElementById('event-detail-content-' + eventIndex) || document.getElementById('default-detail-content');
             } else {
-                sourceContent = document.getElementById(sectionId + '-content') || document.getElementById('default-detail-content');
+                // เปลี่ยนให้หา ID ที่มี -เลขEvent ต่อท้ายก่อนเสมอ เพื่อโชว์ข้อมูลแต่ละงานไม่ซ้ำกัน
+                sourceContent = document.getElementById(sectionId + '-content-' + eventIndex) || document.getElementById(sectionId + '-content') || document.getElementById('default-detail-content');
             }
             
             if(contentArea && sourceContent) {
@@ -417,75 +426,124 @@ function addEventDetailListeners(container) {
     });
 }
 // ฟังก์ชันนี้จะถูกเรียกอัตโนมัติเมื่อมีการกดเปิดการ์ดต่างๆ (ใน script.js ตั้งค่าไว้แล้ว)
-// ฟังก์ชันดึงข้อมูลมาแสดงแบบสร้างการ์ดใหม่ตามจำนวนจริง
+window.frontendEvents = []; // สร้างตัวแปรเก็บข้อมูลไว้ใช้ตอนเปิด Detail
+
+window.frontendEvents = []; 
+
 window.applyDataToDOM = async function(container) {
-    
-    // หาพื้นที่ที่ใช้แสดงการ์ด Event (Festival)
     const festivalContainer = container.querySelector('.clone-main-content');
     
-    // เช็คให้ชัวร์ว่าเป็นหน้า Festival (ที่มี ID dyn-fest_title1 อยู่)
     if (festivalContainer && container.querySelector('#dyn-fest_title1')) {
         try {
-            // ดึงข้อมูลล่าสุดจาก Backend
             const response = await fetch('backend.php?action=get_front_events');
             const result = await response.json();
             
             if (result.status === 'success' && result.data.length > 0) {
-                
-                // 1. ล้างการ์ดจำลองอันเก่าทิ้งให้หมด (เพื่อไม่ให้มันชนกัน)
-                festivalContainer.innerHTML = '';
-                
+                festivalContainer.innerHTML = ''; 
                 const events = result.data;
+                window.frontendEvents = events; 
                 
-                // 2. วนลูปสร้างการ์ดใหม่เฉพาะข้อมูลที่ "มีชื่ออีเวนต์จริงๆ"
+                const hiddenContainer = document.getElementById('hidden-card-content');
+                
                 events.forEach((event) => {
-                    // ถ้าชื่ออีเวนต์ว่างเปล่า (ข้อมูลขยะ) ให้ข้ามไปเลย ไม่ต้องสร้างการ์ด
                     if (!event.title || event.title.trim() === '') return; 
                     
                     const d = new Date(event.start_date);
                     const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-                    const dateFormatted = `${String(d.getDate()).padStart(2, '0')}<br>${monthNames[d.getMonth()]}<br>${d.getFullYear()}`;
-                    
-                    // ถ้ารูปแบนเนอร์ไม่มี ให้ใช้รูปสีดำๆ เท่ๆ แทนไปก่อน
+                    const dateFormatted = `${String(d.getDate()).padStart(2, '0')} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+                    const dateCard = `${String(d.getDate()).padStart(2, '0')}<br>${monthNames[d.getMonth()]}<br>${d.getFullYear()}`;
                     const imageUrl = event.banner_image ? event.banner_image : 'https://placehold.co/1200x400/1a1a1a/ffffff?text=Jazz+Event';
                     
-                    // สร้างโครงสร้าง HTML ของการ์ด 1 ใบ
+                    // --- 1. สร้างการ์ดด้านนอก ---
                     const cardHTML = `
                         <div data-event-index="${event.id}" class="event-link relative rounded-2xl overflow-hidden group cursor-pointer bg-black/40 border border-white/20 min-h-[140px] md:min-h-[160px] flex items-center p-6 lg:p-8 transition-transform duration-300 hover:scale-[1.02] mb-4">
                             <img src="${imageUrl}" class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen group-hover:opacity-90 transition-opacity duration-300">
                             <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-black/80 pointer-events-none"></div>
-                            
                             <div class="relative z-10 w-full flex items-center justify-between text-white">
-                                <div class="font-header text-3xl lg:text-4xl font-bold leading-none tracking-tight shrink-0 relative z-20 cursor-pointer hover:text-yellow-400 transition-colors">
-                                    ${dateFormatted}
-                                </div>
+                                <div class="font-header text-3xl lg:text-4xl font-bold leading-none tracking-tight shrink-0 relative z-20 cursor-pointer hover:text-yellow-400 transition-colors">${dateCard}</div>
                                 <div class="flex flex-col items-end gap-1 text-right">
                                     <div class="flex items-center gap-4">
                                         <h3 class="font-header text-2xl lg:text-3xl font-bold tracking-tight relative z-20 cursor-pointer hover:text-yellow-400 transition-colors">${event.title}</h3>
-                                        <div class="w-10 h-10 border border-white/50 rounded-full flex items-center justify-center shrink-0 group-hover:bg-white group-hover:text-black transition-colors hidden sm:flex">
-                                            <span class="text-xl leading-none -mt-1">&#8594;</span>
-                                        </div>
+                                        <div class="w-10 h-10 border border-white/50 rounded-full flex items-center justify-center shrink-0 group-hover:bg-white group-hover:text-black transition-colors hidden sm:flex"><span class="text-xl leading-none -mt-1">&#8594;</span></div>
                                     </div>
                                     <p class="font-body text-sm text-white/80 max-w-[90%] sm:max-w-md relative z-20 cursor-pointer hover:text-yellow-400 transition-colors">${event.short_description || ''}</p>
                                 </div>
                             </div>
                         </div>
                     `;
-                    
-                    // นำการ์ดที่สร้างเสร็จแล้ว ไปยัดใส่ในหน้าเว็บ
                     festivalContainer.innerHTML += cardHTML;
+                    
+                    // --- 2. แอบสร้างเนื้อหาทั้ง 5 หน้า Detail เตรียมไว้ ---
+                    if(hiddenContainer) {
+                        const posterImg = event.poster_image ? event.poster_image : 'https://placehold.co/600x800/222/fff?text=Poster';
+                        const leftCol = `
+                            <div class="lg:col-span-4 flex flex-col gap-6">
+                                <img src="${posterImg}" class="w-full rounded-lg shadow-md border border-gray-200">
+                                <button class="flex items-center gap-2 text-lg font-bold hover:text-gray-500 transition-colors w-fit" onclick="document.querySelector('.close-btn').click()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                                    Go Back
+                                </button>
+                            </div>
+                        `;
+
+                        // 2.1 Tab: DETAILS
+                        let detailDiv = document.getElementById('event-detail-content-' + event.id);
+                        if(!detailDiv) { detailDiv = document.createElement('div'); detailDiv.id = 'event-detail-content-' + event.id; detailDiv.className = 'hidden'; hiddenContainer.appendChild(detailDiv); }
+                        const detailsText = event.details ? event.details.replace(/\n/g, '<br>') : 'ไม่มีรายละเอียด...';
+                        detailDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h1 class="text-3xl sm:text-4xl lg:text-5xl font-header font-bold mb-1 tracking-tight">${event.title}</h1><h2 class="text-2xl sm:text-3xl lg:text-4xl font-header font-bold mb-6 tracking-tight">${event.location || 'Chiangmai Jazz City'}</h2><p class="text-sm sm:text-base font-medium mb-4 text-black">${dateFormatted}</p><hr class="border-gray-300 border-t-2 mb-6"><div class="prose prose-sm sm:prose-base max-w-none text-black font-medium leading-relaxed text-sm">${detailsText}</div></div></div>`;
+
+                        // 2.2 Tab: BOOK NOW
+                        let bookDiv = document.getElementById('book-now-content-' + event.id);
+                        if(!bookDiv) { bookDiv = document.createElement('div'); bookDiv.id = 'book-now-content-' + event.id; bookDiv.className = 'hidden'; hiddenContainer.appendChild(bookDiv); }
+                        let ticketsHTML = '';
+                        if(event.tickets && event.tickets.length > 0) {
+                            event.tickets.forEach(t => {
+                                ticketsHTML += `<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-300 pb-4 pt-4"><div class="mb-4 sm:mb-0"><h3 class="text-xl font-bold text-black mb-1">${t.title}</h3><p class="text-xs text-gray-600 font-medium">${t.details || ''}</p></div><div class="flex items-center justify-between w-full sm:w-auto gap-6"><span class="text-xl font-bold text-black shrink-0">${t.price} THB</span><button class="bg-black text-white px-6 py-2 rounded-full font-bold hover:bg-gray-800 text-sm shadow-md transition-transform active:scale-95">Buy Ticket</button></div></div>`;
+                            });
+                        } else { ticketsHTML = '<p class="text-gray-500 font-medium mt-4">ไม่มีข้อมูลบัตรเข้าชมสำหรับงานนี้</p>'; }
+                        bookDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8 flex flex-col gap-4"><h3 class="text-3xl font-header font-bold mb-2">Buy Tickets</h3>${ticketsHTML}</div></div>`;
+
+                        // 2.3 Tab: LINE UP
+                        let lineDiv = document.getElementById('line-up-content-' + event.id);
+                        if(!lineDiv) { lineDiv = document.createElement('div'); lineDiv.id = 'line-up-content-' + event.id; lineDiv.className = 'hidden'; hiddenContainer.appendChild(lineDiv); }
+                        let lineupHTML = '<ul class="text-sm text-gray-700 space-y-4 mt-4">';
+                        if(event.lineups && event.lineups.length > 0) {
+                            event.lineups.forEach(l => {
+                                const timeStr = l.lineup_time ? l.lineup_time.substring(0,5) : '';
+                                const dateStr = l.lineup_date ? `(${l.lineup_date})` : '';
+                                lineupHTML += `<li class="flex items-start gap-4 border-l-4 border-yellow-400 pl-4 py-1"><div class="shrink-0"><span class="font-bold text-black text-lg">${timeStr}</span><br><span class="text-xs text-gray-500">${dateStr}</span></div><div class="flex items-center h-full pt-1"><span class="text-lg font-bold text-gray-800">${l.band_name}</span></div></li>`;
+                            });
+                        } else { lineupHTML += '<li>ไม่มีตารางเวลาศิลปินสำหรับงานนี้</li>'; }
+                        lineupHTML += '</ul>';
+                        lineDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h3 class="text-3xl font-header font-bold mb-4 border-b-2 border-gray-300 pb-2">Event Line Up</h3>${lineupHTML}</div></div>`;
+
+                        // 2.4 Tab: VENUE
+                        let venueDiv = document.getElementById('venue-content-' + event.id);
+                        if(!venueDiv) { venueDiv = document.createElement('div'); venueDiv.id = 'venue-content-' + event.id; venueDiv.className = 'hidden'; hiddenContainer.appendChild(venueDiv); }
+                        const venueImg = event.venue_image ? event.venue_image : 'https://placehold.co/800x400/e2e8f0/64748b?text=No+Map';
+                        venueDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h2 class="text-3xl font-header font-bold mb-4">Venue Location</h2><img src="${venueImg}" class="w-full h-auto rounded-lg shadow-md border border-gray-200"></div></div>`;
+
+                        // 2.5 Tab: GALLERY
+                        let galDiv = document.getElementById('gallery-content-' + event.id);
+                        if(!galDiv) { galDiv = document.createElement('div'); galDiv.id = 'gallery-content-' + event.id; galDiv.className = 'hidden'; hiddenContainer.appendChild(galDiv); }
+                        let galleryHTML = '<div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">';
+                        if(event.gallery_images) {
+                            try {
+                                const images = JSON.parse(event.gallery_images);
+                                if(images.length > 0) {
+                                    images.forEach(img => { galleryHTML += `<img src="${img}" class="w-full aspect-square object-cover rounded-lg shadow-sm hover:opacity-80 transition cursor-pointer">`; });
+                                } else { galleryHTML += '<p class="col-span-3 text-gray-500 font-medium">ยังไม่มีรูปภาพแกลลอรี่สำหรับงานนี้</p>'; }
+                            } catch(e){ galleryHTML += '<p class="col-span-3 text-gray-500 font-medium">ยังไม่มีรูปภาพแกลลอรี่สำหรับงานนี้</p>'; }
+                        } else { galleryHTML += '<p class="col-span-3 text-gray-500 font-medium">ยังไม่มีรูปภาพแกลลอรี่สำหรับงานนี้</p>'; }
+                        galleryHTML += '</div>';
+                        galDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h2 class="text-3xl font-header font-bold mb-2">Event Gallery</h2>${galleryHTML}</div></div>`;
+                    }
                 });
                 
-                // 3. สำคัญมาก: ผูกระบบให้การ์ดใหม่สามารถกดคลิกเพื่อเข้าไปดู Detail ได้
-                if (typeof addEventDetailListeners === 'function') {
-                    addEventDetailListeners(container);
-                }
+                if (typeof addEventDetailListeners === 'function') addEventDetailListeners(container);
             }
-        } catch (error) {
-            console.error('Error fetching events:', error);
-        }
+        } catch (error) { console.error('Error fetching events:', error); }
     }
 };
-
 
 
