@@ -22,14 +22,14 @@
         .toast { background: #333; color: white; padding: 12px 24px; border-radius: 8px; margin-top: 10px; opacity: 0; transition: opacity 0.3s; }
         .toast.show { opacity: 1; }
     </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 <body class="h-screen flex overflow-hidden">
 
-    <!-- Login & Register Screen -->
     <div id="login-screen" class="fixed inset-0 flex items-center justify-center z-50 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=2000&auto=format&fit=crop');">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-        
-        <!-- Login Form -->
         <div id="login-container" class="relative bg-gray-900/80 border border-yellow-600/30 p-10 rounded-3xl shadow-[0_0_50px_rgba(202,138,4,0.15)] w-full max-w-md transition-all duration-500 backdrop-blur-md">
             <div class="text-center mb-8">
                 <h2 class="text-4xl font-bold text-yellow-500 tracking-wider mb-1">JAZZ <span class="text-white font-light">ADMIN</span></h2>
@@ -38,11 +38,11 @@
             <form id="login-form" class="space-y-5">
                 <div>
                     <label class="block text-gray-400 mb-2 text-sm tracking-wide">ชื่อผู้ใช้ / Username</label>
-                    <input type="text" id="username" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3 outline-none focus:border-yellow-500 transition-all placeholder-gray-600" placeholder="admin" required value="admin">
+                    <input type="text" id="username" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3 outline-none focus:border-yellow-500 transition-all placeholder-gray-600" placeholder="admin" required>
                 </div>
                 <div>
                     <label class="block text-gray-400 mb-2 text-sm tracking-wide">รหัสผ่าน / Password</label>
-                    <input type="password" id="password" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3 outline-none focus:border-yellow-500 transition-all placeholder-gray-600" placeholder="••••••••" required value="1234">
+                    <input type="password" id="password" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3 outline-none focus:border-yellow-500 transition-all placeholder-gray-600" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="w-full mt-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-gray-900 font-bold py-3 rounded-xl hover:from-yellow-500 hover:to-yellow-400 transition-all transform hover:-translate-y-1 shadow-lg text-lg">เข้าสู่ระบบ</button>
             </form>
@@ -52,24 +52,18 @@
             </div>
         </div>
 
-        <!-- Register Form -->
         <div id="register-container" class="relative bg-gray-900/80 border border-yellow-600/30 p-10 rounded-3xl shadow-[0_0_50px_rgba(202,138,4,0.15)] w-full max-w-md hidden transition-all duration-500 backdrop-blur-md">
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-white tracking-wide mb-1">JOIN THE <span class="text-yellow-500">BAND</span></h2>
-            </div>
+            <div class="text-center mb-8"><h2 class="text-3xl font-bold text-white tracking-wide mb-1">JOIN THE <span class="text-yellow-500">BAND</span></h2></div>
             <form id="register-form" class="space-y-4">
                 <input type="text" id="reg-username" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3" placeholder="Username" required>
                 <input type="email" id="reg-email" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3" placeholder="Email" required>
                 <input type="password" id="reg-password" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3" placeholder="Password" required>
                 <button type="submit" class="w-full mt-4 bg-gradient-to-r from-yellow-600 to-yellow-500 text-gray-900 font-bold py-3 rounded-xl text-lg">ลงทะเบียน</button>
             </form>
-            <div class="mt-8 text-center border-t border-gray-700/50 pt-6">
-                <button id="show-login" type="button" class="text-sm text-yellow-500 font-bold hover:underline">กลับไปเข้าสู่ระบบ</button>
-            </div>
+            <div class="mt-8 text-center border-t border-gray-700/50 pt-6"><button id="show-login" type="button" class="text-sm text-yellow-500 font-bold hover:underline">กลับไปเข้าสู่ระบบ</button></div>
         </div>
     </div>
 
-    <!-- Sidebar Navigation -->
     <aside class="w-64 bg-white border-r border-gray-200 flex flex-col h-full z-10 hidden" id="sidebar">
         <div class="p-6"><h1 class="text-2xl font-bold">Admin Panel</h1></div>
         <nav class="flex-1 overflow-y-auto">
@@ -85,8 +79,6 @@
                 </li>
                 <li><a href="#" data-target="section-courses" class="nav-link block px-6 py-3 font-semibold hover:bg-green-100 text-gray-800">Courses Library</a></li>
                 <li><a href="#" data-target="section-cmbigband" class="nav-link block px-6 py-3 font-semibold hover:bg-gray-200 text-gray-800">CMBigband</a></li>
-                <li><a href="#" data-target="section-forum" class="nav-link block px-6 py-3 font-semibold hover:bg-gray-100 text-gray-800">Forum Q&A</a></li>
-                <li><a href="#" data-target="section-store" class="nav-link block px-6 py-3 font-semibold hover:bg-gray-100 text-gray-800">Store & Merch</a></li>
             </ul>
         </nav>
         <div class="p-4 border-t border-gray-200">
@@ -94,9 +86,8 @@
         </div>
     </aside>
 
-    <!-- Main Content Area -->
     <main class="flex-1 h-full overflow-y-auto bg-white hidden relative" id="main-content">
-        <!-- 1. Admin (User Management) Section -->
+        
         <section id="section-admin" class="content-section p-8 max-w-6xl mx-auto">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">จัดการสมาชิก (User Management)</h2>
             <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
@@ -115,7 +106,6 @@
             </div>
         </section>
 
-        <!-- 2. Festival & Event Section -->
         <section id="section-festival" class="content-section hidden">
             <div class="bg-blue-600 text-white p-6 flex justify-between items-center sticky top-0 z-10 shadow-md">
                 <h2 class="text-3xl font-bold">Festival & Event</h2>
@@ -123,50 +113,54 @@
             </div>
             
             <div class="p-8 max-w-4xl mx-auto space-y-8">
-                <!-- Banners -->
+                <div class="mb-10 bg-white border rounded-2xl shadow-sm p-6">
+                    <h3 class="text-2xl font-bold mb-4 border-b pb-2 text-gray-800">รายการ Event ทั้งหมดในระบบ</h3>
+                    <div class="overflow-hidden rounded-xl border">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 border-b">
+                                    <th class="p-4 font-semibold text-gray-600">ID</th>
+                                    <th class="p-4 font-semibold text-gray-600">ชื่องาน (Title)</th>
+                                    <th class="p-4 font-semibold text-gray-600">เริ่มวันที่</th>
+                                    <th class="p-4 font-semibold text-gray-600">สถานะ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="event-table-body"><tr><td colspan="4" class="p-4 text-center">กำลังโหลดข้อมูล...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 flex justify-end gap-3 h-10">
+                        <button id="external-edit-btn" onclick="editSelectedEvent()" class="hidden bg-blue-500 text-white px-6 py-2 rounded-full font-bold shadow-md hover:bg-blue-600">✏️ แก้ไขข้อมูล</button>
+                        <button id="external-delete-btn" onclick="deleteSelectedEvent()" class="hidden bg-red-500 text-white px-6 py-2 rounded-full font-bold shadow-md hover:bg-red-600">🗑️ ลบข้อมูล</button>
+                    </div>
+                </div>
+                
+                <h3 id="form-section-title" class="text-2xl font-bold mb-4 border-b pb-2 text-gray-800">เพิ่มข้อมูล Event ใหม่</h3>
+                <input type="hidden" id="edit-event-id" value="">
+
                 <div class="grid grid-cols-2 gap-4 h-48">
                     <label class="upload-box relative overflow-hidden group" id="banner-preview">
                         <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Banner</span>
-                        <input type="file" id="event-banner" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'banner-preview')">
+                        <input type="file" id="event-banner" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'banner-preview', 3/1)">
                     </label>
                     <label class="upload-box relative overflow-hidden group" id="poster-preview">
                         <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Poster</span>
-                        <input type="file" id="event-poster" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'poster-preview')">
+                        <input type="file" id="event-poster" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'poster-preview', 3/4)">
                     </label>
                 </div>
 
-                <!-- Basic Info -->
                 <div class="space-y-4">
                     <input type="text" id="ev-title" class="input-style" placeholder="Title">
                     <input type="text" id="ev-short-desc" class="input-style" placeholder="Short Description">
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs text-gray-500 ml-2 mb-1">Start Date</label>
-                            <div class="flex gap-2">
-                                <input type="date" id="ev-start-date" class="input-style">
-                                <input type="time" id="ev-start-time" class="input-style w-32" value="12:00">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-500 ml-2 mb-1">End Date</label>
-                            <div class="flex gap-2">
-                                <input type="date" id="ev-end-date" class="input-style">
-                                <input type="time" id="ev-end-time" class="input-style w-32" value="15:00">
-                            </div>
-                        </div>
+                        <div><label class="block text-xs text-gray-500 ml-2 mb-1">Start Date</label><div class="flex gap-2"><input type="date" id="ev-start-date" class="input-style"><input type="time" id="ev-start-time" class="input-style w-32" value="12:00"></div></div>
+                        <div><label class="block text-xs text-gray-500 ml-2 mb-1">End Date</label><div class="flex gap-2"><input type="date" id="ev-end-date" class="input-style"><input type="time" id="ev-end-time" class="input-style w-32" value="15:00"></div></div>
                     </div>
-                    <div class="relative">
-                        <input type="text" id="ev-location" class="input-style pr-10" placeholder="Location">
-                    </div>
+                    <input type="text" id="ev-location" class="input-style" placeholder="Location">
                     <textarea id="ev-details" class="textarea-style" placeholder="Details ...."></textarea>
                 </div>
-
-                <hr>
-
-                <!-- Ticket -->
+                
                 <div>
                     <h3 class="text-xl font-bold mb-4">Ticket</h3>
-                    <!-- ฟอร์มกรอกข้อมูลตั๋ว -->
                     <div class="border p-4 rounded-xl relative bg-gray-50/50">
                         <div class="flex gap-4 mb-4">
                             <label class="flex items-center gap-2"><input type="radio" name="temp_ticket_status" value="1" checked> Sale Open</label>
@@ -180,210 +174,314 @@
                                 <input type="number" id="temp_ticket_amount" class="input-style" placeholder="Sale Amount">
                             </div>
                         </div>
-                        <button type="button" onclick="addTicketToList()" class="absolute -bottom-4 right-4 bg-blue-600 text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-lg hover:bg-blue-700 transition">+ Add Ticket</button>
+                        <button type="button" onclick="addTicketToList()" class="absolute -bottom-4 right-4 bg-blue-600 text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-lg hover:bg-blue-700">+ Add Ticket</button>
                     </div>
-
-                    <!-- พื้นที่แสดงรายการตั๋วที่เตรียมบันทึก -->
                     <div id="added-tickets-list" class="mt-8 space-y-2"></div>
                 </div>
 
-                <hr>
-
-                <!-- Line Up -->
                 <div>
                     <h3 class="text-xl font-bold mb-4">Line Up</h3>
-                    <div id="lineup-container" class="space-y-2">
-                        <div class="flex gap-2 items-center lineup-row">
-                            <input type="date" class="input-style w-1/3 lineup-date">
-                            <input type="time" class="input-style w-1/4 lineup-time">
-                            <input type="text" class="input-style flex-1 lineup-name" placeholder="Details / Band Name">
-                            <button type="button" onclick="addLineUpRow()" class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold hover:bg-blue-700 shrink-0 shadow">+</button>
+                    <div class="border p-4 rounded-xl relative bg-gray-50/50">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div><label class="block text-xs text-gray-500 ml-2 mb-1">Date</label><input type="date" id="temp_lineup_date" class="input-style"></div>
+                            <div><label class="block text-xs text-gray-500 ml-2 mb-1">Time</label><input type="time" id="temp_lineup_time" class="input-style"></div>
                         </div>
+                        <div class="space-y-4">
+                            <input type="text" id="temp_lineup_stage" class="input-style" placeholder="Stage / Venue">
+                            <input type="text" id="temp_lineup_name" class="input-style" placeholder="Artist / Band Name">
+                        </div>
+                        <button type="button" onclick="addLineUpToList()" class="absolute -bottom-4 right-4 bg-blue-600 text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-lg hover:bg-blue-700">+ Add Line Up</button>
                     </div>
+                    <div id="added-lineups-list" class="mt-8 space-y-2"></div>
                 </div>
 
-                <hr>
-
-                <!-- Venue & Gallery -->
                 <div><h3 class="text-xl font-bold mb-4">Venue</h3>
                     <div class="flex gap-4 items-stretch">
                         <label class="upload-box w-1/3 min-h-[200px] relative overflow-hidden group shrink-0" id="venue-photo-preview">
                             <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Photo</span>
-                            <input type="file" id="venue-photo" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'venue-photo-preview')">
+                            <input type="file" id="venue-photo" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'venue-photo-preview', 16/9)">
                         </label>
                         <div class="flex-1 flex flex-col space-y-3">
-                            <input type="text" id="venue-title" class="input-style" placeholder="Title">
+                            <input type="text" id="venue-title" class="input-style" placeholder="Venue Title">
                             <textarea id="venue-details" class="textarea-style flex-1" placeholder="Details"></textarea>
-                            <input type="text" id="venue-map" class="input-style" placeholder="Google Map Link">
-                            <div class="text-right mt-2">
-                                <button type="button" onclick="showToast('บันทึกข้อมูล Venue ชั่วคราว (จะถูกบันทึกเมื่อกด Save Event)')" class="bg-blue-600 text-white px-8 py-2 rounded-full font-bold shadow hover:bg-blue-700 transition">Save</button>
-                            </div>
+                            <input type="text" id="venue-map" class="input-style" placeholder="วางโค้ด <iframe src=...> จาก Google Maps" oninput="previewMap(this.value)">
+                            <div id="map-preview-container" class="w-full mt-2 rounded-xl overflow-hidden hidden border border-gray-300"></div>
                         </div>
                     </div>
                 </div>
-                <hr>
+                
                 <div><h3 class="text-xl font-bold mb-4">Gallery</h3>
                     <div id="gallery-container" class="flex flex-wrap gap-4 items-start">
                         <label class="upload-box w-32 h-32 relative overflow-hidden group shrink-0 shadow-sm border border-dashed border-gray-400">
-                            <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200 text-center">+ Add<br>Photos<br><span class="text-xs font-normal">(Max 10)</span></span>
+                            <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200 text-center">+ Add<br>Photos</span>
                             <input type="file" id="gallery-photo" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" multiple onchange="previewGalleryImages(this)">
                         </label>
                         <div id="gallery-previews-wrapper" class="flex flex-wrap gap-4"></div>
                     </div>
                 </div>
                 
-                <div class="pb-20 text-center mt-12">
-                    <button class="bg-green-500 text-white px-12 py-3 rounded-full font-bold text-xl shadow-lg hover:bg-green-600 transition" onclick="saveEvent()">บันทึกข้อมูลทั้งหมด (Save Event)</button>
+                <div class="pb-20 text-center mt-12 flex justify-center gap-4">
+                    <button type="button" id="cancel-edit-btn" class="hidden bg-gray-500 text-white px-8 py-3 rounded-full font-bold text-xl shadow-lg hover:bg-gray-600 transition" onclick="cancelEditEvent()">ยกเลิกการแก้ไข</button>
+                    <button class="bg-green-500 text-white px-12 py-3 rounded-full font-bold text-xl shadow-lg hover:bg-green-600 transition" onclick="saveEvent()">บันทึกข้อมูล (Save Event)</button>
                 </div>
             </div>
         </section>
         
-        <!-- 3. Musician Network Section -->
         <section id="section-musician" class="content-section hidden">
-            <div class="bg-yellow-500 text-black p-6 sticky top-0 z-10 shadow-md">
-                <h2 class="text-3xl font-bold mb-4">Musician Network</h2>
-                <div class="flex bg-gray-200 rounded-full p-1 max-w-md">
-                    <button id="tab-btn-artist" onclick="switchMusicianTab('artist')" class="flex-1 bg-yellow-500 text-black font-bold py-1 rounded-full shadow-sm text-center transition">Artist Library</button>
-                    <button id="tab-btn-jazz" onclick="switchMusicianTab('jazz')" class="flex-1 text-gray-500 font-semibold py-1 rounded-full text-center hover:bg-gray-300 transition">Jazz Network</button>
+            <div class="bg-[#ffc107] text-black p-6 sticky top-0 z-10 shadow-sm flex flex-col gap-4">
+                <h2 class="text-3xl font-extrabold">Musician Network</h2>
+                <div class="flex bg-[#e5e7eb] rounded-full p-1 max-w-md w-full">
+                    <button id="tab-btn-artist" onclick="switchMusicianTab('artist')" class="flex-1 bg-[#ffc107] text-black font-bold py-2 rounded-full shadow text-center transition">Artist Library</button>
+                    <button id="tab-btn-jazz" onclick="switchMusicianTab('jazz')" class="flex-1 text-gray-500 font-bold py-2 rounded-full text-center hover:bg-gray-300 transition">Jazz Network</button>
                 </div>
             </div>
 
-            <div class="p-8 max-w-4xl mx-auto">
-                <!-- ARTIST LIBRARY CONTENT -->
-                <div id="musician-artist-content" class="space-y-6 block">
-                    <div class="grid grid-cols-2 gap-4 h-40">
-                        <label class="upload-box relative overflow-hidden group" id="artist-banner-preview">
-                            <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Banner</span>
-                            <input type="file" id="artist-banner" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'artist-banner-preview')">
-                        </label>
-                        <label class="upload-box relative overflow-hidden group" id="artist-profile-preview">
-                            <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Profile</span>
-                            <input type="file" id="artist-profile" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'artist-profile-preview')">
-                        </label>
-                    </div>
-                    <div class="space-y-4">
-                        <input type="text" id="art-title" class="input-style" placeholder="Band Title">
-                        <input type="text" id="art-genre" class="input-style" placeholder="Genre">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">f</div><input type="text" id="art-fb" class="input-style" placeholder="Facebook"></div>
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">WA</div><input type="text" id="art-wa" class="input-style" placeholder="WhatsApp"></div>
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold">IG</div><input type="text" id="art-ig" class="input-style" placeholder="Instagram"></div>
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-gray-600 text-white rounded-full flex items-center justify-center font-bold">W</div><input type="text" id="art-web" class="input-style" placeholder="Website"></div>
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold">TK</div><input type="text" id="art-tk" class="input-style" placeholder="TikTok"></div>
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold">@</div><input type="text" id="art-email" class="input-style" placeholder="Email"></div>
-                        </div>
-                        <textarea id="art-details" class="textarea-style min-h-[150px]" placeholder="Details ...."></textarea>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold mb-4">Video</h3>
-                        <div id="art-video-container" class="space-y-2">
-                            <div class="flex gap-4">
-                                <input type="text" class="input-style flex-1 art-video" placeholder="Link to your Video / Youtube / Vimeo">
-                                <button type="button" onclick="addVideoRow('art-video-container', 'art-video')" class="bg-yellow-500 text-black px-8 py-2 rounded-full font-bold shadow hover:bg-yellow-600">Add</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="pb-10 text-center mt-8">
-                        <button type="button" class="bg-green-500 text-white px-12 py-3 rounded-full font-bold text-xl shadow-lg hover:bg-green-600" onclick="saveMusician('artist_library')">บันทึกข้อมูล Artist (Save)</button>
+            <div class="p-8 max-w-5xl mx-auto">
+                <div class="mb-10 bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+                    <h3 class="text-xl font-extrabold mb-4 border-b border-gray-200 pb-3 text-gray-900">ตารางรายชื่อศิลปินและเครือข่ายทั้งหมด</h3>
+                    <div class="overflow-hidden rounded-xl border border-gray-200">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 border-b border-gray-200 text-sm">
+                                    <th class="p-4 font-bold text-gray-700">ID / ช่อง</th>
+                                    <th class="p-4 font-bold text-gray-700">ชื่อวง / ศิลปิน</th>
+                                    <th class="p-4 font-bold text-gray-700">หมวดหมู่ (Genre)</th>
+                                    <th class="p-4 font-bold text-gray-700">เครือข่าย</th>
+                                </tr>
+                            </thead>
+                            <tbody id="musician-table-body">
+                                <tr><td colspan="4" class="p-4 text-center text-gray-500 font-medium">กำลังโหลดข้อมูล...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <!-- JAZZ NETWORK CONTENT -->
-                <div id="musician-jazz-content" class="space-y-6 hidden">
-                    <div class="grid grid-cols-2 gap-4 h-40">
-                        <label class="upload-box relative overflow-hidden group" id="jazz-banner-preview">
-                            <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Banner</span>
-                            <input type="file" id="jazz-banner" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'jazz-banner-preview')">
-                        </label>
-                        <label class="upload-box relative overflow-hidden group" id="jazz-profile-preview">
-                            <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Profile</span>
-                            <input type="file" id="jazz-profile" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'jazz-profile-preview')">
-                        </label>
-                    </div>
-                    <div class="space-y-4">
-                        <input type="text" id="jazz-title" class="input-style" placeholder="Band / Institution Title">
-                        <input type="text" id="jazz-genre" class="input-style" placeholder="Category">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">f</div><input type="text" id="jazz-fb" class="input-style" placeholder="Facebook"></div>
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">WA</div><input type="text" id="jazz-wa" class="input-style" placeholder="WhatsApp"></div>
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold">IG</div><input type="text" id="jazz-ig" class="input-style" placeholder="Instagram"></div>
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-gray-600 text-white rounded-full flex items-center justify-center font-bold">W</div><input type="text" id="jazz-web" class="input-style" placeholder="Website"></div>
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold">TK</div><input type="text" id="jazz-tk" class="input-style" placeholder="TikTok"></div>
-                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold">@</div><input type="text" id="jazz-email" class="input-style" placeholder="Email"></div>
+                <input type="hidden" id="edit-musician-id" value="">
+
+                <div id="musician-artist-content" class="block space-y-4">
+                    <h3 class="text-xl font-extrabold mb-4 border-b border-gray-200 pb-2">Artist Library (จัดเรียงไร้ขีดจำกัด)</h3>
+                    <div id="artist-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6"></div>
+
+                    <div id="artist-form-container" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hidden">
+                        <div class="flex justify-between items-center mb-4 border-b pb-2">
+                            <h4 id="artist-form-title" class="text-xl font-extrabold text-black">เพิ่มข้อมูล Artist</h4>
+                            <input type="hidden" id="edit-artist-slot" value="">
                         </div>
-                        <textarea id="jazz-details" class="textarea-style min-h-[150px]" placeholder="Details ...."></textarea>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold mb-4">Video</h3>
-                        <div id="jazz-video-container" class="space-y-2">
-                            <div class="flex gap-4">
-                                <input type="text" class="input-style flex-1 jazz-video" placeholder="Link to your Video / Youtube / Vimeo">
-                                <button type="button" onclick="addVideoRow('jazz-video-container', 'jazz-video')" class="bg-yellow-500 text-black px-8 py-2 rounded-full font-bold shadow hover:bg-yellow-600">Add</button>
+                        
+                        <div class="grid grid-cols-2 gap-4 h-36 md:h-44 mb-6">
+                            <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
+                                <img id="artist-banner-img" src="https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner" class="w-full h-full object-cover">
+                                <label for="artist-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner / Crop</span>
+                                    <input type="file" id="artist-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'artist-banner-img', 3/1)">
+                                </label>
+                            </div>
+                            <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
+                                <img id="artist-profile-img" src="https://placehold.co/600x600/e5e7eb/a3a3a3?text=No+Profile" class="w-full h-full object-contain bg-gray-200">
+                                <label for="artist-profile" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">👤 เปลี่ยน Profile / Crop</span>
+                                    <input type="file" id="artist-profile" class="hidden" accept="image/*" onchange="previewImage(this, 'artist-profile-img', NaN)">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <input type="text" id="art-title" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm" placeholder="Band / Institution Title">
+                            <input type="text" id="art-genre" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm" placeholder="Category">
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 pt-2">
+                                <div class="flex items-center gap-3"><svg class="w-7 h-7 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><input type="text" id="art-fb" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                                <div class="flex items-center gap-3"><svg class="w-7 h-7 text-[#25D366]" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.653.863 5.14 2.378 7.182L.632 24l4.908-1.745c1.977 1.306 4.28 2.012 6.666 2.012 6.646 0 12.031-5.385 12.031-12.031S18.677 0 12.031 0zm4.587 17.207c-.207.585-1.189 1.12-1.637 1.157-.449.037-1.042.13-2.955-.662-2.315-.96-3.804-3.328-3.92-3.483-.116-.156-.937-1.246-.937-2.376 0-1.13.585-1.688.788-1.916.203-.228.444-.284.593-.284.148 0 .297 0 .428.006.136.006.315-.052.493.376.18.435.617 1.503.673 1.618.056.115.093.251.018.402-.074.151-.112.245-.223.375-.112.131-.238.283-.339.395-.112.113-.23.235-.1.459.13.224.58 1.054 1.332 1.734.97.882 1.782 1.154 2.007 1.267.225.113.355.094.486-.054.131-.149.563-.655.713-.881.149-.226.297-.188.503-.112.206.075 1.302.614 1.527.727.225.113.375.169.431.264.056.094.056.547-.151 1.132z"/></svg><input type="text" id="art-wa" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                                <div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-[#FFDC80] via-[#F77737] to-[#C13584] flex items-center justify-center text-white"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div><input type="text" id="art-ig" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                                <div class="flex items-center gap-3"><svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg><input type="text" id="art-web" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                                <div class="flex items-center gap-3"><svg class="w-7 h-7 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.04-.1z"/></svg><input type="text" id="art-tk" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                                <div class="flex items-center gap-3"><svg class="w-7 h-7 text-[#EA4335]" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><input type="text" id="art-email" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                            </div>
+                            <textarea id="art-details" class="w-full border border-gray-400 rounded-xl px-5 py-4 outline-none focus:border-yellow-500 h-32 placeholder-gray-400 font-semibold text-sm mt-3" placeholder="Details ...."></textarea>
+                        </div>
+
+                        <div class="mt-6">
+                            <div class="flex items-center gap-4 mb-4">
+                                <h3 class="text-2xl font-extrabold text-black">Video</h3>
+                                <hr class="flex-grow border-gray-300">
+                            </div>
+                            <div id="art-video-container" class="space-y-3">
+                                <div class="flex gap-3 items-center">
+                                    <input type="text" class="w-full border border-gray-400 rounded-full px-5 py-2 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm art-video" placeholder="Link to your Video / Youtube / Vimeo">
+                                    <button type="button" onclick="addVideoRow('art-video-container', 'art-video')" class="bg-[#ffc107] text-black px-6 py-2 rounded-full font-extrabold hover:bg-yellow-500 transition shadow-sm">Add</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+                            <button type="button" onclick="deleteTargetMusician(document.getElementById('edit-musician-id').value)" class="text-red-500 font-bold hover:underline">🗑️ ลบข้อมูล</button>
+                            <div class="flex gap-3">
+                                <button type="button" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-full font-bold shadow-sm hover:bg-gray-300 transition" onclick="closeArtistForm()">ยกเลิก</button>
+                                <button type="button" class="bg-green-500 text-white px-8 py-2 rounded-full font-bold shadow-md hover:bg-green-600 transition" onclick="saveMusician('artist_library')">บันทึกข้อมูล (Save)</button>
                             </div>
                         </div>
                     </div>
-                    <div class="pb-10 text-center mt-8">
-                        <button type="button" class="bg-green-500 text-white px-12 py-3 rounded-full font-bold text-xl shadow-lg hover:bg-green-600" onclick="saveMusician('jazz_network')">บันทึกข้อมูล Jazz Network (Save)</button>
+                </div>
+
+                <div id="musician-jazz-content" class="hidden space-y-4">
+                    <h3 class="text-xl font-extrabold mb-4 border-b border-gray-200 pb-2">Jazz Network (จัดเรียงไร้ขีดจำกัด)</h3>
+                    <div id="jazz-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6"></div>
+
+                    <div id="jazz-form-container" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hidden">
+                        <div class="flex justify-between items-center mb-4 border-b pb-2">
+                            <h4 id="jazz-form-title" class="text-xl font-extrabold text-black">เพิ่มข้อมูล Jazz Network</h4>
+                            <input type="hidden" id="edit-jazz-slot" value="">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 h-36 md:h-44 mb-6">
+                            <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
+                                <img id="jazz-banner-img" src="https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner" class="w-full h-full object-cover">
+                                <label for="jazz-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner / Crop</span>
+                                    <input type="file" id="jazz-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'jazz-banner-img', 3/1)">
+                                </label>
+                            </div>
+                            <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
+                                <img id="jazz-profile-img" src="https://placehold.co/600x600/e5e7eb/a3a3a3?text=No+Profile" class="w-full h-full object-contain bg-gray-200">
+                                <label for="jazz-profile" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">👤 เปลี่ยน Profile / Crop</span>
+                                    <input type="file" id="jazz-profile" class="hidden" accept="image/*" onchange="previewImage(this, 'jazz-profile-img', NaN)">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <input type="text" id="jazz-title" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm" placeholder="Band / Institution Title">
+                            <input type="text" id="jazz-genre" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm" placeholder="Category">
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 pt-2">
+                                <div class="flex items-center gap-3"><svg class="w-7 h-7 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><input type="text" id="jazz-fb" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                                <div class="flex items-center gap-3"><svg class="w-7 h-7 text-[#25D366]" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.653.863 5.14 2.378 7.182L.632 24l4.908-1.745c1.977 1.306 4.28 2.012 6.666 2.012 6.646 0 12.031-5.385 12.031-12.031S18.677 0 12.031 0zm4.587 17.207c-.207.585-1.189 1.12-1.637 1.157-.449.037-1.042.13-2.955-.662-2.315-.96-3.804-3.328-3.92-3.483-.116-.156-.937-1.246-.937-2.376 0-1.13.585-1.688.788-1.916.203-.228.444-.284.593-.284.148 0 .297 0 .428.006.136.006.315-.052.493.376.18.435.617 1.503.673 1.618.056.115.093.251.018.402-.074.151-.112.245-.223.375-.112.131-.238.283-.339.395-.112.113-.23.235-.1.459.13.224.58 1.054 1.332 1.734.97.882 1.782 1.154 2.007 1.267.225.113.355.094.486-.054.131-.149.563-.655.713-.881.149-.226.297-.188.503-.112.206.075 1.302.614 1.527.727.225.113.375.169.431.264.056.094.056.547-.151 1.132z"/></svg><input type="text" id="jazz-wa" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                                <div class="flex items-center gap-3"><div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-[#FFDC80] via-[#F77737] to-[#C13584] flex items-center justify-center text-white"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div><input type="text" id="jazz-ig" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                                <div class="flex items-center gap-3"><svg class="w-7 h-7 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg><input type="text" id="jazz-web" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                                <div class="flex items-center gap-3"><svg class="w-7 h-7 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.04-.1z"/></svg><input type="text" id="jazz-tk" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                                <div class="flex items-center gap-3"><svg class="w-7 h-7 text-[#EA4335]" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><input type="text" id="jazz-email" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
+                            </div>
+                            
+                            <textarea id="jazz-details" class="w-full border border-gray-400 rounded-xl px-5 py-4 outline-none focus:border-yellow-500 h-32 placeholder-gray-400 font-semibold text-sm mt-3" placeholder="Details ...."></textarea>
+                        </div>
+
+                        <div class="mt-6">
+                            <div class="flex items-center gap-4 mb-4">
+                                <h3 class="text-2xl font-extrabold text-black">Video</h3>
+                                <hr class="flex-grow border-gray-300">
+                            </div>
+                            <div id="jazz-video-container" class="space-y-3">
+                                <div class="flex gap-3 items-center">
+                                    <input type="text" class="w-full border border-gray-400 rounded-full px-5 py-2 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm jazz-video" placeholder="Link to your Video / Youtube / Vimeo">
+                                    <button type="button" onclick="addVideoRow('jazz-video-container', 'jazz-video')" class="bg-[#ffc107] text-black px-6 py-2 rounded-full font-extrabold hover:bg-yellow-500 transition shadow-sm">Add</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+                            <button type="button" onclick="deleteTargetMusician(document.getElementById('edit-musician-id').value)" class="text-red-500 font-bold hover:underline">🗑️ ลบข้อมูล</button>
+                            <div class="flex gap-3">
+                                <button type="button" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-full font-bold shadow-sm hover:bg-gray-300 transition" onclick="closeJazzForm()">ยกเลิก</button>
+                                <button type="button" class="bg-green-500 text-white px-8 py-2 rounded-full font-bold shadow-md hover:bg-green-600 transition" onclick="saveMusician('jazz_network')">บันทึกข้อมูล (Save)</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 4. Courses Library Section -->
         <section id="section-courses" class="content-section hidden">
-            <div class="bg-green-600 text-white p-6 flex justify-between items-center sticky top-0 z-10 shadow-md">
-                <h2 class="text-3xl font-bold">Courses Library</h2>
-                <button class="bg-green-500 hover:bg-green-700 px-6 py-2 rounded-full border border-white font-semibold shadow transition" onclick="saveCourse()">+ Save Course</button>
+            <div class="bg-[#10a349] text-white p-6 sticky top-0 z-10 shadow-sm flex flex-col gap-4">
+                <h2 class="text-3xl font-extrabold">Courses Library</h2>
             </div>
             
-            <div class="p-8 max-w-4xl mx-auto space-y-6">
-                <!-- Course Banner -->
-                <label class="upload-box h-40 w-full relative overflow-hidden group shadow-sm border border-gray-300" id="course-banner-preview">
-                    <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Banner</span>
-                    <input type="file" id="course-banner" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'course-banner-preview')">
-                </label>
-                
-                <!-- Course Info -->
-                <input type="text" id="course-title" class="input-style" placeholder="Course Title">
-                <input type="text" id="course-creator" class="input-style" placeholder="Creator">
-                
-                <!-- เครื่องมือสำหรับเพิ่มเนื้อหาลงใน Course -->
-                <div class="flex gap-4 border-b pb-4 mb-4">
-                    <button type="button" onclick="addCourseContent('text')" class="border-2 border-green-500 text-green-700 rounded-full px-5 py-1.5 text-sm font-bold hover:bg-green-50 transition">+ Add Text</button>
-                    <button type="button" onclick="addCourseContent('image')" class="border-2 border-blue-500 text-blue-700 rounded-full px-5 py-1.5 text-sm font-bold hover:bg-blue-50 transition">+ Add Image</button>
-                    <button type="button" onclick="addCourseContent('video')" class="border-2 border-red-500 text-red-700 rounded-full px-5 py-1.5 text-sm font-bold hover:bg-red-50 transition">+ Add Video</button>
-                </div>
-                
-                <!-- คอนเทนเนอร์สำหรับใส่เนื้อหาแบบอิสระ -->
-                <div id="course-content-container" class="space-y-4">
-                    <!-- กล่องข้อความเริ่มต้น 1 กล่อง -->
-                    <div class="relative course-item border border-gray-200 p-4 rounded-xl bg-gray-50 shadow-sm" data-type="text">
-                        <button type="button" onclick="this.parentElement.remove()" class="absolute -top-3 -right-3 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition z-10 text-xs">✕</button>
-                        <textarea class="textarea-style min-h-[120px] course-text-input border-white" placeholder="พิมพ์ข้อความ / Details ที่นี่...."></textarea>
+            <div class="p-8 max-w-5xl mx-auto">
+                <div class="mb-10 bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+                    <h3 class="text-xl font-extrabold mb-4 border-b border-gray-200 pb-3 text-gray-900">ตารางรายชื่อคอร์สเรียนทั้งหมด</h3>
+                    <div class="overflow-hidden rounded-xl border border-gray-200">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 border-b border-gray-200 text-sm">
+                                    <th class="p-4 font-bold text-gray-700">ID / ช่อง</th>
+                                    <th class="p-4 font-bold text-gray-700">ชื่อคอร์สเรียน</th>
+                                    <th class="p-4 font-bold text-gray-700">ผู้สอน (Creator)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="course-table-body">
+                                <tr><td colspan="3" class="p-4 text-center text-gray-500 font-medium">กำลังโหลดข้อมูล...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                
-                <div class="pb-10 text-center mt-8">
-                    <button type="button" class="bg-green-500 text-white px-12 py-3 rounded-full font-bold text-xl shadow-lg hover:bg-green-600 transition" onclick="saveCourse()">บันทึกคอร์สเรียน (Save Course)</button>
+
+                <div class="space-y-4">
+                    <h3 class="text-xl font-extrabold mb-4 border-b border-gray-200 pb-2">Courses Library (จัดเรียงกล่องไดนามิก)</h3>
+                    
+                    <div id="course-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6"></div>
+
+                    <div id="course-form-container" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hidden">
+                        <div class="flex justify-between items-center mb-4 border-b pb-2">
+                            <h4 id="course-form-title" class="text-xl font-extrabold text-[#10a349]">เพิ่มข้อมูล Course</h4>
+                            <input type="hidden" id="edit-course-slot" value="">
+                            <input type="hidden" id="edit-course-id" value="">
+                        </div>
+                        
+                        <div class="w-full h-40 md:h-56 mb-5">
+                            <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-[#b2b2b2] group h-full flex items-center justify-center">
+                                <img id="course-banner-img" src="https://placehold.co/1200x400/b2b2b2/000?text=No+Banner" class="w-full h-full object-cover">
+                                <label for="course-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner / Crop</span>
+                                    <input type="file" id="course-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'course-banner-img', 16/9)">
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3 mb-5">
+                            <input type="text" id="course-title" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm" placeholder="Course Title">
+                            <input type="text" id="course-creator" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm" placeholder="Creator">
+                        </div>
+
+                        <div class="flex gap-3 mb-4">
+                            <button type="button" onclick="addCourseContent('text')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Text</button>
+                            <button type="button" onclick="addCourseContent('image')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Image</button>
+                            <button type="button" onclick="addCourseContent('video')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Video</button>
+                        </div>
+                        
+                        <div id="course-content-container" class="space-y-4"></div>
+
+                        <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+                            <button type="button" onclick="deleteTargetCourse(document.getElementById('edit-course-id').value)" class="text-red-500 font-bold hover:underline">🗑️ ลบข้อมูล</button>
+                            <div class="flex gap-3">
+                                <button type="button" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-full font-bold shadow-sm hover:bg-gray-300 transition" onclick="closeCourseForm()">ยกเลิก</button>
+                                <button type="button" class="bg-[#10a349] text-white px-8 py-2 rounded-full font-bold shadow-md hover:bg-green-700 transition" onclick="saveCourse()">บันทึกคอร์ส (Save)</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- 5. CMBigband Section -->
         <section id="section-cmbigband" class="content-section hidden">
             <div class="bg-gray-400 text-black p-6 sticky top-0 z-10 shadow-md">
                 <h2 class="text-3xl font-bold">CMBigband</h2>
             </div>
             <div class="p-8 max-w-4xl mx-auto space-y-6">
-                <div class="grid grid-cols-2 gap-4 h-40">
-                    <label class="upload-box relative overflow-hidden group" id="cmbigband-banner-preview">
-                        <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Banner</span>
-                        <input type="file" id="cmb-banner" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'cmbigband-banner-preview')">
-                    </label>
-                    <label class="upload-box relative overflow-hidden group" id="cmbigband-profile-preview">
-                        <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Profile</span>
-                        <input type="file" id="cmb-profile" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'cmbigband-profile-preview')">
-                    </label>
+                <div class="grid grid-cols-2 gap-4 h-44 mb-6">
+                    <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
+                        <img id="cmbigband-banner-img" src="https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner" class="w-full h-full object-cover">
+                        <label for="cmb-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                            <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner</span>
+                            <input type="file" id="cmb-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'cmbigband-banner-img', 3/1)">
+                        </label>
+                    </div>
+                    <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
+                        <img id="cmbigband-profile-img" src="https://placehold.co/600x600/e5e7eb/a3a3a3?text=No+Profile" class="w-full h-full object-contain bg-gray-200">
+                        <label for="cmb-profile" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                            <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">👤 เปลี่ยน Profile</span>
+                            <input type="file" id="cmb-profile" class="hidden" accept="image/*" onchange="previewImage(this, 'cmbigband-profile-img', NaN)">
+                        </label>
+                    </div>
                 </div>
                 <div class="space-y-4">
                     <input type="text" id="cmb-title" class="input-style" placeholder="Band Title">
@@ -413,26 +511,17 @@
             </div>
         </section>
 
-        <!-- 6. Forum Q&A Section -->
         <section id="section-forum" class="content-section hidden p-8 max-w-6xl mx-auto">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">Forum Q&A</h2>
-            <div class="bg-white border rounded-xl shadow-sm p-16 text-center text-gray-500">
-                <p class="text-xl font-semibold mb-2">ระบบจัดการ Forum Q&A</p>
-                <p>อยู่ระหว่างการพัฒนา...</p>
-            </div>
+            <div class="bg-white border rounded-xl shadow-sm p-16 text-center text-gray-500"><p class="text-xl font-semibold mb-2">ระบบจัดการ Forum Q&A</p><p>อยู่ระหว่างการพัฒนา...</p></div>
         </section>
 
-        <!-- 7. Store & Merch Section -->
         <section id="section-store" class="content-section hidden p-8 max-w-6xl mx-auto">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">Store & Merch</h2>
-            <div class="bg-white border rounded-xl shadow-sm p-16 text-center text-gray-500">
-                <p class="text-xl font-semibold mb-2">ระบบจัดการ Store & Merch</p>
-                <p>อยู่ระหว่างการพัฒนา...</p>
-            </div>
+            <div class="bg-white border rounded-xl shadow-sm p-16 text-center text-gray-500"><p class="text-xl font-semibold mb-2">ระบบจัดการ Store & Merch</p><p>อยู่ระหว่างการพัฒนา...</p></div>
         </section>
     </main>
 
-    <!-- Confirm Delete Modal -->
     <div id="confirm-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden backdrop-blur-sm transition-opacity">
         <div class="bg-white p-8 rounded-3xl shadow-2xl w-96 text-center transform transition-all">
             <h3 class="text-2xl font-bold mb-2 text-gray-800">ยืนยันการลบ</h3>
@@ -443,7 +532,6 @@
         </div>
     </div>
 
-    <!-- Change Password Modal -->
     <div id="password-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden backdrop-blur-sm transition-opacity">
         <div class="bg-white p-8 rounded-3xl shadow-2xl w-96 transform transition-all">
             <h3 class="text-2xl font-bold mb-1 text-gray-800">เปลี่ยนรหัสผ่าน</h3>
@@ -455,623 +543,21 @@
         </div>
     </div>
 
+    <div id="cropper-modal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-[200] hidden backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl w-[90%] max-w-4xl flex flex-col h-[85vh]">
+            <h3 class="text-2xl font-bold mb-4 text-gray-800">ครอบตัดรูปภาพ (Crop Image)</h3>
+            <div class="flex-1 bg-gray-200 overflow-hidden relative rounded-xl flex items-center justify-center">
+                <img id="cropper-image" src="" class="max-w-full max-h-full block">
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="closeCropperModal()" class="px-6 py-3 bg-gray-200 text-gray-800 font-bold rounded-full hover:bg-gray-300 transition">ยกเลิก</button>
+                <button onclick="applyCrop()" class="px-8 py-3 bg-blue-600 text-white font-bold rounded-full shadow-lg hover:bg-blue-700 transition">✂️ ยืนยันการตัดรูป</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container"></div>
-
-    <script>
-        // --- 0. API Config (รองรับการทดสอบบน Canvas) ---
-        const getApiUrl = (action) => {
-            if (window.location.protocol === 'blob:' || window.location.protocol === 'file:' || window.location.protocol === 'data:') {
-                return 'http://localhost/backend.php?action=' + action;
-            }
-            return 'backend.php?action=' + action;
-        };
-
-        const fetchOptions = (method, body = null) => {
-            const opts = { method: method };
-            if (body) opts.body = body;
-            opts.credentials = 'include'; 
-            return opts;
-        };
-
-        // --- 1. DOM Elements ที่ต้องใช้ ---
-        const loginScreen = document.getElementById('login-screen');
-        const loginContainer = document.getElementById('login-container');
-        const registerContainer = document.getElementById('register-container');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const showRegisterBtn = document.getElementById('show-register');
-        const showLoginBtn = document.getElementById('show-login');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('main-content');
-        const logoutBtn = document.getElementById('logout-btn');
-
-        // --- 2. สลับหน้า Login / Register ---
-        showRegisterBtn.addEventListener('click', () => {
-            loginContainer.classList.add('hidden'); 
-            registerContainer.classList.remove('hidden');
-        });
-
-        showLoginBtn.addEventListener('click', () => {
-            registerContainer.classList.add('hidden'); 
-            loginContainer.classList.remove('hidden');
-        });
-
-        // --- 3. ระบบ Register ---
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData();
-            formData.append('username', document.getElementById('reg-username').value);
-            formData.append('email', document.getElementById('reg-email').value);
-            formData.append('password', document.getElementById('reg-password').value);
-            try {
-                const response = await fetch(getApiUrl('register'), fetchOptions('POST', formData));
-                const result = await response.json();
-                showToast(result.message);
-                if (result.status === 'success') { 
-                    registerForm.reset(); 
-                    showLoginBtn.click(); 
-                }
-            } catch (error) { showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ (ทดสอบใน Preview Mode)'); }
-        });
-
-        // --- 4. ระบบ Login ---
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData();
-            formData.append('username', document.getElementById('username').value);
-            formData.append('password', document.getElementById('password').value);
-            try {
-                const response = await fetch(getApiUrl('login'), fetchOptions('POST', formData));
-                const result = await response.json();
-                if (result.status === 'success') {
-                    loginScreen.classList.add('hidden'); 
-                    sidebar.classList.remove('hidden'); 
-                    mainContent.classList.remove('hidden');
-                    showToast('เข้าสู่ระบบสำเร็จ'); 
-                    switchTab('section-admin'); 
-                    fetchUsers(); 
-                } else {
-                    showToast('ข้อผิดพลาด: ' + result.message); 
-                }
-            } catch (error) { showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ (ทดสอบใน Preview Mode)'); }
-        });
-
-        // --- 5. ระบบ Logout ---
-        logoutBtn.addEventListener('click', () => {
-            loginScreen.classList.remove('hidden'); 
-            sidebar.classList.add('hidden'); 
-            mainContent.classList.add('hidden');
-            document.getElementById('password').value = ''; 
-        });
-
-        // --- 6. ระบบ Tabs ---
-        const navLinks = document.querySelectorAll('.nav-link');
-        function switchTab(targetId) {
-            document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
-            const target = document.getElementById(targetId);
-            if(target) target.classList.remove('hidden');
-            
-            navLinks.forEach(link => {
-                link.classList.remove('bg-gray-100', 'bg-blue-100', 'bg-yellow-100', 'bg-green-100', 'bg-gray-200');
-                if(link.getAttribute('data-target') === targetId) {
-                    if(targetId.includes('festival')) link.classList.add('bg-blue-100');
-                    else if(targetId.includes('admin')) link.classList.add('bg-gray-100');
-                    else if(targetId.includes('musician')) link.classList.add('bg-yellow-100');
-                    else if(targetId.includes('courses')) link.classList.add('bg-green-100');
-                    else if(targetId.includes('cmbigband')) link.classList.add('bg-gray-200');
-                    else link.classList.add('bg-gray-100');
-                }
-            });
-        }
-        navLinks.forEach(link => { 
-            link.addEventListener('click', (e) => { 
-                e.preventDefault(); 
-                const target = link.getAttribute('data-target');
-                switchTab(target); 
-                if(target === 'section-admin') fetchUsers(); 
-            }); 
-        });
-
-        // ฟังก์ชันสลับเมนูย่อยของ Musician Network
-        window.switchMusicianTab = function(tabName) {
-            const btnArtist = document.getElementById('tab-btn-artist');
-            const btnJazz = document.getElementById('tab-btn-jazz');
-            const contentArtist = document.getElementById('musician-artist-content');
-            const contentJazz = document.getElementById('musician-jazz-content');
-
-            if (tabName === 'artist') {
-                btnArtist.className = 'flex-1 bg-yellow-500 text-black font-bold py-1 rounded-full shadow-sm text-center transition';
-                btnJazz.className = 'flex-1 text-gray-500 font-semibold py-1 rounded-full text-center hover:bg-gray-300 transition';
-                contentArtist.classList.remove('hidden'); contentArtist.classList.add('block');
-                contentJazz.classList.add('hidden'); contentJazz.classList.remove('block');
-            } else if (tabName === 'jazz') {
-                btnJazz.className = 'flex-1 bg-yellow-500 text-black font-bold py-1 rounded-full shadow-sm text-center transition';
-                btnArtist.className = 'flex-1 text-gray-500 font-semibold py-1 rounded-full text-center hover:bg-gray-300 transition';
-                contentJazz.classList.remove('hidden'); contentJazz.classList.add('block');
-                contentArtist.classList.add('hidden'); contentArtist.classList.remove('block');
-            }
-        };
-
-        window.showToast = (message) => {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div'); toast.className = 'toast'; toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
-        };
-
-        // --- 7. User Management ---
-        let users = [];
-        async function fetchUsers() {
-            try {
-                const response = await fetch(getApiUrl('get_users'), fetchOptions('GET'));
-                const result = await response.json();
-                if (result.status === 'success') { users = result.data; renderUsers(); }
-            } catch (error) {}
-        }
-        
-        function renderUsers() {
-            const tbody = document.getElementById('user-table-body'); tbody.innerHTML = '';
-            users.forEach(user => {
-                const statusColor = user.status === 'approved' ? 'text-green-600 bg-green-100' : 'text-yellow-600 bg-yellow-100';
-                const statusText = user.status === 'approved' ? 'อนุมัติแล้ว' : 'รอตรวจสอบ';
-                const tr = document.createElement('tr'); tr.className = 'border-b hover:bg-gray-50';
-                tr.innerHTML = `
-                    <td class="p-4 text-gray-500">${user.id}</td>
-                    <td class="p-4 font-medium">${user.username}<div class="text-sm text-gray-400">${user.email}</div></td>
-                    <td class="p-4"><span class="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600 uppercase font-bold">${user.role}</span></td>
-                    <td class="p-4"><span class="px-2 py-1 rounded text-xs font-semibold ${statusColor}">${statusText}</span></td>
-                    <td class="p-4 text-right space-x-2">
-                        ${user.status === 'pending' ? `<button onclick="updateUserStatus(${user.id}, 'approved')" class="bg-green-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold">อนุมัติ</button>` : `<button onclick="updateUserStatus(${user.id}, 'pending')" class="bg-yellow-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold">ระงับ</button>`}
-                        <button onclick="promptChangePassword(${user.id})" class="bg-blue-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold">เปลี่ยนรหัส</button>
-                        <button onclick="confirmDeleteUser(${user.id})" class="bg-red-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold">ลบ</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-        
-        window.updateUserStatus = async (id, newStatus) => {
-            try {
-                const formData = new FormData(); formData.append('user_id', id); formData.append('status', newStatus);
-                const response = await fetch(getApiUrl('update_user_status'), fetchOptions('POST', formData));
-                const result = await response.json();
-                if (result.status === 'success') { showToast('อัปเดตสถานะแล้ว'); fetchUsers(); }
-            } catch(error) {}
-        };
-        
-        let deleteTargetId = null;
-        window.confirmDeleteUser = (id) => { deleteTargetId = id; document.getElementById('confirm-modal').classList.remove('hidden'); };
-        window.closeConfirmModal = () => { deleteTargetId = null; document.getElementById('confirm-modal').classList.add('hidden'); };
-        
-        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
-            if(!deleteTargetId) return;
-            try {
-                const formData = new FormData(); formData.append('user_id', deleteTargetId);
-                const response = await fetch(getApiUrl('delete_user'), fetchOptions('POST', formData));
-                const result = await response.json();
-                if (result.status === 'success') { showToast(result.message); fetchUsers(); }
-            } catch(error) {}
-            closeConfirmModal();
-        });
-
-        let passwordTargetId = null;
-        window.promptChangePassword = (id) => { passwordTargetId = id; document.getElementById('new-password-input').value = ''; document.getElementById('password-modal').classList.remove('hidden'); };
-        window.closePasswordModal = () => { passwordTargetId = null; document.getElementById('password-modal').classList.add('hidden'); };
-        
-        document.getElementById('save-password-btn').addEventListener('click', async () => {
-            const newPass = document.getElementById('new-password-input').value;
-            if(!newPass) return showToast('กรุณากรอกรหัสผ่าน');
-            try {
-                const formData = new FormData(); formData.append('user_id', passwordTargetId); formData.append('new_password', newPass);
-                const response = await fetch(getApiUrl('update_password'), fetchOptions('POST', formData));
-                const result = await response.json(); showToast(result.message); 
-            } catch(error) {}
-            closePasswordModal();
-        });
-
-        // --- 8. Ticket Logic ---
-        let pendingTickets = [];
-        window.addTicketToList = () => {
-            const title = document.getElementById('temp_ticket_title').value.trim();
-            if (!title) { showToast('กรุณากรอกชื่อตั๋ว (Ticket Title)'); return; }
-            const details = document.getElementById('temp_ticket_details').value;
-            const price = document.getElementById('temp_ticket_price').value || 0;
-            const amount = document.getElementById('temp_ticket_amount').value || 0;
-            const status = document.querySelector('input[name="temp_ticket_status"]:checked').value;
-
-            pendingTickets.push({ title, details, price, amount, status });
-            
-            document.getElementById('temp_ticket_title').value = '';
-            document.getElementById('temp_ticket_details').value = '';
-            document.getElementById('temp_ticket_price').value = '';
-            document.getElementById('temp_ticket_amount').value = '';
-            document.querySelector('input[name="temp_ticket_status"][value="1"]').checked = true;
-
-            renderPendingTickets();
-        };
-
-        function renderPendingTickets() {
-            const container = document.getElementById('added-tickets-list');
-            container.innerHTML = '';
-            if(pendingTickets.length > 0) container.innerHTML = `<h4 class="text-sm font-bold text-gray-600 mb-2">รายการตั๋วที่เตรียมบันทึก:</h4>`;
-            pendingTickets.forEach((ticket, index) => {
-                container.innerHTML += `
-                    <div class="bg-white border border-gray-200 p-3 rounded-lg shadow-sm flex justify-between items-center">
-                        <div>
-                            <span class="font-bold text-blue-600">${ticket.title}</span> 
-                            <span class="text-sm text-gray-500 ml-2">(${ticket.price} THB / ${ticket.amount} ใบ)</span>
-                        </div>
-                        <button type="button" onclick="removePendingTicket(${index})" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-2 py-1 rounded">ลบ</button>
-                    </div>
-                `;
-            });
-        }
-        window.removePendingTicket = (index) => { pendingTickets.splice(index, 1); renderPendingTickets(); };
-
-        // --- 9. Lineup Logic ---
-        window.addLineUpRow = () => {
-            const container = document.getElementById('lineup-container');
-            const row = document.createElement('div');
-            row.className = 'flex gap-2 items-center lineup-row';
-            row.innerHTML = `
-                <input type="date" class="input-style w-1/3 lineup-date">
-                <input type="time" class="input-style w-1/4 lineup-time">
-                <input type="text" class="input-style flex-1 lineup-name" placeholder="Details / Band Name">
-                <button type="button" onclick="this.parentElement.remove()" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold hover:bg-red-600 shrink-0 shadow">-</button>
-            `;
-            container.appendChild(row);
-        };
-
-        // --- 10. Image Preview Logic ---
-        window.previewImage = (input, containerId) => {
-            const container = document.getElementById(containerId);
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    container.style.backgroundImage = `url('${e.target.result}')`; container.style.backgroundSize = 'cover'; container.style.backgroundPosition = 'center';
-                    const span = container.querySelector('span'); if (span) span.classList.add('bg-black/60', 'text-white', 'px-4', 'py-2', 'rounded-full');
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        };
-
-        let globalGalleryFiles = new DataTransfer(); 
-        window.previewGalleryImages = (input) => {
-            if (input.files && input.files.length > 0) {
-                Array.from(input.files).forEach(file => { if (globalGalleryFiles.files.length < 10) globalGalleryFiles.items.add(file); });
-                input.value = ''; renderGalleryPreviews();
-            }
-        };
-        function renderGalleryPreviews() {
-            const wrapper = document.getElementById('gallery-previews-wrapper'); wrapper.innerHTML = ''; 
-            Array.from(globalGalleryFiles.files).forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const previewDiv = document.createElement('div');
-                    previewDiv.className = 'w-32 h-32 rounded-lg bg-cover bg-center shrink-0 shadow-sm border border-gray-200 relative group';
-                    previewDiv.style.backgroundImage = `url('${e.target.result}')`;
-                    const removeBtn = document.createElement('button'); removeBtn.innerHTML = '✕';
-                    removeBtn.className = 'absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow hover:bg-red-700';
-                    removeBtn.onclick = (e) => { e.preventDefault(); removeGalleryImage(index); };
-                    previewDiv.appendChild(removeBtn); wrapper.appendChild(previewDiv);
-                }
-                reader.readAsDataURL(file);
-            });
-        }
-        window.removeGalleryImage = (idxToRemove) => {
-            const dt = new DataTransfer();
-            Array.from(globalGalleryFiles.files).forEach((file, idx) => { if (idx !== idxToRemove) dt.items.add(file); });
-            globalGalleryFiles = dt; renderGalleryPreviews(); 
-        };
-
-        // --- 11. Save Event ---
-        window.saveEvent = async () => {
-            try {
-                const formData = new FormData();
-                let sd = document.getElementById('ev-start-date').value; let st = document.getElementById('ev-start-time').value;
-                formData.append('start_date', sd ? `${sd} ${st}:00` : '');
-                let ed = document.getElementById('ev-end-date').value; let et = document.getElementById('ev-end-time').value;
-                formData.append('end_date', ed ? `${ed} ${et}:00` : '');
-
-                formData.append('title', document.getElementById('ev-title').value);
-                formData.append('short_description', document.getElementById('ev-short-desc').value);
-                formData.append('location', document.getElementById('ev-location').value);
-                formData.append('details', document.getElementById('ev-details').value);
-                
-                formData.append('venue_title', document.getElementById('venue-title') ? document.getElementById('venue-title').value : '');
-                formData.append('venue_details', document.getElementById('venue-details') ? document.getElementById('venue-details').value : '');
-                formData.append('venue_map', document.getElementById('venue-map') ? document.getElementById('venue-map').value : '');
-
-                if(pendingTickets.length > 0) {
-                    pendingTickets.forEach(ticket => {
-                        formData.append('ticket_titles[]', ticket.title);
-                        formData.append('ticket_details[]', ticket.details);
-                        formData.append('ticket_prices[]', ticket.price);
-                        formData.append('ticket_amounts[]', ticket.amount);
-                        formData.append('ticket_status[]', ticket.status);
-                    });
-                } else {
-                    const tempTitle = document.getElementById('temp_ticket_title').value.trim();
-                    if(tempTitle) {
-                        formData.append('ticket_titles[]', tempTitle);
-                        formData.append('ticket_details[]', document.getElementById('temp_ticket_details').value);
-                        formData.append('ticket_prices[]', document.getElementById('temp_ticket_price').value || 0);
-                        formData.append('ticket_amounts[]', document.getElementById('temp_ticket_amount').value || 0);
-                        formData.append('ticket_status[]', document.querySelector('input[name="temp_ticket_status"]:checked').value);
-                    }
-                }
-
-                const lineupDates = document.querySelectorAll('.lineup-date');
-                const lineupTimes = document.querySelectorAll('.lineup-time');
-                document.querySelectorAll('.lineup-name').forEach((input, index) => {
-                    const nameVal = input.value.trim();
-                    if(nameVal) { 
-                        formData.append('lineup_dates[]', lineupDates[index].value);
-                        let timeVal = lineupTimes[index].value;
-                        if (timeVal && timeVal.length === 5) timeVal += ':00';
-                        formData.append('lineup_times[]', timeVal);
-                        formData.append('lineup_names[]', nameVal);
-                    }
-                });
-
-                const bannerFile = document.getElementById('event-banner').files[0];
-                const posterFile = document.getElementById('event-poster').files[0];
-                const venueFile = document.getElementById('venue-photo') ? document.getElementById('venue-photo').files[0] : null;
-                if(bannerFile) formData.append('banner_image', bannerFile);
-                if(posterFile) formData.append('poster_image', posterFile);
-                if(venueFile) formData.append('venue_image', venueFile);
-
-                Array.from(globalGalleryFiles.files).forEach(file => { formData.append('gallery_images[]', file); });
-
-                showToast('กำลังบันทึกข้อมูล Event...');
-                const response = await fetch(getApiUrl('save_event'), fetchOptions('POST', formData));
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    showToast('บันทึกสำเร็จ!');
-                    
-                    const section = document.getElementById('section-festival');
-                    section.querySelectorAll('input:not([type="radio"]):not([type="checkbox"]), textarea').forEach(el => el.value = '');
-                    section.querySelectorAll('.upload-box').forEach(el => {
-                        el.style.backgroundImage = '';
-                        const span = el.querySelector('span');
-                        if(span) span.classList.remove('bg-black/60', 'text-white', 'px-4', 'py-2', 'rounded-full');
-                    });
-                    
-                    document.getElementById('lineup-container').innerHTML = `
-                        <div class="flex gap-2 items-center lineup-row">
-                            <input type="date" class="input-style w-1/3 lineup-date">
-                            <input type="time" class="input-style w-1/4 lineup-time">
-                            <input type="text" class="input-style flex-1 lineup-name" placeholder="Details / Band Name">
-                            <button type="button" onclick="addLineUpRow()" class="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold hover:bg-blue-700 shrink-0 shadow">+</button>
-                        </div>
-                    `;
-                    
-                    pendingTickets = []; renderPendingTickets();
-                    globalGalleryFiles = new DataTransfer(); renderGalleryPreviews();
-                    
-                    document.getElementById('main-content').scrollTop = 0; 
-                } else showToast('ข้อผิดพลาด: ' + result.message);
-            } catch (error) { showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'); }
-        };
-
-        // --- 12. Musician Network Logic ---
-        window.addVideoRow = (containerId, inputClass) => {
-            const container = document.getElementById(containerId);
-            const row = document.createElement('div');
-            row.className = 'flex gap-4 mt-2';
-            row.innerHTML = `
-                <input type="text" class="input-style flex-1 ${inputClass}" placeholder="Link to your Video / Youtube / Vimeo">
-                <button type="button" onclick="this.parentElement.remove()" class="bg-red-500 text-white px-8 py-2 rounded-full font-bold shadow hover:bg-red-600 transition">Del</button>
-            `;
-            container.appendChild(row);
-        };
-
-        window.saveMusician = async (type) => {
-            try {
-                const formData = new FormData();
-                const prefix = type === 'artist_library' ? 'art' : 'jazz';
-                
-                formData.append('network_type', type);
-                formData.append('title', document.getElementById(`${prefix}-title`).value);
-                formData.append('genre', document.getElementById(`${prefix}-genre`).value);
-                formData.append('facebook', document.getElementById(`${prefix}-fb`).value);
-                formData.append('whatsapp', document.getElementById(`${prefix}-wa`).value);
-                formData.append('instagram', document.getElementById(`${prefix}-ig`).value);
-                formData.append('website', document.getElementById(`${prefix}-web`).value);
-                formData.append('tiktok', document.getElementById(`${prefix}-tk`).value);
-                formData.append('email', document.getElementById(`${prefix}-email`).value);
-                formData.append('details', document.getElementById(`${prefix}-details`).value);
-
-                const videoInputs = document.querySelectorAll(`.${prefix}-video`);
-                videoInputs.forEach(input => {
-                    if(input.value.trim()) formData.append('video_links[]', input.value.trim());
-                });
-
-                const bannerType = type === 'artist_library' ? 'artist' : 'jazz';
-                const bannerFile = document.getElementById(`${bannerType}-banner`).files[0];
-                const profileFile = document.getElementById(`${bannerType}-profile`).files[0];
-                
-                if(bannerFile) formData.append('banner_image', bannerFile);
-                if(profileFile) formData.append('profile_image', profileFile);
-
-                showToast('กำลังบันทึกข้อมูล...');
-                const response = await fetch(getApiUrl('save_musician'), fetchOptions('POST', formData));
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    showToast('บันทึกข้อมูลสำเร็จ!');
-                    
-                    const section = document.getElementById(type === 'artist_library' ? 'musician-artist-content' : 'musician-jazz-content');
-                    section.querySelectorAll('input:not([type="radio"]):not([type="checkbox"]), textarea').forEach(el => el.value = '');
-                    section.querySelectorAll('.upload-box').forEach(el => {
-                        el.style.backgroundImage = '';
-                        const span = el.querySelector('span');
-                        if(span) span.classList.remove('bg-black/60', 'text-white', 'px-4', 'py-2', 'rounded-full');
-                    });
-                    
-                    const videoContainerId = type === 'artist_library' ? 'art-video-container' : 'jazz-video-container';
-                    const videoClass = type === 'artist_library' ? 'art-video' : 'jazz-video';
-                    document.getElementById(videoContainerId).innerHTML = `
-                        <div class="flex gap-4">
-                            <input type="text" class="input-style flex-1 ${videoClass}" placeholder="Link to your Video / Youtube / Vimeo">
-                            <button type="button" onclick="addVideoRow('${videoContainerId}', '${videoClass}')" class="bg-yellow-500 text-black px-8 py-2 rounded-full font-bold shadow hover:bg-yellow-600">Add</button>
-                        </div>
-                    `;
-                    
-                    document.getElementById('main-content').scrollTop = 0; 
-                } else {
-                    showToast('ข้อผิดพลาด: ' + result.message);
-                }
-            } catch(e) {
-                showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
-            }
-        };
-
-        // --- 13. Courses Library Logic ---
-        let courseImgCounter = 0;
-        window.addCourseContent = (type) => {
-            const container = document.getElementById('course-content-container');
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'relative course-item border border-gray-200 p-4 rounded-xl bg-gray-50 shadow-sm';
-            itemDiv.setAttribute('data-type', type);
-            const deleteBtn = `<button type="button" onclick="this.parentElement.remove()" class="absolute -top-3 -right-3 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition z-10 text-xs">✕</button>`;
-
-            if (type === 'text') {
-                itemDiv.innerHTML = deleteBtn + `<textarea class="textarea-style min-h-[120px] course-text-input border-white" placeholder="พิมพ์ข้อความ / Details ที่นี่...."></textarea>`;
-            } else if (type === 'image') {
-                courseImgCounter++;
-                const previewId = `course-img-preview-${courseImgCounter}`;
-                itemDiv.innerHTML = deleteBtn + `
-                    <label class="upload-box h-48 w-full relative overflow-hidden group shadow-sm border border-dashed border-gray-400 bg-white" id="${previewId}">
-                        <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Image</span>
-                        <input type="file" class="absolute inset-0 opacity-0 cursor-pointer z-20 course-img-input" accept="image/*" onchange="previewImage(this, '${previewId}')">
-                    </label>
-                `;
-            } else if (type === 'video') {
-                itemDiv.innerHTML = deleteBtn + `<input type="text" class="input-style course-video-input bg-white" placeholder="Link to Video (Youtube / Vimeo / etc.)">`;
-            }
-            container.appendChild(itemDiv);
-        };
-
-        window.saveCourse = async () => {
-            try {
-                const formData = new FormData();
-                formData.append('title', document.getElementById('course-title').value);
-                formData.append('creator', document.getElementById('course-creator').value);
-                
-                const bannerFile = document.getElementById('course-banner').files[0];
-                if(bannerFile) formData.append('banner_image', bannerFile);
-
-                // ดึงข้อมูล Content ที่ถูกเพิ่มเข้ามาแบบอิสระ
-                const contentItems = document.querySelectorAll('.course-item');
-                contentItems.forEach((item, index) => {
-                    const type = item.getAttribute('data-type');
-                    formData.append('content_types[]', type);
-                    
-                    if (type === 'text') {
-                        formData.append('content_values[]', item.querySelector('.course-text-input').value);
-                    } else if (type === 'video') {
-                        formData.append('content_values[]', item.querySelector('.course-video-input').value);
-                    } else if (type === 'image') {
-                        const fileInput = item.querySelector('.course-img-input');
-                        if (fileInput && fileInput.files[0]) {
-                            formData.append(`content_images_${index}`, fileInput.files[0]);
-                            formData.append('content_values[]', `has_image`);
-                        } else {
-                            formData.append('content_values[]', '');
-                        }
-                    }
-                });
-
-                showToast('กำลังบันทึกข้อมูล Course...');
-                const response = await fetch(getApiUrl('save_course'), fetchOptions('POST', formData));
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    showToast('บันทึกคอร์สเรียนสำเร็จ!');
-                    
-                    // เคลียร์ฟอร์ม
-                    document.getElementById('course-title').value = '';
-                    document.getElementById('course-creator').value = '';
-                    
-                    const bannerPreview = document.getElementById('course-banner-preview');
-                    bannerPreview.style.backgroundImage = '';
-                    const span = bannerPreview.querySelector('span');
-                    if(span) span.classList.remove('bg-black/60', 'text-white', 'px-4', 'py-2', 'rounded-full');
-                    document.getElementById('course-banner').value = ''; 
-                    
-                    // ล้างเนื้อหาเดิม และใส่กล่องข้อความกลับมาให้ 1 อันเหมือนตอนเริ่มต้น
-                    document.getElementById('course-content-container').innerHTML = '';
-                    addCourseContent('text'); 
-                    
-                    document.getElementById('main-content').scrollTop = 0;
-                } else {
-                    showToast('ข้อผิดพลาด: ' + result.message);
-                }
-            } catch (error) {
-                showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
-            }
-        };
-
-        // --- 14. CMBigband Logic ---
-        window.saveCMBigband = async () => {
-            try {
-                const formData = new FormData();
-                
-                formData.append('title', document.getElementById('cmb-title').value);
-                formData.append('genre', document.getElementById('cmb-genre').value);
-                formData.append('facebook', document.getElementById('cmb-fb').value);
-                formData.append('whatsapp', document.getElementById('cmb-wa').value);
-                formData.append('instagram', document.getElementById('cmb-ig').value);
-                formData.append('website', document.getElementById('cmb-web').value);
-                formData.append('tiktok', document.getElementById('cmb-tk').value);
-                formData.append('email', document.getElementById('cmb-email').value);
-                formData.append('details', document.getElementById('cmb-details').value);
-
-                const videoInputs = document.querySelectorAll('.cmb-video');
-                videoInputs.forEach(input => {
-                    if(input.value.trim()) formData.append('video_links[]', input.value.trim());
-                });
-
-                const bannerFile = document.getElementById('cmb-banner').files[0];
-                const profileFile = document.getElementById('cmb-profile').files[0];
-                
-                if(bannerFile) formData.append('banner_image', bannerFile);
-                if(profileFile) formData.append('profile_image', profileFile);
-
-                showToast('กำลังบันทึกข้อมูล CMBigband...');
-                const response = await fetch(getApiUrl('save_cmbigband'), fetchOptions('POST', formData));
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    showToast('บันทึกข้อมูลสำเร็จ!');
-                    
-                    const section = document.getElementById('section-cmbigband');
-                    section.querySelectorAll('input:not([type="radio"]):not([type="checkbox"]), textarea').forEach(el => el.value = '');
-                    section.querySelectorAll('.upload-box').forEach(el => {
-                        el.style.backgroundImage = '';
-                        const span = el.querySelector('span');
-                        if(span) span.classList.remove('bg-black/60', 'text-white', 'px-4', 'py-2', 'rounded-full');
-                    });
-                    
-                    document.getElementById('cmb-video-container').innerHTML = `
-                        <div class="flex gap-4">
-                            <input type="text" class="input-style flex-1 cmb-video" placeholder="Link to your Video / Youtube / Vimeo">
-                            <button type="button" onclick="addVideoRow('cmb-video-container', 'cmb-video')" class="bg-yellow-500 text-black px-8 py-2 rounded-full font-bold shadow hover:bg-yellow-600">Add</button>
-                        </div>
-                    `;
-                    
-                    document.getElementById('main-content').scrollTop = 0;
-                } else {
-                    showToast('ข้อผิดพลาด: ' + result.message);
-                }
-            } catch(e) {
-                showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
-            }
-        };
-
-    </script>
+    <script src="admin.js?v=999"></script>
+    <script src="admin1.js?v=1000"></script> </body>
 </body>
 </html>

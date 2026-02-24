@@ -49,6 +49,9 @@ function expandCard(card) {
             activeClone.classList.add('is-expanded'); 
             requestAnimationFrame(() => activeClone.querySelector('.clone-content')?.classList.add('content-visible'));
             addEventDetailListeners(activeClone); activeClone.removeEventListener('transitionend', onExpansionEnd);
+            
+            // ดึงข้อมูลตอนการ์ดขยายเสร็จ
+            if (window.applyDataToDOM) window.applyDataToDOM(activeClone);
         }
     };
     activeClone.addEventListener('transitionend', onExpansionEnd);
@@ -62,11 +65,9 @@ function collapseCard(clone, originalCard) {
         delete mainContainer.dataset.initialHeight; 
     }
     
-    // 🌟 จุดที่เพิ่มเพื่อแก้บั๊ก: คืนค่าสีพื้นหลัง (เช่นสีเหลือง #ffc107) และ Padding กลับมาทันทีตอนกดกากบาท
     clone.style.backgroundColor = '';
     clone.style.padding = '';
 
-    // ซ่อนเนื้อหา
     clone.classList.remove('is-expanded'); 
     clone.querySelector('.clone-content, .event-detail-content, .bigband-detail-content, .artist-detail-content, .course-detail-content, .forum-detail-content, .store-detail-content')?.classList.remove('content-visible');
     
@@ -104,6 +105,8 @@ function navigate(direction) {
         createButtons(nextCard).forEach(btn => activeClone.appendChild(btn));
         activeCard.classList.remove('ghost'); nextCard.classList.add('ghost'); activeCard = nextCard;
         addEventDetailListeners(activeClone);
+        
+        if (window.applyDataToDOM) window.applyDataToDOM(activeClone);
     }, 300); 
 }
 
@@ -116,6 +119,8 @@ function showMainCategoryContent() {
         requestAnimationFrame(() => activeClone.querySelector('.clone-content')?.classList.add('content-visible'));
         createButtons(activeCard).forEach(btn => activeClone.appendChild(btn));
         addEventDetailListeners(activeClone);
+        
+        if (window.applyDataToDOM) window.applyDataToDOM(activeClone);
     }, 300);
 }
 
@@ -153,28 +158,121 @@ function loadTemplateWithSuffix(templateId, suffix, isWhiteBg = false) {
         
         activeClone.appendChild(backButton); activeClone.appendChild(closeBtn);
         
-        // ผูก Event Listener ให้พวกการ์ดใน Artists
         addEventDetailListeners(activeClone);
 
         if(window.applyDataToDOM) window.applyDataToDOM(activeClone);
     }, 300);
 }
 
-function showArtistDetailContent(type, num) {
+// โค้ดแสดงหน้ารายละเอียดของศิลปิน (ดีไซน์ใหม่ ตามแบบรูปภาพ 100%)
+window.showArtistDetailContent = function(artistType, artistNum, linkElement = null) {
     const template = document.getElementById('artist-detail-template');
     if (!activeClone || !template) return;
     activeClone.querySelector('.content-visible')?.classList.remove('content-visible');
-    
+
+    let musicianId = null;
+    if (linkElement && linkElement.hasAttribute('data-musician-id')) {
+        musicianId = linkElement.getAttribute('data-musician-id');
+    }
+
     setTimeout(() => {
-        activeClone.style.backgroundColor = 'transparent'; activeClone.style.padding = '0';
-        const tempDiv = document.createElement('div'); tempDiv.innerHTML = template.innerHTML;
+        activeClone.style.backgroundColor = 'transparent'; 
+        activeClone.style.padding = '0';
         
-        const suffix = `_${type}${num}`;
-        tempDiv.querySelectorAll('[id^="dyn-"]').forEach(el => el.id += suffix);
-        activeClone.innerHTML = tempDiv.innerHTML;
+        if (musicianId && window.frontendMusicians) {
+            const musician = window.frontendMusicians.find(m => m.id == musicianId);
+            if (musician) {
+                // 1. จัดเตรียมข้อมูลพื้นฐาน
+                const bannerImg = musician.banner_image || 'https://placehold.co/1200x400/333/ccc?text=No+Banner';
+                const profileImg = musician.profile_image || 'https://placehold.co/600x800/222/ddd?text=No+Profile';
+                const title = musician.title || 'Untitled';
+                const genre = musician.genre ? `<p class="italic text-gray-700 font-medium mb-3">${musician.genre}</p>` : '';
+                
+                // 2. จัดเตรียมไอคอนโซเชียล (แบบกลมๆ เรียงติดกันตามรูป)
+                let socialsHTML = '';
+                if(musician.facebook) socialsHTML += `<a href="${musician.facebook}" target="_blank" class="text-[#1877F2] hover:opacity-80 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>`;
+                if(musician.tiktok) socialsHTML += `<a href="${musician.tiktok}" target="_blank" class="text-black hover:opacity-80 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.04-.1z"/></svg></a>`;
+                if(musician.instagram) socialsHTML += `<a href="${musician.instagram}" target="_blank" class="text-[#E1306C] hover:opacity-80 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>`;
+                if(musician.email) socialsHTML += `<a href="mailto:${musician.email}" class="text-[#EA4335] hover:opacity-80 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></a>`;
+                if(musician.website) socialsHTML += `<a href="${musician.website}" target="_blank" class="text-gray-600 hover:opacity-80 transition"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg></a>`;
+
+                // 3. จัดการ Contact และ Details
+                let contactLine = '';
+                if (musician.whatsapp) contactLine = `Contact : ${musician.whatsapp}`;
+                else if (musician.email) contactLine = `Contact : ${musician.email}`;
+
+                const detailsHtml = musician.details ? musician.details.replace(/\n/g, '<br>') : '';
+
+                // 4. จัดการ Video Link (โหลด Youtube ให้อัตโนมัติแบบในรูป)
+                let videoHtml = '';
+                try { 
+                    const vids = JSON.parse(musician.video_link || '[]'); 
+                    if (vids.length > 0) {
+                        videoHtml = `
+                            <div class="flex items-center gap-4 mb-4 mt-8">
+                                <h3 class="text-2xl font-extrabold text-black">Video</h3>
+                                <hr class="flex-grow border-gray-400">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        `;
+                        vids.forEach(v => {
+                            let embedUrl = v;
+                            if(v.includes('youtube.com/watch?v=')) embedUrl = v.replace('watch?v=', 'embed/');
+                            else if(v.includes('youtu.be/')) embedUrl = v.replace('youtu.be/', 'youtube.com/embed/');
+
+                            if(embedUrl.includes('embed/')) {
+                                videoHtml += `<div class="w-full aspect-video rounded-xl overflow-hidden shadow-sm border border-gray-200"><iframe width="100%" height="100%" src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+                            } else {
+                                videoHtml += `<a href="${v}" target="_blank" class="bg-[#ffc107] text-black font-bold p-4 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition shadow-sm h-full min-h-[100px] text-center break-all text-sm px-4">▶ Play Video</a>`;
+                            }
+                        });
+                        videoHtml += `</div>`;
+                    }
+                } catch(e){}
+
+                // 5. ปั้น HTML โครงสร้างใหม่ทั้งหมดให้เหมือนรูปภาพ
+                activeClone.innerHTML = `
+                    <div class="artist-detail-content hide-scrollbar h-full overflow-y-auto bg-[#f8f9fa] text-black rounded-2xl pb-12">
+                        
+                        <div class="w-full h-48 md:h-64 overflow-hidden rounded-t-2xl relative border-b border-gray-200">
+                            <img src="${bannerImg}" class="w-full h-full object-cover object-center">
+                        </div>
+                        
+                        <div class="p-6 md:p-12 max-w-6xl mx-auto">
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+                                
+                               <div class="md:col-span-5 lg:col-span-4 flex items-start">
+                                    <img src="${profileImg}" class="w-full h-auto rounded-2xl shadow-lg border border-gray-200">
+                               </div>
+
+                                    <div class="md:col-span-7 lg:col-span-8">
+                                    <h1 class="text-4xl md:text-5xl font-extrabold text-black tracking-tight mb-1 break-words w-full whitespace-normal">${title}</h1>
+                                    ${genre}
+                                    
+                                    <div class="flex items-center gap-3 mb-3">
+                                        ${socialsHTML}
+                                    </div>
+                                    
+                                    ${contactLine ? `<p class="font-bold text-sm text-black mb-4">${contactLine}</p>` : ''}
+                                    
+                                    <hr class="border-gray-300 my-4">
+                                    
+                                    <div class="text-sm sm:text-base leading-relaxed text-black font-medium space-y-4">
+                                        ${detailsHtml}
+                                    </div>
+                                    
+                                    ${videoHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
         
         requestAnimationFrame(() => activeClone.querySelector('.artist-detail-content')?.classList.add('content-visible'));
 
+        // ปุ่มย้อนกลับและปิด
         const backButton = document.createElement('button'); backButton.innerHTML = '&#8592;'; backButton.className = 'nav-btn nav-btn-left'; backButton.style.left = '20px'; backButton.style.color = '#121212'; backButton.style.borderColor = '#121212';
         backButton.addEventListener('click', (e) => { 
             e.stopPropagation(); 
@@ -188,7 +286,6 @@ function showArtistDetailContent(type, num) {
         if(window.applyDataToDOM) window.applyDataToDOM(activeClone);
     }, 300);
 }
-
 function showEventDetailContent(eventIndex) {
     const template = document.getElementById('event-detail-template');
     if (!activeClone || !template) return;
@@ -199,17 +296,17 @@ function showEventDetailContent(eventIndex) {
         const suffix = `_event${eventIndex}`;
         tempDiv.querySelectorAll('[id^="dyn-"]').forEach(el => { if(!el.id.endsWith(suffix)) el.id += suffix; });
         activeClone.innerHTML = tempDiv.innerHTML; 
-        // --- ส่วนที่ดึงรูป Banner มาใส่ ---
-if (window.frontendEvents) {
-    const eventData = window.frontendEvents.find(e => e.id == eventIndex);
-    if (eventData && eventData.banner_image) {
-        const bannerImg = activeClone.querySelector('img[id^="dyn-festival_banner"]');
-        if(bannerImg) bannerImg.src = eventData.banner_image;
-    }
-}
-// ------------------------------
-        const contentArea = activeClone.querySelector('#event-detail-content-area'); 
         
+        // --- ดึงรูป Banner มาใส่หน้า Detail ---
+        if (window.frontendEvents) {
+            const eventData = window.frontendEvents.find(e => e.id == eventIndex);
+            if (eventData && eventData.banner_image) {
+                const bannerImg = activeClone.querySelector('img[id^="dyn-festival_banner"]');
+                if(bannerImg) bannerImg.src = eventData.banner_image;
+            }
+        }
+        
+        const contentArea = activeClone.querySelector('#event-detail-content-area'); 
         let sourceContent = document.getElementById('event-detail-content-' + eventIndex) || document.getElementById('default-detail-content'); 
         
         if (contentArea && sourceContent) { 
@@ -247,7 +344,6 @@ window.showCourseDetailContent = function(courseIndex) {
         activeClone.innerHTML = tempDiv.innerHTML; 
         
         const contentArea = activeClone.querySelector('#course-detail-content-area'); 
-        
         let sourceContent = document.getElementById('course-detail-content-' + courseIndex) || document.getElementById('default-course-content'); 
         
         if (contentArea && sourceContent) { 
@@ -349,7 +445,6 @@ function setupInnerTabs(container, targetAreaId, eventIndex = null) {
             if (sectionId === 'default') {
                 sourceContent = document.getElementById('event-detail-content-' + eventIndex) || document.getElementById('default-detail-content');
             } else {
-                // เปลี่ยนให้หา ID ที่มี -เลขEvent ต่อท้ายก่อนเสมอ เพื่อโชว์ข้อมูลแต่ละงานไม่ซ้ำกัน
                 sourceContent = document.getElementById(sectionId + '-content-' + eventIndex) || document.getElementById(sectionId + '-content') || document.getElementById('default-detail-content');
             }
             
@@ -420,14 +515,18 @@ function addEventDetailListeners(container) {
                 window.showBigbandDetailContent();
             } else if (newLink.classList.contains('artist-link')) {
                 const match = newLink.querySelector('img[id^="dyn-"]')?.id.match(/dyn-(artist|partner)(\d+)/);
-                if(match) showArtistDetailContent(match[1], match[2]);
+                if(match) {
+                    // ส่ง newLink ไปด้วยเพื่อใช้ดึง data-musician-id
+                    showArtistDetailContent(match[1], match[2], newLink);
+                }
             }
         });
     });
 }
-// ฟังก์ชันนี้จะถูกเรียกอัตโนมัติเมื่อมีการกดเปิดการ์ดต่างๆ (ใน script.js ตั้งค่าไว้แล้ว)
-window.frontendEvents = []; // สร้างตัวแปรเก็บข้อมูลไว้ใช้ตอนเปิด Detail
 
+// ----------------------------------------------------------------------
+// ระบบดึงข้อมูลจาก Database มาหยอดลง DOM (เฉพาะหน้า Event)
+// ----------------------------------------------------------------------
 window.frontendEvents = []; 
 
 window.applyDataToDOM = async function(container) {
@@ -448,32 +547,49 @@ window.applyDataToDOM = async function(container) {
                 events.forEach((event) => {
                     if (!event.title || event.title.trim() === '') return; 
                     
-                    const d = new Date(event.start_date);
+                    const startD = new Date(event.start_date);
+                    const endStr = event.end_date && event.end_date !== '0000-00-00 00:00:00' ? event.end_date : event.start_date;
+                    const endD = new Date(endStr);
                     const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-                    const dateFormatted = `${String(d.getDate()).padStart(2, '0')} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
-                    const dateCard = `${String(d.getDate()).padStart(2, '0')}<br>${monthNames[d.getMonth()]}<br>${d.getFullYear()}`;
+                    
+                    const dateFormatted = `${String(startD.getDate()).padStart(2, '0')} ${monthNames[startD.getMonth()]} ${startD.getFullYear()}`;
+                    let dateCard = '';
+                    
+                    if (startD.getTime() !== endD.getTime() && startD.getMonth() === endD.getMonth()) {
+                        dateCard = `${String(startD.getDate()).padStart(2, '0')}-${String(endD.getDate()).padStart(2, '0')}<br>${monthNames[startD.getMonth()]}<br>${startD.getFullYear()}`;
+                    } else {
+                        dateCard = `${String(startD.getDate()).padStart(2, '0')}<br>${monthNames[startD.getMonth()]}<br>${startD.getFullYear()}`;
+                    }
+
                     const imageUrl = event.banner_image ? event.banner_image : 'https://placehold.co/1200x400/1a1a1a/ffffff?text=Jazz+Event';
                     
-                    // --- 1. สร้างการ์ดด้านนอก ---
+                    // --- 1. โครงสร้างการ์ดด้านนอก ---
                     const cardHTML = `
-                        <div data-event-index="${event.id}" class="event-link relative rounded-2xl overflow-hidden group cursor-pointer bg-black/40 border border-white/20 min-h-[140px] md:min-h-[160px] flex items-center p-6 lg:p-8 transition-transform duration-300 hover:scale-[1.02] mb-4">
+                        <div data-event-index="${event.id}" class="event-link relative rounded-2xl overflow-hidden group cursor-pointer bg-black/40 border border-white/20 min-h-[160px] md:min-h-[180px] flex items-end p-5 lg:p-6 transition-transform duration-300 hover:scale-[1.02] mb-4">
                             <img src="${imageUrl}" class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen group-hover:opacity-90 transition-opacity duration-300">
-                            <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-black/80 pointer-events-none"></div>
-                            <div class="relative z-10 w-full flex items-center justify-between text-white">
-                                <div class="font-header text-3xl lg:text-4xl font-bold leading-none tracking-tight shrink-0 relative z-20 cursor-pointer hover:text-yellow-400 transition-colors">${dateCard}</div>
-                                <div class="flex flex-col items-end gap-1 text-right">
-                                    <div class="flex items-center gap-4">
-                                        <h3 class="font-header text-2xl lg:text-3xl font-bold tracking-tight relative z-20 cursor-pointer hover:text-yellow-400 transition-colors">${event.title}</h3>
-                                        <div class="w-10 h-10 border border-white/50 rounded-full flex items-center justify-center shrink-0 group-hover:bg-white group-hover:text-black transition-colors hidden sm:flex"><span class="text-xl leading-none -mt-1">&#8594;</span></div>
+                            
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 pointer-events-none"></div>
+                            
+                            <div class="relative z-10 w-full flex items-end justify-between gap-4 text-white">
+                                <div class="font-header text-2xl lg:text-3xl font-bold leading-none tracking-tight shrink-0 text-left">
+                                    ${dateCard}
+                                </div>
+                                
+                                <div class="flex flex-col items-end text-right flex-1 min-w-0">
+                                    <div class="flex items-center justify-end gap-3 w-full mb-1">
+                                        <h3 class="font-header text-xl lg:text-2xl font-bold tracking-tight leading-tight break-words text-right line-clamp-2">${event.title}</h3>
+                                        <div class="w-8 h-8 border border-white/50 rounded-full flex items-center justify-center shrink-0 group-hover:bg-white group-hover:text-black transition-colors hidden sm:flex">
+                                            <span class="text-sm leading-none -mt-0.5">&#8594;</span>
+                                        </div>
                                     </div>
-                                    <p class="font-body text-sm text-white/80 max-w-[90%] sm:max-w-md relative z-20 cursor-pointer hover:text-yellow-400 transition-colors">${event.short_description || ''}</p>
+                                    <p class="font-body text-xs sm:text-sm text-white/80 leading-relaxed break-words line-clamp-2 max-w-[90%] text-right">${event.short_description || ''}</p>
                                 </div>
                             </div>
                         </div>
                     `;
                     festivalContainer.innerHTML += cardHTML;
                     
-                    // --- 2. แอบสร้างเนื้อหาทั้ง 5 หน้า Detail เตรียมไว้ ---
+                    // --- 2. เนื้อหา Detail ด้านใน ---
                     if(hiddenContainer) {
                         const posterImg = event.poster_image ? event.poster_image : 'https://placehold.co/600x800/222/fff?text=Poster';
                         const leftCol = `
@@ -486,44 +602,124 @@ window.applyDataToDOM = async function(container) {
                             </div>
                         `;
 
-                        // 2.1 Tab: DETAILS
+                        // 2.1 DETAILS
                         let detailDiv = document.getElementById('event-detail-content-' + event.id);
                         if(!detailDiv) { detailDiv = document.createElement('div'); detailDiv.id = 'event-detail-content-' + event.id; detailDiv.className = 'hidden'; hiddenContainer.appendChild(detailDiv); }
                         const detailsText = event.details ? event.details.replace(/\n/g, '<br>') : 'ไม่มีรายละเอียด...';
-                        detailDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h1 class="text-3xl sm:text-4xl lg:text-5xl font-header font-bold mb-1 tracking-tight">${event.title}</h1><h2 class="text-2xl sm:text-3xl lg:text-4xl font-header font-bold mb-6 tracking-tight">${event.location || 'Chiangmai Jazz City'}</h2><p class="text-sm sm:text-base font-medium mb-4 text-black">${dateFormatted}</p><hr class="border-gray-300 border-t-2 mb-6"><div class="prose prose-sm sm:prose-base max-w-none text-black font-medium leading-relaxed text-sm">${detailsText}</div></div></div>`;
+                        detailDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h1 class="text-3xl sm:text-4xl lg:text-5xl font-header font-bold mb-1 tracking-tight break-words">${event.title}</h1><h2 class="text-2xl sm:text-3xl lg:text-4xl font-header font-bold mb-6 tracking-tight text-gray-700">${event.location || 'Chiangmai Jazz City'}</h2><p class="text-sm sm:text-base font-medium mb-4 text-black">${dateFormatted}</p><hr class="border-gray-300 border-t-2 mb-6"><div class="prose prose-sm sm:prose-base max-w-none text-black font-medium leading-relaxed text-sm whitespace-pre-line break-words">${detailsText}</div></div></div>`;
 
-                        // 2.2 Tab: BOOK NOW
+                        // 2.2 BOOK NOW
                         let bookDiv = document.getElementById('book-now-content-' + event.id);
                         if(!bookDiv) { bookDiv = document.createElement('div'); bookDiv.id = 'book-now-content-' + event.id; bookDiv.className = 'hidden'; hiddenContainer.appendChild(bookDiv); }
                         let ticketsHTML = '';
                         if(event.tickets && event.tickets.length > 0) {
                             event.tickets.forEach(t => {
-                                ticketsHTML += `<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-300 pb-4 pt-4"><div class="mb-4 sm:mb-0"><h3 class="text-xl font-bold text-black mb-1">${t.title}</h3><p class="text-xs text-gray-600 font-medium">${t.details || ''}</p></div><div class="flex items-center justify-between w-full sm:w-auto gap-6"><span class="text-xl font-bold text-black shrink-0">${t.price} THB</span><button class="bg-black text-white px-6 py-2 rounded-full font-bold hover:bg-gray-800 text-sm shadow-md transition-transform active:scale-95">Buy Ticket</button></div></div>`;
+                                const formattedPrice = Number(t.price).toLocaleString('en-US');
+                                ticketsHTML += `
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-300 pb-4 pt-2">
+                                    <div class="mb-4 sm:mb-0 max-w-sm pr-4">
+                                        <h3 class="text-xl font-bold text-black mb-1 break-words">${t.title}</h3>
+                                        <p class="text-xs text-gray-600 font-medium leading-snug break-words whitespace-pre-line">${t.details || ''}</p>
+                                    </div>
+                                    <div class="flex items-center justify-between w-full sm:w-auto gap-6 shrink-0">
+                                        <span class="text-xl font-bold text-black">${formattedPrice} THB</span>
+                                        <div class="flex items-center border border-black rounded bg-white">
+                                            <button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">-</button>
+                                            <span class="w-10 text-center font-bold">0</span>
+                                            <button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">+</button>
+                                        </div>
+                                    </div>
+                                </div>`;
                             });
-                        } else { ticketsHTML = '<p class="text-gray-500 font-medium mt-4">ไม่มีข้อมูลบัตรเข้าชมสำหรับงานนี้</p>'; }
-                        bookDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8 flex flex-col gap-4"><h3 class="text-3xl font-header font-bold mb-2">Buy Tickets</h3>${ticketsHTML}</div></div>`;
+                            ticketsHTML += `
+                            <div class="mt-6 flex flex-col gap-6">
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <input type="checkbox" class="mt-1 w-4 h-4 rounded border-gray-300 text-black focus:ring-black">
+                                    <span class="text-[10px] sm:text-xs text-black font-medium leading-relaxed">
+                                        By checking this box, I hereby agree that my information will be shared to our Event Organizers
+                                    </span>
+                                </label>
+                                <button class="w-full bg-black text-white font-header font-bold text-xl py-4 rounded-full tracking-wider hover:bg-gray-800 transition-colors uppercase shadow-lg">
+                                    BUY TICKET
+                                </button>
+                            </div>`;
+                        } else { 
+                            ticketsHTML = '<p class="text-gray-500 font-medium mt-4">ไม่มีข้อมูลบัตรเข้าชมสำหรับงานนี้</p>'; 
+                        }
+                        bookDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8 flex flex-col gap-4">${ticketsHTML}</div></div>`;
 
-                        // 2.3 Tab: LINE UP
+                        // 2.3 LINE UP
                         let lineDiv = document.getElementById('line-up-content-' + event.id);
                         if(!lineDiv) { lineDiv = document.createElement('div'); lineDiv.id = 'line-up-content-' + event.id; lineDiv.className = 'hidden'; hiddenContainer.appendChild(lineDiv); }
-                        let lineupHTML = '<ul class="text-sm text-gray-700 space-y-4 mt-4">';
+                        
+                        let lineupHTML = '';
                         if(event.lineups && event.lineups.length > 0) {
+                            const groupedByDate = {};
                             event.lineups.forEach(l => {
-                                const timeStr = l.lineup_time ? l.lineup_time.substring(0,5) : '';
-                                const dateStr = l.lineup_date ? `(${l.lineup_date})` : '';
-                                lineupHTML += `<li class="flex items-start gap-4 border-l-4 border-yellow-400 pl-4 py-1"><div class="shrink-0"><span class="font-bold text-black text-lg">${timeStr}</span><br><span class="text-xs text-gray-500">${dateStr}</span></div><div class="flex items-center h-full pt-1"><span class="text-lg font-bold text-gray-800">${l.band_name}</span></div></li>`;
+                                const d = l.lineup_date || 'TBA';
+                                if(!groupedByDate[d]) groupedByDate[d] = [];
+                                groupedByDate[d].push(l);
                             });
-                        } else { lineupHTML += '<li>ไม่มีตารางเวลาศิลปินสำหรับงานนี้</li>'; }
-                        lineupHTML += '</ul>';
-                        lineDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h3 class="text-3xl font-header font-bold mb-4 border-b-2 border-gray-300 pb-2">Event Line Up</h3>${lineupHTML}</div></div>`;
 
-                        // 2.4 Tab: VENUE
+                            lineupHTML = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-8">'; 
+                            
+                            for (const [dateStr, items] of Object.entries(groupedByDate)) {
+                                let dateHeader = dateStr;
+                                if(dateStr !== 'TBA') {
+                                    const dObj = new Date(dateStr);
+                                    const mNames = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+                                    dateHeader = `${String(dObj.getDate()).padStart(2, '0')} ${mNames[dObj.getMonth()]} ${dObj.getFullYear()}`;
+                                }
+
+                                lineupHTML += `<div><h3 class="text-2xl font-header font-bold mb-4 border-b-2 border-gray-300 pb-2 uppercase">${dateHeader}</h3>`;
+                                
+                                const groupedByStage = {};
+                                items.forEach(l => {
+                                    const s = l.lineup_stage || 'Main Stage';
+                                    if(!groupedByStage[s]) groupedByStage[s] = [];
+                                    groupedByStage[s].push(l);
+                                });
+
+                                for (const [stageName, stageItems] of Object.entries(groupedByStage)) {
+                                    lineupHTML += `<div class="mb-6"><h4 class="font-bold text-sm mb-2 uppercase text-black tracking-wider">${stageName}</h4><ul class="text-sm text-gray-700 space-y-1">`;
+                                    stageItems.forEach(item => {
+                                        const timeDisplay = item.lineup_time ? item.lineup_time.substring(0,5) : '';
+                                        lineupHTML += `<li><span class="font-bold mr-2">${timeDisplay}</span> ${item.band_name}</li>`;
+                                    });
+                                    lineupHTML += `</ul></div>`;
+                                }
+                                lineupHTML += `</div>`;
+                            }
+                            lineupHTML += '</div>';
+                        } else { 
+                            lineupHTML = '<div class="p-8 text-center text-gray-500">ไม่มีตารางเวลาศิลปินสำหรับงานนี้</div>'; 
+                        }
+                        
+                        lineDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8">${lineupHTML}</div></div>`;
+
+                        // 2.4 VENUE
                         let venueDiv = document.getElementById('venue-content-' + event.id);
                         if(!venueDiv) { venueDiv = document.createElement('div'); venueDiv.id = 'venue-content-' + event.id; venueDiv.className = 'hidden'; hiddenContainer.appendChild(venueDiv); }
-                        const venueImg = event.venue_image ? event.venue_image : 'https://placehold.co/800x400/e2e8f0/64748b?text=No+Map';
-                        venueDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h2 class="text-3xl font-header font-bold mb-4">Venue Location</h2><img src="${venueImg}" class="w-full h-auto rounded-lg shadow-md border border-gray-200"></div></div>`;
+                        
+                        let venueHTML = '';
+                        if (event.venue_image) {
+                            venueHTML += `<img src="${event.venue_image}" class="w-full aspect-[16/9] object-cover rounded-xl shadow-md border border-gray-200 mb-6">`;
+                        }
+                        venueHTML += `<h2 class="text-3xl sm:text-4xl font-header font-bold mb-4 text-black tracking-tight">${event.venue_title || 'Venue Location'}</h2>`;
+                        if (event.venue_details) {
+                            venueHTML += `<div class="prose prose-sm sm:prose-base max-w-none text-gray-700 font-medium leading-relaxed mb-6 whitespace-pre-line">${event.venue_details}</div>`;
+                        }
+                        if (event.venue_map) {
+                            if (event.venue_map.includes('<iframe')) {
+                                let mapEmbed = event.venue_map.replace(/width="[^"]*"/, 'width="100%"').replace(/height="[^"]*"/, 'height="450"');
+                                venueHTML += `<div class="w-full overflow-hidden rounded-xl border border-gray-200 shadow-sm">${mapEmbed}</div>`;
+                            } else {
+                                venueHTML += `<a href="${event.venue_map}" target="_blank" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-full font-bold shadow hover:bg-blue-700 transition">📌 Open in Google Maps</a>`;
+                            }
+                        }
+                        venueDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8 flex flex-col">${venueHTML}</div></div>`;
 
-                        // 2.5 Tab: GALLERY
+                        // 2.5 GALLERY
                         let galDiv = document.getElementById('gallery-content-' + event.id);
                         if(!galDiv) { galDiv = document.createElement('div'); galDiv.id = 'gallery-content-' + event.id; galDiv.className = 'hidden'; hiddenContainer.appendChild(galDiv); }
                         let galleryHTML = '<div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">';
@@ -545,5 +741,3 @@ window.applyDataToDOM = async function(container) {
         } catch (error) { console.error('Error fetching events:', error); }
     }
 };
-
-

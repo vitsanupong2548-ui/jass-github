@@ -1,15 +1,34 @@
-﻿# Host: localhost  (Version 5.5.5-10.4.32-MariaDB)
-# Date: 2026-02-23 23:57:58
-# Generator: MySQL-Front 6.0  (Build 2.20)
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Feb 24, 2026 at 09:38 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 
-#
-# Structure for table "cmbigband"
-#
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-DROP TABLE IF EXISTS `cmbigband`;
+--
+-- Database: `music_admin_db`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cmbigband`
+--
+
 CREATE TABLE `cmbigband` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `genre` varchar(100) DEFAULT NULL,
   `details` text DEFAULT NULL,
@@ -22,43 +41,41 @@ CREATE TABLE `cmbigband` (
   `video_link` text DEFAULT NULL,
   `banner_image` varchar(255) DEFAULT NULL,
   `profile_image` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-#
-# Data for table "cmbigband"
-#
+-- --------------------------------------------------------
 
-INSERT INTO `cmbigband` VALUES (1,'พดเกดเ','กดเกดเ','้่เ้่เ้่เ้่','เกดเกดเ','เกดเดก','เกเกดเ','เกดเดก','กเกดเกด','เกดเ','[\"https:\\/\\/www.youtube.com\\/watch?v=h1tbhH8RBBU&list=RDh1tbhH8RBBU&start_radio=1\"]','uploads/cmbigband/banner_1771865585_699c85f154575.png','uploads/cmbigband/profile_1771865585_699c85f154727.png','2026-02-23 23:53:05');
+--
+-- Table structure for table `courses`
+--
 
-#
-# Structure for table "courses"
-#
-
-DROP TABLE IF EXISTS `courses`;
 CREATE TABLE `courses` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
+  `slot_number` int(11) DEFAULT NULL,
   `title` varchar(255) NOT NULL,
   `creator` varchar(100) DEFAULT NULL,
   `details` text DEFAULT NULL,
-  `banner_image` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `banner_image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-#
-# Data for table "courses"
-#
+--
+-- Dumping data for table `courses`
+--
 
-INSERT INTO `courses` VALUES (1,'fdgfdg','dfgdfg','[{\"type\":\"text\",\"value\":\"dfghgfjgl;\"},{\"type\":\"text\",\"value\":\"hjkhjkjhkhj\"},{\"type\":\"image\",\"value\":\"uploads\\/courses\\/course_content_1771864745_699c82a92b5f2.png\"},{\"type\":\"video\",\"value\":\"https:\\/\\/www.youtube.com\\/watch?v=h1tbhH8RBBU&list=RDh1tbhH8RBBU&start_radio=1\"}]','uploads/courses/course_banner_1771864745_699c82a92b457.png');
+INSERT INTO `courses` (`id`, `slot_number`, `title`, `creator`, `details`, `banner_image`) VALUES
+(1, 3, 'fdgfdg', 'dfgdfg', '[{\"type\":\"text\",\"value\":\"dfghgfjgl;\"},{\"type\":\"text\",\"value\":\"hjkhjkjhkhj\"},{\"type\":\"image\",\"value\":\"uploads\\/courses\\/content_1771958454_699df0b66d33a.jpg\"},{\"type\":\"video\",\"value\":\"https:\\/\\/www.youtube.com\\/watch?v=h1tbhH8RBBU&list=RDh1tbhH8RBBU&start_radio=1\"}]', 'uploads/courses/banner_1771958454_699df0b66c8cc.jpg'),
+(2, 1, 'ฟหกด', 'ฟหกด', '[{\"type\":\"text\",\"value\":\"ฟหกดหก\"}]', 'uploads/courses/course_banner_1771961875_699dfe139097c.jpg'),
+(3, 2, 'asdf', 'adsf', '[{\"type\":\"text\",\"value\":\"asdf\"}]', 'uploads/courses/course_banner_1771961912_699dfe38e15a4.jpg');
 
-#
-# Structure for table "events"
-#
+-- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `events`;
+--
+-- Table structure for table `events`
+--
+
 CREATE TABLE `events` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `short_description` text DEFAULT NULL,
   `start_date` datetime NOT NULL,
@@ -68,71 +85,83 @@ CREATE TABLE `events` (
   `banner_image` varchar(255) DEFAULT NULL,
   `poster_image` varchar(255) DEFAULT NULL,
   `venue_image` varchar(255) DEFAULT NULL,
+  `venue_title` varchar(255) DEFAULT NULL,
+  `venue_details` text DEFAULT NULL,
+  `venue_map` text DEFAULT NULL,
   `gallery_images` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-#
-# Data for table "events"
-#
+--
+-- Dumping data for table `events`
+--
 
-INSERT INTO `events` VALUES (1,'','','0000-00-00 00:00:00','0000-00-00 00:00:00','','',NULL,NULL,NULL,'[]','2026-02-23 21:26:51'),(2,'','','0000-00-00 00:00:00','0000-00-00 00:00:00','','',NULL,NULL,NULL,'[]','2026-02-23 21:36:40'),(3,'','','0000-00-00 00:00:00','0000-00-00 00:00:00','','',NULL,NULL,NULL,'[]','2026-02-23 21:38:35'),(4,'','','2026-02-23 15:46:37','2026-02-23 15:46:37','','',NULL,NULL,NULL,'[]','2026-02-23 21:46:37'),(5,'','','2026-02-23 15:59:01','2026-02-23 15:59:01','','',NULL,NULL,NULL,'[]','2026-02-23 21:59:01'),(6,'','','2026-02-23 16:34:02','2026-02-23 16:34:02','','',NULL,NULL,'uploads/events/venue_1771860842_699c736aa08ca.png','[\"uploads\\/events\\/gallery_1771860842_699c736aa13de_0.png\",\"uploads\\/events\\/gallery_1771860842_699c736aa14dd_1.png\"]','2026-02-23 22:34:02'),(7,'เกะัถะั ทภา','ุะพถุัำถพุ','2026-02-24 12:00:00','2026-02-24 15:00:00','ดเดกะ','กหพะเำถ','uploads/events/banner_1771863277_699c7ceddaa36.png','uploads/events/poster_1771863277_699c7ceddab29.png','uploads/events/venue_1771863277_699c7ceddabd0.png','[\"uploads\\/events\\/gallery_1771863277_699c7ceddac71_0.png\",\"uploads\\/events\\/gallery_1771863277_699c7ceddad14_1.png\",\"uploads\\/events\\/gallery_1771863277_699c7ceddadb4_2.png\"]','2026-02-23 23:14:37');
+INSERT INTO `events` (`id`, `title`, `short_description`, `start_date`, `end_date`, `location`, `details`, `banner_image`, `poster_image`, `venue_image`, `venue_title`, `venue_details`, `venue_map`, `gallery_images`, `created_at`) VALUES
+(13, 'fffffffffffffffffffffffffffffffff', 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', '2026-02-24 02:28:00', '2026-02-24 02:31:00', '', 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 'uploads/events/banner_1771875020_699caaccc49c3.png', 'uploads/events/poster_1771875020_699caaccc4e48.webp', 'uploads/events/venue_1771875020_699caaccc5288.png', '', '', '', '[\"uploads\\/events\\/gallery_1771875020_699caaccc5871_0.webp\"]', '2026-02-23 19:30:20'),
+(14, 'ttttttttttttttttttttttttttttttttttttttttttttt', 'ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt', '2026-02-24 12:00:00', '2026-02-24 15:00:00', '', 'ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt', 'uploads/events/banner_1771909459_699d3153718ad.png', 'uploads/events/poster_1771909459_699d315371cb8.jpg', 'uploads/events/venue_1771932173_699d8a0de460a.jpg', 'Hello', 'HAHAHAHAHAHA', '<iframe src=\"https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d60433.40760753234!2d98.9152775!3d18.7942323!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30da3b9c93d76acf%3A0xb9a78f294af5fc20!2sSipSpot!5e0!3m2!1sth!2sth!4v1771943670840!5m2!1sth!2sth\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>', '[\"uploads\\/events\\/gallery_1771930442_699d834acdda6_0.webp\",\"uploads\\/events\\/gallery_1771930442_699d834ace125_1.webp\"]', '2026-02-24 05:04:19'),
+(16, 'adsffffffffffffffff', 'asdfffffffff', '2026-02-24 13:47:00', '2026-02-24 13:48:00', '', 'asdffffffff', 'uploads/events/banner_1771928131_699d7a43611b3.jpg', 'uploads/events/poster_1771915685_699d49a5e726e.JPG', NULL, NULL, NULL, NULL, '[]', '2026-02-24 06:48:05');
 
-#
-# Structure for table "event_tickets"
-#
+-- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `event_tickets`;
+--
+-- Table structure for table `event_lineups`
+--
+
+CREATE TABLE `event_lineups` (
+  `id` int(11) NOT NULL,
+  `event_id` int(11) NOT NULL,
+  `lineup_date` date DEFAULT NULL,
+  `lineup_time` time DEFAULT NULL,
+  `lineup_stage` varchar(255) DEFAULT NULL,
+  `band_name` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `event_lineups`
+--
+
+INSERT INTO `event_lineups` (`id`, `event_id`, `lineup_date`, `lineup_time`, `lineup_stage`, `band_name`, `created_at`) VALUES
+(45, 14, '2026-02-24', NULL, 'IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII', 'iq1123', '2026-02-24 20:33:22'),
+(46, 14, '2026-02-24', NULL, 'IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII', 'iq11232', '2026-02-24 20:33:22'),
+(47, 13, '2026-02-24', '02:32:00', '', 'F', '2026-02-24 20:34:30');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_tickets`
+--
+
 CREATE TABLE `event_tickets` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `event_id` int(11) NOT NULL,
   `title` varchar(100) NOT NULL,
   `details` text DEFAULT NULL,
   `price` decimal(10,2) NOT NULL,
   `amount` int(11) NOT NULL,
-  `is_open` tinyint(1) DEFAULT 1,
-  PRIMARY KEY (`id`),
-  KEY `event_id` (`event_id`),
-  CONSTRAINT `event_tickets_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `is_open` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-#
-# Data for table "event_tickets"
-#
+--
+-- Dumping data for table `event_tickets`
+--
 
-INSERT INTO `event_tickets` VALUES (1,6,'hgjhgj','ghjhgj',555.00,5,1),(2,6,'edtdfg','5tdrt',777.00,6,1),(3,7,'เดท่','กพะัำเ',999.00,99,1),(4,7,'fghj','dfgbdf',888.00,88,1);
+INSERT INTO `event_tickets` (`id`, `event_id`, `title`, `details`, `price`, `amount`, `is_open`) VALUES
+(78, 14, 'ttttttttttttttttttttttttt', 'ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt', 6000.00, 6000, 1),
+(79, 14, 'ttttttttttttttttttttttttt1', 'ttttttttttttttttttttttttt1', 80000.00, 6000, 1),
+(80, 14, 'ttttttttttttttttttttttttt2', 'ttttttttttttttttttttttttt2', 8000.00, 800, 1),
+(81, 14, 'klkdsfsdfds', 'sdfafssssssssssssssssssssssssss', 800.00, 300, 1),
+(82, 13, 'ffffffffffffffffffffffffffffffffffffffffff', 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 30000.00, 800, 1);
 
-#
-# Structure for table "event_lineups"
-#
+-- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `event_lineups`;
-CREATE TABLE `event_lineups` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `event_id` int(11) NOT NULL,
-  `lineup_date` date DEFAULT NULL,
-  `lineup_time` time DEFAULT NULL,
-  `band_name` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `event_id` (`event_id`),
-  CONSTRAINT `event_lineups_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+--
+-- Table structure for table `musicians`
+--
 
-#
-# Data for table "event_lineups"
-#
-
-INSERT INTO `event_lineups` VALUES (1,4,'2026-02-23','21:46:00','hjk','2026-02-23 21:46:37'),(2,4,NULL,'22:46:00','jfsasf','2026-02-23 21:46:37'),(3,5,NULL,'21:58:00','กดกดก','2026-02-23 21:59:01'),(4,5,NULL,'22:58:00','กดกดก','2026-02-23 21:59:01'),(5,6,'2026-02-23','22:33:00','hgjhj','2026-02-23 22:34:02'),(6,6,'2026-02-23','23:33:00','hghg','2026-02-23 22:34:02'),(7,7,'2026-02-24','23:14:00','htfyhfh','2026-02-23 23:14:37'),(8,7,NULL,'00:14:00','fthtuytu','2026-02-23 23:14:37');
-
-#
-# Structure for table "musicians"
-#
-
-DROP TABLE IF EXISTS `musicians`;
 CREATE TABLE `musicians` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
+  `slot_number` int(11) DEFAULT NULL,
   `network_type` enum('artist_library','jazz_network') DEFAULT 'artist_library',
   `title` varchar(255) NOT NULL,
   `genre` varchar(100) DEFAULT NULL,
@@ -145,34 +174,155 @@ CREATE TABLE `musicians` (
   `email` varchar(100) DEFAULT NULL,
   `video_link` varchar(255) DEFAULT NULL,
   `banner_image` varchar(255) DEFAULT NULL,
-  `profile_image` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `profile_image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-#
-# Data for table "musicians"
-#
+--
+-- Dumping data for table `musicians`
+--
 
-INSERT INTO `musicians` VALUES (1,'artist_library','gggg','dfgd','stkyukdr','gfhfg','fghgfhkj','fghfgh','fuyljil','fhf','fjghjgh','[\"https:\\/\\/www.youtube.com\\/watch?v=AnY9kgflPPk&list=RDAnY9kgflPPk&start_radio=1\",\"https:\\/\\/www.youtube.com\\/watch?v=h1tbhH8RBBU&list=RDh1tbhH8RBBU&start_radio=1\"]','uploads/musicians/banner_1771863042_699c7c020041d.png','uploads/musicians/profile_1771863042_699c7c020050e.png'),(2,'artist_library','dfggfhgkj','hjkjkljkh','wreewr','kjljklk','weretret','ljkljkljk','wewrwer','ljkljk\'\'','rwrwer','[]','uploads/musicians/banner_1771863430_699c7d86a4e53.png','uploads/musicians/profile_1771863430_699c7d86a4f2f.png'),(3,'jazz_network','uyujykjh','jkl;werwq','rwer','eqwqweq','rwerwer','eqew','werwerwe','rqwewrw','rwrwerwe','[]','uploads/musicians/banner_1771863459_699c7da39cdf3.png','uploads/musicians/profile_1771863459_699c7da39d713.png');
+INSERT INTO `musicians` (`id`, `slot_number`, `network_type`, `title`, `genre`, `details`, `facebook`, `whatsapp`, `instagram`, `website`, `tiktok`, `email`, `video_link`, `banner_image`, `profile_image`) VALUES
+(4, 1, 'artist_library', 'HELLO', 'MOOO', 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk', 'https://www.facebook.com/', '096454542', '', '', '', '', '[\"https:\\/\\/www.youtube.com\\/watch?v=xeLtkYELNwI\"]', 'uploads/musicians/banner_1771950548_699dd1d4dcc15.webp', 'uploads/musicians/profile_1771951567_699dd5cf50996.jpg'),
+(5, 2, 'artist_library', 'TEST2.', 'BOOK NOW', 'alksjdljf;alsdj;lfasjd;lfjslkjfmijlkjoijnoijoihjkjlsiemdnlskdur', 'https://www.facebook.com/', '', 'https://www.facebook.com/', 'https://www.facebook.com/', 'https://www.facebook.com/', 'https://www.facebook.com/', '[\"https:\\/\\/www.youtube.com\\/watch?v=zyZ6YWfZN2I\",\"https:\\/\\/www.youtube.com\\/watch?v=zyZ6YWfZN2I\"]', 'uploads/musicians/banner_1771950067_699dcff30496a.webp', 'uploads/musicians/profile_1771951589_699dd5e5d54ea.jpg'),
+(6, 1, 'jazz_network', 'ดดดดดดดดดดดดดดดดดดด', 'ะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะ', 'ดดดดดดดดดดดดดดดดดดดดดดดดดดดดดดดดด', 'https://www.facebook.com/', '0987463245', 'https://www.facebook.com/', 'https://www.facebook.com/', 'https://www.facebook.com/', 'https://www.facebook.com/', '[\"https:\\/\\/www.youtube.com\\/watch?v=zyZ6YWfZN2I\"]', 'uploads/musicians/banner_1771948761_699dcad9e5c92.jpg', 'uploads/musicians/profile_1771948761_699dcad9e5ebc.jpg');
 
-#
-# Structure for table "users"
-#
+-- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `users`;
+--
+-- Table structure for table `users`
+--
+
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `email` varchar(100) NOT NULL,
   `role` enum('admin','user') DEFAULT 'user',
   `status` enum('pending','approved','suspended') DEFAULT 'pending',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-#
-# Data for table "users"
-#
+--
+-- Dumping data for table `users`
+--
 
-INSERT INTO `users` VALUES (1,'admin','$2y$10$geLkDiiWk1MkF1xpJBEzaOV.Gr.2m.D7RhVHUTTr/W0qSPJX1miDu','admin@local.com','admin','approved','2026-02-23 21:24:43'),(2,'bhassa','$2y$10$uBKOi/KmYUPpT/Y0n/NTkePtcLpG.TMKqu7w1fjbDV7erNljh84eS','bhassakorn.ps@gmail.com','admin','approved','2026-02-23 21:25:12'),(3,'admin@jazz01','$2y$10$x9PFgK5/grvqlLil.qYHO.sCv.iTCOTcDjchxgstHPjMoA1hQMMui','admin@jazz.com','admin','approved','2026-02-23 23:33:50');
+INSERT INTO `users` (`id`, `username`, `password`, `email`, `role`, `status`, `created_at`) VALUES
+(1, 'admin', '$2y$10$geLkDiiWk1MkF1xpJBEzaOV.Gr.2m.D7RhVHUTTr/W0qSPJX1miDu', 'admin@local.com', 'admin', 'approved', '2026-02-23 14:24:43'),
+(2, 'bhassa', '$2y$10$uBKOi/KmYUPpT/Y0n/NTkePtcLpG.TMKqu7w1fjbDV7erNljh84eS', 'bhassakorn.ps@gmail.com', 'admin', 'approved', '2026-02-23 14:25:12'),
+(3, 'admin@jazz01', '$2y$10$x9PFgK5/grvqlLil.qYHO.sCv.iTCOTcDjchxgstHPjMoA1hQMMui', 'admin@jazz.com', 'admin', 'approved', '2026-02-23 16:33:50'),
+(4, 'test', '$2y$10$keaz/4F6636RzRBF6pmLIu4YNGVy3sPwQNEs.3yCD.dnFyWMIJEmK', 'test@gmail.com', 'user', 'pending', '2026-02-23 18:08:45');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `cmbigband`
+--
+ALTER TABLE `cmbigband`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `courses`
+--
+ALTER TABLE `courses`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `events`
+--
+ALTER TABLE `events`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `event_lineups`
+--
+ALTER TABLE `event_lineups`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `event_id` (`event_id`);
+
+--
+-- Indexes for table `event_tickets`
+--
+ALTER TABLE `event_tickets`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `event_id` (`event_id`);
+
+--
+-- Indexes for table `musicians`
+--
+ALTER TABLE `musicians`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `cmbigband`
+--
+ALTER TABLE `cmbigband`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `courses`
+--
+ALTER TABLE `courses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `events`
+--
+ALTER TABLE `events`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `event_lineups`
+--
+ALTER TABLE `event_lineups`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+
+--
+-- AUTO_INCREMENT for table `event_tickets`
+--
+ALTER TABLE `event_tickets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+
+--
+-- AUTO_INCREMENT for table `musicians`
+--
+ALTER TABLE `musicians`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `event_lineups`
+--
+ALTER TABLE `event_lineups`
+  ADD CONSTRAINT `event_lineups_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `event_tickets`
+--
+ALTER TABLE `event_tickets`
+  ADD CONSTRAINT `event_tickets_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
