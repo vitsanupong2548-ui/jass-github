@@ -9,15 +9,16 @@ window.isUserLoggedIn = false;
 
 if (mainContainer) {
     mainContainer.addEventListener('click', function(e) {
-        if (!activeCard) {
+       if (!activeCard) {
             const clickedCard = e.target.closest('.card:not(.clone)');
             if (clickedCard) { 
-                if (e.target.closest('a')) return; 
                 
-                // 🌟 ดักตรงนี้: ถ้ายังไม่ล็อกอิน ให้โชว์ Modal แล้วหยุดการทำงาน
-                if (!window.isUserLoggedIn) {
-                    document.getElementById('auth-modal').classList.remove('hidden');
-                    return; 
+                // 🌟 แก้ไขตรงนี้: ถ้าเป็นปุ่มลูกศร (.arrow-link) ให้อนุญาตให้ขยายกล่องได้
+                if (e.target.closest('a') && !e.target.closest('.arrow-link')) return; 
+                
+                // ป้องกันไม่ให้หน้าเว็บกระตุกกลับขึ้นด้านบนตอนกดปุ่มลูกศร
+                if (e.target.closest('.arrow-link')) {
+                    e.preventDefault();
                 }
                 
                 expandCard(clickedCard); 
@@ -25,7 +26,7 @@ if (mainContainer) {
             return; 
         }
         if (activeClone) {
-            const link = e.target.closest('.event-link, .course-link, .forum-link, .store-link, .bigband-link, .artist-link'); // เพิ่ม .artist-link เข้าไปเผื่อไว้ครับ
+            const link = e.target.closest('.event-link, .course-link, .forum-link, .store-link, .bigband-link, .artist-link'); 
             if (link && activeClone.contains(link)) return; 
             if (!activeClone.contains(e.target)) collapseCard(activeClone, activeCard); 
         }
@@ -508,14 +509,29 @@ function addEventDetailListeners(container) {
         link.parentNode.replaceChild(newLink, link);
         
         newLink.addEventListener('click', (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             e.stopPropagation();
-            
-            if (!mainContainer.dataset.initialHeight) { 
-                mainContainer.dataset.initialHeight = mainContainer.offsetHeight; 
+
+            // 🌟 1. ดักล็อกอิน "เฉพาะคอร์สเรียน" เท่านั้น! 🌟
+            if (!window.isUserLoggedIn && newLink.classList.contains('course-link')) {
+                const authModal = document.getElementById('auth-modal');
+                const loginContainer = document.getElementById('login-form-container');
+                const registerContainer = document.getElementById('register-form-container');
+                
+                if(loginContainer) loginContainer.classList.remove('hidden');
+                if(registerContainer) registerContainer.classList.add('hidden');
+                if(authModal) authModal.classList.remove('hidden');
+                return; // หยุดการทำงาน เฉพาะคอร์สเรียน
+            }
+
+            // 🌟 2. ถ้าเป็นหน้าอื่น หรือล็อกอินแล้ว ให้ทำงานต่อ 🌟
+            const mainContainer = document.querySelector('.main-container');
+            if (mainContainer && !mainContainer.dataset.initialHeight) {
+                mainContainer.dataset.initialHeight = mainContainer.offsetHeight;
                 mainContainer.style.height = `${mainContainer.offsetHeight * 2.5}px`; 
             }
-            
+
+            // 🌟 3. ตรวจสอบว่าคลิกที่ปุ่มไหน แล้วเปิดหน้าต่างรายละเอียดของอันนั้น 🌟
             if (newLink.classList.contains('event-link')) {
                 showEventDetailContent(newLink.getAttribute('data-event-index') || '1');
             } else if (newLink.classList.contains('course-link')) {
@@ -529,7 +545,6 @@ function addEventDetailListeners(container) {
             } else if (newLink.classList.contains('artist-link')) {
                 const match = newLink.querySelector('img[id^="dyn-"]')?.id.match(/dyn-(artist|partner)(\d+)/);
                 if(match) {
-                    // ส่ง newLink ไปด้วยเพื่อใช้ดึง data-musician-id
                     showArtistDetailContent(match[1], match[2], newLink);
                 }
             }

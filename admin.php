@@ -88,9 +88,8 @@
 
     <main class="flex-1 h-full overflow-y-auto bg-white hidden relative" id="main-content">
         
-      <section id="section-admin" class="content-section p-8 max-w-6xl mx-auto hidden">
+        <section id="section-admin" class="content-section p-8 max-w-6xl mx-auto hidden">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">จัดการสมาชิก (User Management)</h2>
-            
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                 <div class="relative w-full md:w-1/3">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -98,31 +97,17 @@
                     </div>
                     <input type="text" id="user-search-input" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition font-medium" placeholder="ค้นหาชื่อผู้ใช้ หรือ อีเมล...">
                 </div>
-
                 <div class="flex gap-3 w-full md:w-auto">
-                    <button id="btn-action-password" disabled class="bg-blue-500 text-white px-6 py-2 rounded-lg font-bold shadow-sm opacity-50 cursor-not-allowed hover:bg-blue-600 transition flex items-center gap-2">
-                        🔑 เปลี่ยนรหัสผ่าน
-                    </button>
-                    <button id="btn-action-delete" disabled class="bg-red-500 text-white px-6 py-2 rounded-lg font-bold shadow-sm opacity-50 cursor-not-allowed hover:bg-red-600 transition flex items-center gap-2">
-                        🗑️ ลบผู้ใช้
-                    </button>
+                    <button id="btn-action-password" disabled class="bg-blue-500 text-white px-6 py-2 rounded-lg font-bold shadow-sm opacity-50 cursor-not-allowed hover:bg-blue-600 transition flex items-center gap-2">🔑 เปลี่ยนรหัสผ่าน</button>
+                    <button id="btn-action-delete" disabled class="bg-red-500 text-white px-6 py-2 rounded-lg font-bold shadow-sm opacity-50 cursor-not-allowed hover:bg-red-600 transition flex items-center gap-2">🗑️ ลบผู้ใช้</button>
                 </div>
             </div>
-
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                 <table class="w-full text-left border-collapse cursor-pointer">
-                    <thead>
-                        <tr class="bg-gray-50 text-gray-700 text-sm uppercase tracking-wider border-b border-gray-200">
-                            <th class="p-4 font-bold w-16 text-center">ID</th>
-                            <th class="p-4 font-bold">ชื่อผู้ใช้ (Username / Email)</th>
-                            <th class="p-4 font-bold w-32 text-center">บทบาท (Role)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="user-table-body" class="text-gray-800">
-                        </tbody>
+                    <thead><tr class="bg-gray-50 text-gray-700 text-sm uppercase tracking-wider border-b border-gray-200"><th class="p-4 font-bold w-16 text-center">ID</th><th class="p-4 font-bold">ชื่อผู้ใช้ (Username / Email)</th><th class="p-4 font-bold w-32 text-center">บทบาท (Role)</th></tr></thead>
+                    <tbody id="user-table-body" class="text-gray-800"></tbody>
                 </table>
             </div>
-            
             <p id="user-selection-status" class="text-sm font-medium text-gray-500 mt-4 text-right">ยังไม่ได้เลือกผู้ใช้งาน</p>
         </section>
 
@@ -154,33 +139,53 @@
                     </div>
                 </div>
                 
-                <h3 id="form-section-title" class="text-2xl font-bold mb-4 border-b pb-2 text-gray-800">เพิ่มข้อมูล Event ใหม่</h3>
+                <div class="flex justify-between items-end mb-4 border-b pb-2">
+                    <h3 id="form-section-title" class="text-2xl font-bold text-gray-800">เพิ่มข้อมูล Event ใหม่</h3>
+                    <div class="flex items-center gap-3 text-sm font-bold bg-white px-4 py-1.5 rounded-full border border-gray-200 shadow-sm">
+                        <button type="button" class="admin-lang-btn text-red-500 border-b-2 border-red-500 pb-0.5" data-form="event" onclick="switchAdminLang(this, 'en', 'event')">GB English</button>
+                        <span class="text-gray-300">|</span>
+                        <button type="button" class="admin-lang-btn text-gray-400 hover:text-gray-800 transition pb-0.5" data-form="event" onclick="switchAdminLang(this, 'th', 'event')">TH ไทย</button>
+                    </div>
+                </div>
+                
                 <input type="hidden" id="edit-event-id" value="">
 
-                <div class="grid grid-cols-2 gap-4 h-48">
-                    <label class="upload-box relative overflow-hidden group" id="banner-preview">
-                        <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Banner</span>
-                        <input type="file" id="event-banner" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'banner-preview', 3/1)">
-                    </label>
-                    <label class="upload-box relative overflow-hidden group" id="poster-preview">
-                        <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Poster</span>
-                        <input type="file" id="event-poster" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'poster-preview', 3/4)">
-                    </label>
+                <div class="grid grid-cols-2 gap-4 h-48 mb-6">
+                    <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
+                        <img id="event-banner-img" src="https://placehold.co/1200x400/e5e7eb/a3a3a3?text=Add+Banner" class="w-full h-full object-cover">
+                        <label for="event-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                            <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm">📷 เปลี่ยน Banner</span>
+                            <input type="file" id="event-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'event-banner-img')">
+                        </label>
+                    </div>
+                    <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
+                        <img id="event-poster-img" src="https://placehold.co/600x800/e5e7eb/a3a3a3?text=Add+Poster" class="w-full h-full object-cover">
+                        <label for="event-poster" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                            <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm">📷 เปลี่ยน Poster</span>
+                            <input type="file" id="event-poster" class="hidden" accept="image/*" onchange="previewImage(this, 'event-poster-img')">
+                        </label>
+                    </div>
                 </div>
 
                 <div class="space-y-4">
-                    <input type="text" id="ev-title" class="input-style" placeholder="Title">
-                    <input type="text" id="ev-short-desc" class="input-style" placeholder="Short Description">
+                    <input type="text" id="ev-title" class="input-style lang-en" placeholder="Title (EN)">
+                    <input type="text" id="ev-title-th" class="input-style lang-th hidden" placeholder="ชื่องาน (TH)">
+                    
+                    <input type="text" id="ev-short-desc" class="input-style lang-en" placeholder="Short Description (EN)">
+                    <input type="text" id="ev-short-desc-th" class="input-style lang-th hidden" placeholder="คำอธิบายแบบย่อ (TH)">
+                    
                     <div class="grid grid-cols-2 gap-4">
                         <div><label class="block text-xs text-gray-500 ml-2 mb-1">Start Date</label><div class="flex gap-2"><input type="date" id="ev-start-date" class="input-style"><input type="time" id="ev-start-time" class="input-style w-32" value="12:00"></div></div>
                         <div><label class="block text-xs text-gray-500 ml-2 mb-1">End Date</label><div class="flex gap-2"><input type="date" id="ev-end-date" class="input-style"><input type="time" id="ev-end-time" class="input-style w-32" value="15:00"></div></div>
                     </div>
-                    <input type="text" id="ev-location" class="input-style" placeholder="Location">
-                    <textarea id="ev-details" class="textarea-style" placeholder="Details ...."></textarea>
+                    <input type="text" id="ev-location" class="input-style" placeholder="Location (Map Search)">
+                    
+                    <textarea id="ev-details" class="textarea-style lang-en" placeholder="Details (EN) ...."></textarea>
+                    <textarea id="ev-details-th" class="textarea-style lang-th hidden" placeholder="รายละเอียดแบบเต็ม (TH) ...."></textarea>
                 </div>
                 
                 <div>
-                    <h3 class="text-xl font-bold mb-4">Ticket</h3>
+                    <h3 class="text-xl font-bold mb-4 mt-8">Ticket</h3>
                     <div class="border p-4 rounded-xl relative bg-gray-50/50">
                         <div class="flex gap-4 mb-4">
                             <label class="flex items-center gap-2"><input type="radio" name="temp_ticket_status" value="1" checked> Sale Open</label>
@@ -200,7 +205,7 @@
                 </div>
 
                 <div>
-                    <h3 class="text-xl font-bold mb-4">Line Up</h3>
+                    <h3 class="text-xl font-bold mb-4 mt-8">Line Up</h3>
                     <div class="border p-4 rounded-xl relative bg-gray-50/50">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div><label class="block text-xs text-gray-500 ml-2 mb-1">Date</label><input type="date" id="temp_lineup_date" class="input-style"></div>
@@ -215,22 +220,27 @@
                     <div id="added-lineups-list" class="mt-8 space-y-2"></div>
                 </div>
 
-                <div><h3 class="text-xl font-bold mb-4">Venue</h3>
+                <div><h3 class="text-xl font-bold mb-4 mt-8">Venue</h3>
                     <div class="flex gap-4 items-stretch">
-                        <label class="upload-box w-1/3 min-h-[200px] relative overflow-hidden group shrink-0" id="venue-photo-preview">
-                            <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200">+ Add Photo</span>
-                            <input type="file" id="venue-photo" class="absolute inset-0 opacity-0 cursor-pointer z-20" accept="image/*" onchange="previewImage(this, 'venue-photo-preview', 16/9)">
-                        </label>
+                        <div class="w-1/3 min-h-[200px] relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group shrink-0">
+                            <img id="venue-photo-img" src="https://placehold.co/800x450/e5e7eb/a3a3a3?text=Add+Venue+Photo" class="absolute inset-0 w-full h-full object-cover">
+                            <label for="venue-photo" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
+                                <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm text-sm">📷 เปลี่ยนรูป</span>
+                                <input type="file" id="venue-photo" class="hidden" accept="image/*" onchange="previewImage(this, 'venue-photo-img')">
+                            </label>
+                        </div>
                         <div class="flex-1 flex flex-col space-y-3">
-                            <input type="text" id="venue-title" class="input-style" placeholder="Venue Title">
-                            <textarea id="venue-details" class="textarea-style flex-1" placeholder="Details"></textarea>
+                            <input type="text" id="venue-title" class="input-style lang-en" placeholder="Venue Title (EN)">
+                            <input type="text" id="venue-title-th" class="input-style lang-th hidden" placeholder="ชื่อสถานที่จัดงาน (TH)">
+                            <textarea id="venue-details" class="textarea-style flex-1 lang-en" placeholder="Venue Details (EN)"></textarea>
+                            <textarea id="venue-details-th" class="textarea-style flex-1 lang-th hidden" placeholder="รายละเอียดสถานที่ (TH)"></textarea>
                             <input type="text" id="venue-map" class="input-style" placeholder="วางโค้ด <iframe src=...> จาก Google Maps" oninput="previewMap(this.value)">
                             <div id="map-preview-container" class="w-full mt-2 rounded-xl overflow-hidden hidden border border-gray-300"></div>
                         </div>
                     </div>
                 </div>
                 
-                <div><h3 class="text-xl font-bold mb-4">Gallery</h3>
+                <div><h3 class="text-xl font-bold mb-4 mt-8">Gallery</h3>
                     <div id="gallery-container" class="flex flex-wrap gap-4 items-start">
                         <label class="upload-box w-32 h-32 relative overflow-hidden group shrink-0 shadow-sm border border-dashed border-gray-400">
                             <span class="relative z-10 font-bold drop-shadow-md group-hover:text-gray-200 text-center">+ Add<br>Photos</span>
@@ -283,9 +293,16 @@
                     <div id="artist-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6"></div>
 
                     <div id="artist-form-container" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hidden">
-                        <div class="flex justify-between items-center mb-4 border-b pb-2">
-                            <h4 id="artist-form-title" class="text-xl font-extrabold text-black">เพิ่มข้อมูล Artist</h4>
-                            <input type="hidden" id="edit-artist-slot" value="">
+                        <div class="flex justify-between items-end mb-4 border-b pb-2">
+                            <div>
+                                <h4 id="artist-form-title" class="text-xl font-extrabold text-black">เพิ่มข้อมูล Artist</h4>
+                                <input type="hidden" id="edit-artist-slot" value="">
+                            </div>
+                            <div class="flex items-center gap-3 text-sm font-bold bg-gray-50 px-4 py-1.5 rounded-full border border-gray-200">
+                                <button type="button" class="admin-lang-btn text-red-500 border-b-2 border-red-500 pb-0.5" data-form="artist" onclick="switchAdminLang(this, 'en', 'artist')">GB English</button>
+                                <span class="text-gray-300">|</span>
+                                <button type="button" class="admin-lang-btn text-gray-400 hover:text-gray-800 transition pb-0.5" data-form="artist" onclick="switchAdminLang(this, 'th', 'artist')">TH ไทย</button>
+                            </div>
                         </div>
                         
                         <div class="grid grid-cols-2 gap-4 h-36 md:h-44 mb-6">
@@ -293,7 +310,7 @@
                                 <img id="artist-banner-img" src="https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner" class="w-full h-full object-cover">
                                 <label for="artist-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                     <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner / Crop</span>
-                                    <input type="file" id="artist-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'artist-banner-img', 3/1)">
+                                    <input type="file" id="artist-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'artist-banner-img')">
                                 </label>
                             </div>
                             <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
@@ -306,8 +323,11 @@
                         </div>
 
                         <div class="space-y-3">
-                            <input type="text" id="art-title" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm" placeholder="Band / Institution Title">
-                            <input type="text" id="art-genre" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm" placeholder="Category">
+                            <input type="text" id="art-title" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm lang-en" placeholder="Band / Institution Title (EN)">
+                            <input type="text" id="art-title-th" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm lang-th hidden" placeholder="ชื่อศิลปิน (TH)">
+                            
+                            <input type="text" id="art-genre" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm lang-en" placeholder="Category/Genre (EN)">
+                            <input type="text" id="art-genre-th" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm lang-th hidden" placeholder="หมวดหมู่/แนวเพลง (TH)">
                             
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 pt-2">
                                 <div class="flex items-center gap-3"><svg class="w-7 h-7 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><input type="text" id="art-fb" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
@@ -317,7 +337,8 @@
                                 <div class="flex items-center gap-3"><svg class="w-7 h-7 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.04-.1z"/></svg><input type="text" id="art-tk" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
                                 <div class="flex items-center gap-3"><svg class="w-7 h-7 text-[#EA4335]" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><input type="text" id="art-email" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
                             </div>
-                            <textarea id="art-details" class="w-full border border-gray-400 rounded-xl px-5 py-4 outline-none focus:border-yellow-500 h-32 placeholder-gray-400 font-semibold text-sm mt-3" placeholder="Details ...."></textarea>
+                            <textarea id="art-details" class="w-full border border-gray-400 rounded-xl px-5 py-4 outline-none focus:border-yellow-500 h-32 placeholder-gray-400 font-semibold text-sm mt-3 lang-en" placeholder="Details (EN) ...."></textarea>
+                            <textarea id="art-details-th" class="w-full border border-gray-400 rounded-xl px-5 py-4 outline-none focus:border-yellow-500 h-32 placeholder-gray-400 font-semibold text-sm mt-3 lang-th hidden" placeholder="รายละเอียดศิลปิน (TH) ...."></textarea>
                         </div>
 
                         <div class="mt-6">
@@ -348,9 +369,16 @@
                     <div id="jazz-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6"></div>
 
                     <div id="jazz-form-container" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hidden">
-                        <div class="flex justify-between items-center mb-4 border-b pb-2">
-                            <h4 id="jazz-form-title" class="text-xl font-extrabold text-black">เพิ่มข้อมูล Jazz Network</h4>
-                            <input type="hidden" id="edit-jazz-slot" value="">
+                        <div class="flex justify-between items-end mb-4 border-b pb-2">
+                            <div>
+                                <h4 id="jazz-form-title" class="text-xl font-extrabold text-black">เพิ่มข้อมูล Jazz Network</h4>
+                                <input type="hidden" id="edit-jazz-slot" value="">
+                            </div>
+                            <div class="flex items-center gap-3 text-sm font-bold bg-gray-50 px-4 py-1.5 rounded-full border border-gray-200">
+                                <button type="button" class="admin-lang-btn text-red-500 border-b-2 border-red-500 pb-0.5" data-form="jazz" onclick="switchAdminLang(this, 'en', 'jazz')">GB English</button>
+                                <span class="text-gray-300">|</span>
+                                <button type="button" class="admin-lang-btn text-gray-400 hover:text-gray-800 transition pb-0.5" data-form="jazz" onclick="switchAdminLang(this, 'th', 'jazz')">TH ไทย</button>
+                            </div>
                         </div>
                         
                         <div class="grid grid-cols-2 gap-4 h-36 md:h-44 mb-6">
@@ -358,7 +386,7 @@
                                 <img id="jazz-banner-img" src="https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner" class="w-full h-full object-cover">
                                 <label for="jazz-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                     <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner / Crop</span>
-                                    <input type="file" id="jazz-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'jazz-banner-img', 3/1)">
+                                    <input type="file" id="jazz-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'jazz-banner-img')">
                                 </label>
                             </div>
                             <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
@@ -371,8 +399,11 @@
                         </div>
 
                         <div class="space-y-3">
-                            <input type="text" id="jazz-title" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm" placeholder="Band / Institution Title">
-                            <input type="text" id="jazz-genre" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm" placeholder="Category">
+                            <input type="text" id="jazz-title" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm lang-en" placeholder="Band / Institution Title (EN)">
+                            <input type="text" id="jazz-title-th" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm lang-th hidden" placeholder="ชื่อวง/สถานที่ (TH)">
+                            
+                            <input type="text" id="jazz-genre" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm lang-en" placeholder="Category (EN)">
+                            <input type="text" id="jazz-genre-th" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-yellow-500 placeholder-gray-400 font-semibold text-sm lang-th hidden" placeholder="หมวดหมู่ (TH)">
                             
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 pt-2">
                                 <div class="flex items-center gap-3"><svg class="w-7 h-7 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><input type="text" id="jazz-fb" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
@@ -383,7 +414,8 @@
                                 <div class="flex items-center gap-3"><svg class="w-7 h-7 text-[#EA4335]" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><input type="text" id="jazz-email" class="w-full border border-gray-400 rounded-full px-4 py-1.5 outline-none focus:border-yellow-500"></div>
                             </div>
                             
-                            <textarea id="jazz-details" class="w-full border border-gray-400 rounded-xl px-5 py-4 outline-none focus:border-yellow-500 h-32 placeholder-gray-400 font-semibold text-sm mt-3" placeholder="Details ...."></textarea>
+                            <textarea id="jazz-details" class="w-full border border-gray-400 rounded-xl px-5 py-4 outline-none focus:border-yellow-500 h-32 placeholder-gray-400 font-semibold text-sm mt-3 lang-en" placeholder="Details (EN) ...."></textarea>
+                            <textarea id="jazz-details-th" class="w-full border border-gray-400 rounded-xl px-5 py-4 outline-none focus:border-yellow-500 h-32 placeholder-gray-400 font-semibold text-sm mt-3 lang-th hidden" placeholder="รายละเอียด (TH) ...."></textarea>
                         </div>
 
                         <div class="mt-6">
@@ -441,10 +473,17 @@
                     <div id="course-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6"></div>
 
                     <div id="course-form-container" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hidden">
-                        <div class="flex justify-between items-center mb-4 border-b pb-2">
-                            <h4 id="course-form-title" class="text-xl font-extrabold text-[#10a349]">เพิ่มข้อมูล Course</h4>
-                            <input type="hidden" id="edit-course-slot" value="">
-                            <input type="hidden" id="edit-course-id" value="">
+                        <div class="flex justify-between items-end mb-4 border-b pb-2">
+                            <div>
+                                <h4 id="course-form-title" class="text-xl font-extrabold text-[#10a349]">เพิ่มข้อมูล Course</h4>
+                                <input type="hidden" id="edit-course-slot" value="">
+                                <input type="hidden" id="edit-course-id" value="">
+                            </div>
+                            <div class="flex items-center gap-3 text-sm font-bold bg-gray-50 px-4 py-1.5 rounded-full border border-gray-200">
+                                <button type="button" class="admin-lang-btn text-red-500 border-b-2 border-red-500 pb-0.5" data-form="course" onclick="switchAdminLang(this, 'en', 'course')">GB English</button>
+                                <span class="text-gray-300">|</span>
+                                <button type="button" class="admin-lang-btn text-gray-400 hover:text-gray-800 transition pb-0.5" data-form="course" onclick="switchAdminLang(this, 'th', 'course')">TH ไทย</button>
+                            </div>
                         </div>
                         
                         <div class="w-full h-40 md:h-56 mb-5">
@@ -452,14 +491,17 @@
                                 <img id="course-banner-img" src="https://placehold.co/1200x400/b2b2b2/000?text=No+Banner" class="w-full h-full object-cover">
                                 <label for="course-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                     <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner / Crop</span>
-                                    <input type="file" id="course-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'course-banner-img', 16/9)">
+                                    <input type="file" id="course-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'course-banner-img')">
                                 </label>
                             </div>
                         </div>
                         
                         <div class="space-y-3 mb-5">
-                            <input type="text" id="course-title" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm" placeholder="Course Title">
-                            <input type="text" id="course-creator" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm" placeholder="Creator">
+                            <input type="text" id="course-title" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-en" placeholder="Course Title (EN)">
+                            <input type="text" id="course-title-th" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-th hidden" placeholder="ชื่อคอร์สเรียน (TH)">
+                            
+                            <input type="text" id="course-creator" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-en" placeholder="Creator (EN)">
+                            <input type="text" id="course-creator-th" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-th hidden" placeholder="ผู้จัดทำ/ผู้สอน (TH)">
                         </div>
 
                         <div class="flex gap-3 mb-4">
@@ -494,7 +536,7 @@
                             <img id="cmbigband-banner-img" src="https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner" class="w-full h-full object-cover">
                             <label for="cmb-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                                 <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner</span>
-                                <input type="file" id="cmb-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'cmbigband-banner-img', 16/9)">
+                                <input type="file" id="cmb-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'cmbigband-banner-img')">
                             </label>
                         </div>
                         <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
@@ -507,8 +549,11 @@
                     </div>
                     
                     <div class="space-y-4">
-                        <input type="text" id="cmb-title" class="input-style font-bold text-lg" placeholder="ชื่อวง (Band Title)">
-                        <input type="text" id="cmb-genre" class="input-style" placeholder="แนวเพลง (Genre)">
+                        <input type="text" id="cmb-title" class="input-style font-bold text-lg lang-en" placeholder="Band Title (EN)">
+                        <input type="text" id="cmb-title-th" class="input-style font-bold text-lg lang-th hidden" placeholder="ชื่อวง (TH)">
+                        
+                        <input type="text" id="cmb-genre" class="input-style lang-en" placeholder="Genre (EN)">
+                        <input type="text" id="cmb-genre-th" class="input-style lang-th hidden" placeholder="แนวเพลง (TH)">
                         
                         <div class="grid grid-cols-2 gap-4 pt-2">
                             <div class="flex items-center gap-2"><div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">f</div><input type="text" id="cmb-fb" class="input-style" placeholder="Facebook URL"></div>
@@ -522,8 +567,15 @@
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <div class="flex items-center justify-between mb-4 border-b pb-4">
-                        <h3 class="text-xl font-bold">รายละเอียด (Page Builder)</h3>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-4 border-b pb-4 gap-4">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">รายละเอียด (Page Builder)</h3>
+                            <div class="flex items-center gap-3 text-sm font-bold bg-gray-50 px-4 py-1.5 rounded-full border border-gray-200 w-fit">
+                                <button type="button" class="admin-lang-btn text-red-500 border-b-2 border-red-500 pb-0.5" data-form="cmb" onclick="switchAdminLang(this, 'en', 'cmb')">GB English</button>
+                                <span class="text-gray-300">|</span>
+                                <button type="button" class="admin-lang-btn text-gray-400 hover:text-gray-800 transition pb-0.5" data-form="cmb" onclick="switchAdminLang(this, 'th', 'cmb')">TH ไทย</button>
+                            </div>
+                        </div>
                         <div class="flex gap-3">
                             <button type="button" onclick="addCmbContent('text')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Text</button>
                             <button type="button" onclick="addCmbContent('image')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Image</button>
@@ -551,7 +603,7 @@
         </section>
     </main>
 
-    <div id="confirm-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden backdrop-blur-sm transition-opacity">
+    <div id="confirm-modal" class="fixed inset-0 bg-black/50 items-center justify-center z-50 hidden backdrop-blur-sm flex">
         <div class="bg-white p-8 rounded-3xl shadow-2xl w-96 text-center transform transition-all">
             <h3 class="text-2xl font-bold mb-2 text-gray-800">ยืนยันการลบ</h3>
             <div class="flex justify-center gap-3 mt-6">
@@ -561,7 +613,7 @@
         </div>
     </div>
 
-    <div id="password-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden backdrop-blur-sm transition-opacity">
+    <div id="password-modal" class="fixed inset-0 bg-black/50 items-center justify-center z-50 hidden backdrop-blur-sm flex">
         <div class="bg-white p-8 rounded-3xl shadow-2xl w-96 transform transition-all">
             <h3 class="text-2xl font-bold mb-1 text-gray-800">เปลี่ยนรหัสผ่าน</h3>
             <input type="password" id="new-password-input" class="w-full border rounded-xl px-4 py-3 mb-6" placeholder="รหัสผ่านใหม่">
@@ -572,7 +624,7 @@
         </div>
     </div>
 
-    <div id="cropper-modal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-[200] hidden backdrop-blur-sm">
+    <div id="cropper-modal" class="fixed inset-0 bg-black/90 items-center justify-center z-[200] hidden backdrop-blur-sm flex">
         <div class="bg-white p-6 rounded-3xl shadow-2xl w-[90%] max-w-4xl flex flex-col h-[85vh]">
             <h3 class="text-2xl font-bold mb-4 text-gray-800">ครอบตัดรูปภาพ (Crop Image)</h3>
             <div class="flex-1 bg-gray-200 overflow-hidden relative rounded-xl flex items-center justify-center">
@@ -586,308 +638,78 @@
     </div>
 
     <div id="toast-container"></div>
-    <script src="admin.js?v=999"></script>
-    <script src="admin1.js?v=1001"></script>
+    
+   <script src="admin_master.js?v=1"></script>
+    
 <script>
-// 1. ฟังก์ชันเปลี่ยนขนาดกล่อง (ให้เห็นผลทันทีในหน้า Admin)
 window.changeLayout = (selectEl) => {
-    const item = selectEl.closest('.course-item');
-    item.classList.remove('w-full', 'w-1/2', 'w-1/3', 'w-1/4'); // ล้างค่าเดิม
-    const val = selectEl.value;
-    if(val === 'col-1') item.classList.add('w-full');
-    if(val === 'col-2') item.classList.add('w-1/2');
-    if(val === 'col-3') item.classList.add('w-1/3');
-    if(val === 'col-4') item.classList.add('w-1/4');
-};
+        const item = selectEl.closest('.course-item, .cmb-item');
+        item.classList.remove('w-full', 'w-1/2', 'w-1/3', 'w-1/4'); 
+        const val = selectEl.value;
+        if(val === 'col-1') item.classList.add('w-full');
+        if(val === 'col-2') item.classList.add('w-1/2');
+        if(val === 'col-3') item.classList.add('w-1/3');
+        if(val === 'col-4') item.classList.add('w-1/4');
+    };
 
-// 2. ฟังก์ชันสร้างกล่องเนื้อหาใหม่
-window.addCourseContent = (type, value = '', layout = 'col-1') => {
-    const container = document.getElementById('course-content-container');
-    
-    // บังคับให้ Container จัดเรียงแบบ Grid ซ้ายไปขวา
-    if(container.classList.contains('space-y-4')) {
-        container.classList.remove('space-y-4');
-        container.className = 'flex flex-wrap -mx-2 items-stretch';
-    } else if(!container.classList.contains('flex')) {
-        container.className = 'flex flex-wrap -mx-2 items-stretch';
-    }
+    window.addCourseContent = (type, valEn = '', valTh = '', layout = 'col-1') => {
+        const container = document.getElementById('course-content-container');
+        if(container.classList.contains('space-y-4')) {
+            container.classList.remove('space-y-4'); container.className = 'flex flex-wrap -mx-2 items-stretch';
+        } else if(!container.classList.contains('flex')) { container.className = 'flex flex-wrap -mx-2 items-stretch'; }
 
-    const itemDiv = document.createElement('div');
-    
-    // คำนวณความกว้างตอนโหลดครั้งแรก
-    let widthClass = 'w-full';
-    if(layout === 'col-2') widthClass = 'w-1/2';
-    if(layout === 'col-3') widthClass = 'w-1/3';
-    if(layout === 'col-4') widthClass = 'w-1/4';
-
-    itemDiv.className = `course-item px-2 mb-4 transition-all duration-300 ${widthClass}`;
-    itemDiv.setAttribute('data-type', type);
-    
-    // 🌟 ชุดปุ่มควบคุม (กากบาทลบ + วงกลมเลือกคอลัมน์) อยู่มุมขวาบน
-    const controls = `
-        <div class="absolute -top-3 -right-1 flex flex-col gap-1 z-50 items-center">
-            <button type="button" onclick="this.closest('.course-item').remove()" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition text-sm" title="ลบเนื้อหานี้">✕</button>
-            <div class="relative" title="แบ่งคอลัมน์">
-                <select class="course-layout-select w-8 h-8 rounded-full bg-blue-600 text-white text-center font-bold shadow hover:bg-blue-700 cursor-pointer appearance-none outline-none text-sm text-center" style="text-align-last:center;" onchange="changeLayout(this)">
-                    <option value="col-1" ${layout === 'col-1'?'selected':''}>1</option>
-                    <option value="col-2" ${layout === 'col-2'?'selected':''}>2</option>
-                    <option value="col-3" ${layout === 'col-3'?'selected':''}>3</option>
-                    <option value="col-4" ${layout === 'col-4'?'selected':''}>4</option>
-                </select>
-            </div>
-        </div>
-    `;
-
-    let innerContent = '';
-
-    // โครงสร้างข้างในกล่อง
-    if (type === 'text') {
-        innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50" placeholder="พิมพ์ข้อความที่นี่...">${value}</textarea>`;
-    } else if (type === 'image') {
-        courseImgCounter++;
-        const previewId = `course-img-preview-${courseImgCounter}`;
-        const inputId = `course-img-input-${courseImgCounter}`;
-        const imgDisplay = value ? value : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
+        const itemDiv = document.createElement('div');
+        let widthClass = 'w-full';
+        if(layout === 'col-2') widthClass = 'w-1/2'; else if(layout === 'col-3') widthClass = 'w-1/3'; else if(layout === 'col-4') widthClass = 'w-1/4';
+        itemDiv.className = `course-item px-2 mb-4 transition-all duration-300 ${widthClass}`;
+        itemDiv.setAttribute('data-type', type);
         
-        innerContent = `
-            <div class="relative rounded-xl overflow-hidden bg-gray-200 h-full min-h-[150px] group flex items-center justify-center">
-                <img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-cover relative z-0">
-                <label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0">
-                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 อัปโหลดรูป</span>
-                    <input type="file" id="${inputId}" class="hidden course-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)">
-                    <input type="hidden" class="course-img-old" value="${value}">
-                </label>
-            </div>
-        `;
-    } else if (type === 'video') {
-        innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl course-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${value}">`;
-    }
+        const controls = `
+            <div class="absolute -top-3 -right-1 flex flex-col gap-1 z-50 items-center">
+                <button type="button" onclick="this.closest('.course-item').remove()" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition text-sm">✕</button>
+                <div class="relative"><select class="course-layout-select w-8 h-8 rounded-full bg-blue-600 text-white text-center font-bold shadow hover:bg-blue-700 cursor-pointer appearance-none outline-none text-sm text-center" style="text-align-last:center;" onchange="changeLayout(this)"><option value="col-1" ${layout === 'col-1'?'selected':''}>1</option><option value="col-2" ${layout === 'col-2'?'selected':''}>2</option><option value="col-3" ${layout === 'col-3'?'selected':''}>3</option><option value="col-4" ${layout === 'col-4'?'selected':''}>4</option></select></div>
+            </div>`;
 
-    // ห่อเนื้อหาด้วยกล่องดีไซน์ (มีกรอบสีเทาอ่อน)
-    itemDiv.innerHTML = `
-        <div class="border-2 border-gray-200 p-2 rounded-2xl bg-white shadow-sm relative h-full flex flex-col hover:border-blue-400 transition-colors">
-            ${controls}
-            ${innerContent}
-        </div>
-    `;
+        let innerContent = '';
+        if (type === 'text') {
+            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-en" placeholder="Details (EN)...">${valEn}</textarea><textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-text-input-th text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-th hidden" placeholder="รายละเอียด (TH)...">${valTh}</textarea>`;
+        } else if (type === 'image') {
+            courseImgCounter++; 
+            const previewId = `course-img-preview-${courseImgCounter}`; const inputId = `course-img-input-${courseImgCounter}`; const imgDisplay = valEn ? valEn : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
+            innerContent = `<div class="relative rounded-xl overflow-hidden bg-gray-200 h-full min-h-[150px] group flex items-center justify-center"><img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-cover relative z-0"><label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0"><span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 อัปโหลดรูป</span><input type="file" id="${inputId}" class="hidden course-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)"><input type="hidden" class="course-img-old" value="${valEn}"></label></div>`;
+        } else if (type === 'video') { innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl course-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${valEn}">`; }
 
-    container.appendChild(itemDiv);
-};
-
-// 3. ฟังก์ชันบันทึกข้อมูล (ดึงค่าจากวงกลม)
-const originalSaveCourse = window.saveCourse; // เก็บของเก่าไว้ (ถ้ามี)
-window.saveCourse = async () => {
-    try {
-        const formData = new FormData();
-        const courseId = document.getElementById('edit-course-id').value;
-        if (courseId) formData.append('course_id', courseId);
+        itemDiv.innerHTML = `<div class="border-2 border-gray-200 p-2 rounded-2xl bg-white shadow-sm relative h-full flex flex-col hover:border-blue-400 transition-colors">${controls}${innerContent}</div>`;
+        container.appendChild(itemDiv);
         
-        formData.append('slot_number', document.getElementById('edit-course-slot').value);
-        formData.append('title', document.getElementById('course-title').value);
-        formData.append('creator', document.getElementById('course-creator').value);
+        if (window.currentAdminLang === 'th') { itemDiv.querySelectorAll('.lang-en').forEach(el => el.classList.add('hidden')); itemDiv.querySelectorAll('.lang-th').forEach(el => el.classList.remove('hidden')); }
+    };
+
+    window.addCmbContent = (type, valEn = '', valTh = '', layout = 'col-1') => {
+        const container = document.getElementById('cmb-content-container');
+        const itemDiv = document.createElement('div');
+        let widthClass = 'w-full';
+        if(layout === 'col-2') widthClass = 'w-1/2'; else if(layout === 'col-3') widthClass = 'w-1/3'; else if(layout === 'col-4') widthClass = 'w-1/4';
+        itemDiv.className = `cmb-item px-2 mb-4 transition-all duration-300 ${widthClass}`;
+        itemDiv.setAttribute('data-type', type);
         
-        window.croppedImagesData = window.croppedImagesData || {};
-        const bannerFile = window.croppedImagesData['course-banner'] || document.getElementById('course-banner').files[0];
-        if(bannerFile) formData.append('banner_image', bannerFile, window.croppedImagesData['course-banner'] ? 'banner.jpg' : bannerFile.name);
+        const controls = `<div class="absolute -top-3 -right-1 flex flex-col gap-1 z-50 items-center"><button type="button" onclick="this.closest('.cmb-item').remove()" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition text-sm">✕</button><div class="relative"><select class="cmb-layout-select w-8 h-8 rounded-full bg-blue-600 text-white text-center font-bold shadow hover:bg-blue-700 cursor-pointer appearance-none outline-none text-sm text-center" style="text-align-last:center;" onchange="changeLayout(this)"><option value="col-1" ${layout === 'col-1'?'selected':''}>1</option><option value="col-2" ${layout === 'col-2'?'selected':''}>2</option><option value="col-3" ${layout === 'col-3'?'selected':''}>3</option><option value="col-4" ${layout === 'col-4'?'selected':''}>4</option></select></div></div>`;
 
-        const contentItems = document.querySelectorAll('.course-item');
-        contentItems.forEach((item, index) => {
-            const type = item.getAttribute('data-type');
-            formData.append('content_types[]', type);
-            
-            // 🌟 ดึงค่า Layout จากปุ่มวงกลม
-            const layoutSelect = item.querySelector('.course-layout-select');
-            formData.append('content_layouts[]', layoutSelect ? layoutSelect.value : 'col-1');
-            
-            if (type === 'text') {
-                formData.append('content_values[]', item.querySelector('.course-text-input').value);
-            } else if (type === 'video') {
-                formData.append('content_values[]', item.querySelector('.course-video-input').value);
-            } else if (type === 'image') {
-                const fileInput = item.querySelector('.course-img-input');
-                const oldInput = item.querySelector('.course-img-old');
-                if (fileInput && fileInput.id && window.croppedImagesData[fileInput.id]) {
-                    formData.append(`content_images_${index}`, window.croppedImagesData[fileInput.id], 'course_img.jpg');
-                    formData.append('content_values[]', `has_image`);
-                } else if (fileInput && fileInput.files[0]) {
-                    formData.append(`content_images_${index}`, fileInput.files[0]);
-                    formData.append('content_values[]', `has_image`);
-                } else {
-                    formData.append('content_values[]', oldInput ? oldInput.value : '');
-                }
-            }
-        });
+        let innerContent = '';
+        if (type === 'text') {
+            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-en" placeholder="Details (EN)...">${valEn}</textarea><textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-text-input-th text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-th hidden" placeholder="รายละเอียด (TH)...">${valTh}</textarea>`;
+        } else if (type === 'image') {
+            window.cmbImgCounter++; 
+            const previewId = `cmb-img-preview-${window.cmbImgCounter}`; const inputId = `cmb-img-input-${window.cmbImgCounter}`; const imgDisplay = valEn ? valEn : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
+            innerContent = `<div class="relative rounded-xl overflow-hidden bg-gray-200 h-full min-h-[150px] group flex items-center justify-center"><img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-cover relative z-0"><label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0"><span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 อัปโหลดรูป</span><input type="file" id="${inputId}" class="hidden cmb-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)"><input type="hidden" class="cmb-img-old" value="${valEn}"></label></div>`;
+        } else if (type === 'video') { innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl cmb-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${valEn}">`; }
 
-        showToast('กำลังบันทึกข้อมูล Course...');
-        const response = await fetch(getApiUrl('save_course'), fetchOptions('POST', formData));
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-            showToast('บันทึกคอร์สเรียนสำเร็จ!');
-            fetchCourses();
-            closeCourseForm();
-        } else { showToast('ข้อผิดพลาด: ' + result.message); }
-    } catch (error) { showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'); }
-};
+        itemDiv.innerHTML = `<div class="border-2 border-gray-200 p-2 rounded-2xl bg-white shadow-sm relative h-full flex flex-col hover:border-blue-400 transition-colors">${controls}${innerContent}</div>`;
+        container.appendChild(itemDiv);
 
-// ==========================================
-// ส่วนควบคุม Page Builder ของ CMBigband
-// ==========================================
-let cmbImgCounter = 0;
+        if (window.currentAdminLang === 'th') { itemDiv.querySelectorAll('.lang-en').forEach(el => el.classList.add('hidden')); itemDiv.querySelectorAll('.lang-th').forEach(el => el.classList.remove('hidden')); }
+    };
 
-window.addCmbContent = (type, value = '', layout = 'col-1') => {
-    const container = document.getElementById('cmb-content-container');
-    const itemDiv = document.createElement('div');
-    
-    let widthClass = 'w-full';
-    if(layout === 'col-2') widthClass = 'w-1/2';
-    if(layout === 'col-3') widthClass = 'w-1/3';
-    if(layout === 'col-4') widthClass = 'w-1/4';
-
-    itemDiv.className = `course-item cmb-item px-2 mb-4 transition-all duration-300 ${widthClass}`;
-    itemDiv.setAttribute('data-type', type);
-    
-    const controls = `
-        <div class="absolute -top-3 -right-1 flex flex-col gap-1 z-50 items-center">
-            <button type="button" onclick="this.closest('.cmb-item').remove()" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition text-sm">✕</button>
-            <div class="relative">
-                <select class="cmb-layout-select w-8 h-8 rounded-full bg-blue-600 text-white text-center font-bold shadow hover:bg-blue-700 cursor-pointer appearance-none outline-none text-sm text-center" style="text-align-last:center;" onchange="changeLayout(this)">
-                    <option value="col-1" ${layout === 'col-1'?'selected':''}>1</option>
-                    <option value="col-2" ${layout === 'col-2'?'selected':''}>2</option>
-                    <option value="col-3" ${layout === 'col-3'?'selected':''}>3</option>
-                    <option value="col-4" ${layout === 'col-4'?'selected':''}>4</option>
-                </select>
-            </div>
-        </div>
-    `;
-
-    let innerContent = '';
-    if (type === 'text') {
-        innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50" placeholder="พิมพ์เนื้อหาที่นี่...">${value}</textarea>`;
-    } else if (type === 'image') {
-        cmbImgCounter++;
-        const previewId = `cmb-img-preview-${cmbImgCounter}`;
-        const inputId = `cmb-img-input-${cmbImgCounter}`;
-        const imgDisplay = value ? value : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
-        
-        innerContent = `
-            <div class="relative rounded-xl overflow-hidden bg-gray-200 h-full min-h-[150px] group flex items-center justify-center">
-                <img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-cover relative z-0">
-                <label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0">
-                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 อัปโหลดรูป</span>
-                    <input type="file" id="${inputId}" class="hidden cmb-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)">
-                    <input type="hidden" class="cmb-img-old" value="${value}">
-                </label>
-            </div>
-        `;
-    } else if (type === 'video') {
-        innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl cmb-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${value}">`;
-    }
-
-    itemDiv.innerHTML = `
-        <div class="border-2 border-gray-200 p-2 rounded-2xl bg-white shadow-sm relative h-full flex flex-col hover:border-blue-400 transition-colors">
-            ${controls}
-            ${innerContent}
-        </div>
-    `;
-    container.appendChild(itemDiv);
-};
-
-// ดึงข้อมูลเดิมมาแสดง
-window.loadCmbData = async () => {
-    try {
-        const res = await fetch(getApiUrl('get_cmbigband'));
-        const result = await res.json();
-        if (result.status === 'success' && result.data) {
-            const data = result.data;
-            document.getElementById('cmb-title').value = data.title || '';
-            document.getElementById('cmb-genre').value = data.genre || '';
-            document.getElementById('cmb-fb').value = data.facebook || '';
-            document.getElementById('cmb-wa').value = data.whatsapp || '';
-            document.getElementById('cmb-ig').value = data.instagram || '';
-            document.getElementById('cmb-web').value = data.website || '';
-            document.getElementById('cmb-tk').value = data.tiktok || '';
-            document.getElementById('cmb-email').value = data.email || '';
-
-            if(data.banner_image) document.getElementById('cmbigband-banner-img').src = data.banner_image;
-            if(data.profile_image) document.getElementById('cmbigband-profile-img').src = data.profile_image;
-
-            const container = document.getElementById('cmb-content-container');
-            container.innerHTML = '';
-            if(data.details) {
-                try {
-                    let detailsArray = JSON.parse(data.details);
-                    if(Array.isArray(detailsArray)) {
-                        detailsArray.forEach(item => addCmbContent(item.type, item.value, item.layout || 'col-1'));
-                    }
-                } catch(e) {}
-            }
-        }
-    } catch(e) {}
-};
-
-// บันทึกข้อมูล
-window.saveCMBigband = async () => {
-    try {
-        const formData = new FormData();
-        formData.append('title', document.getElementById('cmb-title').value);
-        formData.append('genre', document.getElementById('cmb-genre').value);
-        formData.append('facebook', document.getElementById('cmb-fb').value);
-        formData.append('whatsapp', document.getElementById('cmb-wa').value);
-        formData.append('instagram', document.getElementById('cmb-ig').value);
-        formData.append('website', document.getElementById('cmb-web').value);
-        formData.append('tiktok', document.getElementById('cmb-tk').value);
-        formData.append('email', document.getElementById('cmb-email').value);
-
-        const bannerFile = window.croppedImagesData && window.croppedImagesData['cmb-banner'] ? window.croppedImagesData['cmb-banner'] : document.getElementById('cmb-banner').files[0];
-        const profileFile = window.croppedImagesData && window.croppedImagesData['cmb-profile'] ? window.croppedImagesData['cmb-profile'] : document.getElementById('cmb-profile').files[0];
-        
-        if(bannerFile) formData.append('banner_image', bannerFile, 'banner.jpg');
-        if(profileFile) formData.append('profile_image', profileFile, 'profile.jpg');
-
-        const contentItems = document.querySelectorAll('.cmb-item');
-        contentItems.forEach((item, index) => {
-            const type = item.getAttribute('data-type');
-            formData.append('content_types[]', type);
-            
-            const layoutSelect = item.querySelector('.cmb-layout-select');
-            formData.append('content_layouts[]', layoutSelect ? layoutSelect.value : 'col-1');
-            
-            if (type === 'text') {
-                formData.append('content_values[]', item.querySelector('.cmb-text-input').value);
-            } else if (type === 'video') {
-                formData.append('content_values[]', item.querySelector('.cmb-video-input').value);
-            } else if (type === 'image') {
-                const fileInput = item.querySelector('.cmb-img-input');
-                const oldInput = item.querySelector('.cmb-img-old');
-                if (fileInput && fileInput.id && window.croppedImagesData[fileInput.id]) {
-                    formData.append(`content_images_${index}`, window.croppedImagesData[fileInput.id], 'cmb_img.jpg');
-                    formData.append('content_values[]', `has_image`);
-                } else if (fileInput && fileInput.files[0]) {
-                    formData.append(`content_images_${index}`, fileInput.files[0]);
-                    formData.append('content_values[]', `has_image`);
-                } else {
-                    formData.append('content_values[]', oldInput ? oldInput.value : '');
-                }
-            }
-        });
-
-        showToast('กำลังบันทึกข้อมูล CMBigband...');
-        const response = await fetch(getApiUrl('save_cmbigband'), fetchOptions('POST', formData));
-        const result = await response.json();
-        if (result.status === 'success') { showToast('บันทึกข้อมูลสำเร็จ!'); window.croppedImagesData = {}; } 
-        else { showToast('ข้อผิดพลาด: ' + result.message); }
-    } catch(e) { showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'); }
-};
-
-// สั่งโหลดข้อมูลตอนกดเข้าเมนู
-document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', (e) => {
-        if(link.getAttribute('data-target') === 'section-cmbigband') {
-            loadCmbData();
-        }
-    });
-});
 </script>
 
 </body>

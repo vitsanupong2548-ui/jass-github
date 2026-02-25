@@ -37,7 +37,7 @@
         <div id="menu-backdrop" class="absolute inset-0 bg-black bg-opacity-75 transition-opacity duration-300 ease-in-out opacity-0"></div>
         <div id="menu-panel" class="absolute top-0 right-0 h-full w-full max-w-sm bg-[#050505] p-8 flex flex-col shadow-xl transition-transform duration-300 ease-in-out transform translate-x-full border-l border-white/10 overflow-y-auto">
              <div class="flex justify-between items-center mb-12">
-                 <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More.png" alt="Logo" class="h-10 w-auto object-contain">
+                 <img src="icon/chiangmaijazzcity.webp" alt="Logo" class="h-10 w-auto object-contain">
                  <button id="close-menu-btn" class="w-10 h-10 border border-gray-600 rounded-full flex items-center justify-center hover:bg-white/10 transition">
                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                  </button>
@@ -60,7 +60,7 @@
     
     <div id="main-content" class="max-w-7xl mx-auto w-full flex-grow">
         <header class="flex justify-between items-center mb-12 md:mb-16">
-            <img id="dyn-logo_main" src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More.png" class="h-12 w-auto object-contain cursor-pointer">
+            <img id="dyn-logo_main" src="icon/chiangmaijazzcity.webp" class="h-12 w-auto object-contain cursor-pointer">
             <div class="hidden lg:flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-2 w-1/3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 <input type="text" placeholder="What are you looking for today?" class="bg-transparent w-full focus:outline-none text-sm font-body">
@@ -68,7 +68,14 @@
             <nav class="flex items-center space-x-4 md:space-x-6">
                 <button class="hidden sm:block border border-gray-400 text-white font-menu font-light px-6 py-2 rounded-full hover:bg-white hover:text-black transition-colors">Book Now</button>
                 <button id="header-auth-btn" class="font-menu font-light text-xl hover:text-gray-300 cursor-pointer">Log in</button>
-                <button id="menu-toggle" class="p-2 hover:bg-white/10 rounded-full transition-colors">
+                
+                <div class="flex items-center gap-2 ml-2 text-sm font-bold tracking-wider font-menu">
+                    <button class="front-lang-btn text-[#ef5f4d] border-b-2 border-[#ef5f4d] pb-0.5" onclick="switchFrontLang(this, 'en')">EN</button>
+                    <span class="text-gray-600 font-light">|</span>
+                    <button class="front-lang-btn text-gray-400 hover:text-white transition pb-0.5" onclick="switchFrontLang(this, 'th')">TH</button>
+                </div>
+
+                <button id="menu-toggle" class="p-2 hover:bg-white/10 rounded-full transition-colors ml-2">
                     <svg class="w-7 h-7" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect y="10" width="2" height="12" rx="1" fill="white"/><rect x="4" y="6" width="2" height="20" rx="1" fill="white"/><rect x="8" width="2" height="32" rx="1" fill="white"/><rect x="12" y="13" width="2" height="6" rx="1" fill="white"/><rect x="16" width="2" height="32" rx="1" fill="white"/><rect x="20" y="6" width="2" height="20" rx="1" fill="white"/><rect x="24" y="10" width="2" height="12" rx="1" fill="white"/></svg>
                 </button>
             </nav>
@@ -111,7 +118,7 @@
                     <div class="card card-blue" data-target="#festival-content">
                         <div>
                             <div class="card-header">
-                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Fes-icon@2x.png" class="w-14 h-14 object-contain filter brightness-0 invert">
+                                <img src="icon/1.webp" class="w-14 h-14 object-contain filter brightness-0 invert">
                                 <h2 id="dyn-card1_title" class="font-header font-medium">Festival<br>& Event</h2>
                             </div>
                             <p id="dyn-card1_desc" class="font-body text-sm leading-relaxed text-white/80">Experience the vibrant energy of Lanna-Jazz fusion live on stage. Discover our seasonal music festivals, see the event calendar, and book your tickets.</p>
@@ -121,7 +128,7 @@
                     <div class="card card-yellow" data-target="#artists-content">
                         <div>
                             <div class="card-header">
-                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Artist-Icon.png" class="w-14 h-14 object-contain">
+                                <img src="icon/2.webp" class="w-14 h-14 object-contain">
                                 <h2 id="dyn-card2_title" class="font-header font-medium">Musician<br>Network</h2>
                             </div>
                             <p id="dyn-card2_desc" class="font-body text-sm leading-relaxed text-black/80">Explore our roster of talented local and international artists. Read their biographies, listen to their music, and discover the faces behind the innovative Lanna-Jazz sound.</p>
@@ -131,7 +138,7 @@
                     <div class="card card-green" data-target="#courses-content">
                         <div>
                             <div class="card-header">
-                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/course-icon.png" class="w-14 h-14 object-contain">
+                                <img src="icon/3.webp" class="w-14 h-14 object-contain">
                                 <h2 id="dyn-card3_title" class="font-header font-medium">Courses<br>Library</h2>
                             </div>
                             <p id="dyn-card3_desc" class="font-body text-sm leading-relaxed text-white/90">Unlock your potential with our groundbreaking curriculum. Learn to blend traditional Lanna instruments with jazz theory through our modular online courses.</p>
@@ -141,7 +148,7 @@
                     <div class="card card-gray" data-target="#bigband-content">
                         <div>
                             <div class="card-header">
-                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Cm-bigband-icon.png" class="w-14 h-14 object-contain">
+                                <img src="icon/4.webp" class="w-14 h-14 object-contain">
                                 <h2 id="dyn-card4_title" class="font-header font-medium">CMSJ<br>Bigband</h2>
                             </div>
                             <p id="dyn-card4_desc" class="font-body text-sm leading-relaxed text-black/80">Meet Chiang Mai's one-and-only big band. As our flagship ensemble, we fuse the soul of Lanna music with the power of a modern jazz orchestra.</p>
@@ -151,7 +158,7 @@
                     <div class="card card-orange" data-target="#forum-content">
                         <div>
                             <div class="card-header">
-                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Forum-icon.png" class="w-14 h-14 object-contain">
+                                <img src="icon/5.webp" class="w-14 h-14 object-contain">
                                 <h2 id="dyn-card5_title" class="font-header font-medium">Forum<br>Q&A</h2>
                             </div>
                             <p id="dyn-card5_desc" class="font-body text-sm leading-relaxed text-white/90">Join the conversation in our online community. This is a space for artists, students, and music lovers to ask questions and share knowledge.</p>
@@ -161,7 +168,7 @@
                     <div class="card card-pink" data-target="#store-content">
                         <div>
                             <div class="card-header">
-                                <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Store-Icon.png" class="w-14 h-14 object-contain">
+                                <img src="icon/6.webp" class="w-14 h-14 object-contain">
                                 <h2 id="dyn-card6_title" class="font-header font-medium">Store<br>& Merch</h2>
                             </div>
                             <p id="dyn-card6_desc" class="font-body text-sm leading-relaxed text-white/90">Take a piece of the festival home with you. Browse our exclusive collection of apparel, albums, and unique merchandise.</p>
@@ -175,12 +182,12 @@
         <footer class="mt-24 pt-8 border-t border-white/10 pb-12">
             <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-8 md:gap-0">
                 <div>
-                    <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More.png" alt="Chiang Mai Jazz City" class="h-12 md:h-16 w-auto object-contain">
+                    <img src="icon/footer.webp" alt="Chiang Mai Jazz City" class="h-10 md:h-10 w-auto object-contain">
                 </div>
                 
                 <div class="flex flex-col items-center md:items-end">
                     <span class="text-xs text-gray-500 uppercase tracking-widest mb-2">Powered by</span>
-                    <img src="http://chiangmaijazz.com/wp-content/uploads/2025/12/Learn-More-1.png" class="h-10 md:h-14 w-auto object-contain filter brightness-0 invert" alt="NIA Logo">
+                    <img src="icon/nia.webp" class="h-10 md:h-14 w-auto object-contain filter brightness-0 invert" alt="NIA Logo">
                 </div>
             </div>
 
@@ -841,9 +848,9 @@
         </div>
     </div>
     
-    <script src="script.js?v=999"></script>
-    <script src="main.js?v=999"></script>
+   <script src="script.js?v=2075"></script>
+    <script src="main.js?v=2081"></script>
+    <script src="language.js"></script>
     
- 
 </body>
 </html>
