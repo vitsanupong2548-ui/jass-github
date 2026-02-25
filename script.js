@@ -4,15 +4,28 @@ let activeCard = null;
 let activeClone = null;
 let allCards = Array.from(cards);
 
+// 🌟 ประกาศตัวแปรเช็คสถานะล็อกอิน
+window.isUserLoggedIn = false; 
+
 if (mainContainer) {
     mainContainer.addEventListener('click', function(e) {
         if (!activeCard) {
             const clickedCard = e.target.closest('.card:not(.clone)');
-            if (clickedCard) { if (e.target.closest('a')) return; expandCard(clickedCard); }
+            if (clickedCard) { 
+                if (e.target.closest('a')) return; 
+                
+                // 🌟 ดักตรงนี้: ถ้ายังไม่ล็อกอิน ให้โชว์ Modal แล้วหยุดการทำงาน
+                if (!window.isUserLoggedIn) {
+                    document.getElementById('auth-modal').classList.remove('hidden');
+                    return; 
+                }
+                
+                expandCard(clickedCard); 
+            }
             return; 
         }
         if (activeClone) {
-            const link = e.target.closest('.event-link, .course-link, .forum-link, .store-link, .bigband-link');
+            const link = e.target.closest('.event-link, .course-link, .forum-link, .store-link, .bigband-link, .artist-link'); // เพิ่ม .artist-link เข้าไปเผื่อไว้ครับ
             if (link && activeClone.contains(link)) return; 
             if (!activeClone.contains(e.target)) collapseCard(activeClone, activeCard); 
         }

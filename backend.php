@@ -142,7 +142,18 @@ switch($action) {
         }
         break;
 
+case 'check_auth':
+        if(isset($_SESSION['user_id'])) {
+            echo json_encode(['status' => 'success', 'logged_in' => true, 'role' => $_SESSION['role'], 'user_id' => $_SESSION['user_id']]);
+        } else {
+            echo json_encode(['status' => 'success', 'logged_in' => false]);
+        }
+        break;
 
+    case 'logout':
+        session_destroy();
+        echo json_encode(['status' => 'success']);
+        break;
     // ==========================================
     // 2. ระบบ EVENT & FESTIVAL
     // ==========================================

@@ -1,5 +1,5 @@
 // =====================================================================
-// --- 0. API Config ---
+// --- 0. API Config & Utility ---
 // =====================================================================
 const getApiUrl = (action) => {
     if (window.location.protocol === 'blob:' || window.location.protocol === 'file:' || window.location.protocol === 'data:') {
@@ -109,49 +109,117 @@ navLinks.forEach(link => {
     }); 
 });
 
+
 // =====================================================================
-// --- 3. User Management ---
+// --- 3. User Management (ดีไซน์ใหม่) ---
 // =====================================================================
-let users = [];
+let allUsersData = []; 
+let selectedUserId = null; 
+
 async function fetchUsers() {
     try {
-        const response = await fetch(getApiUrl('get_users'), fetchOptions('GET'));
+        const response = await fetch(getApiUrl('get_users'));
         const result = await response.json();
-        if (result.status === 'success') { users = result.data; renderUsers(); }
-    } catch (error) {}
+        if (result.status === 'success') {
+            allUsersData = result.data;
+            renderUserTable(allUsersData); 
+        }
+    } catch (error) { console.error('Error fetching users:', error); }
 }
 
-function renderUsers() {
-    const tbody = document.getElementById('user-table-body'); if(!tbody) return;
+function renderUserTable(usersArray) {
+    const tbody = document.getElementById('user-table-body');
+    if (!tbody) return;
     tbody.innerHTML = '';
-    users.forEach(user => {
-        const statusColor = user.status === 'approved' ? 'text-green-600 bg-green-100' : 'text-yellow-600 bg-yellow-100';
-        const statusText = user.status === 'approved' ? 'อนุมัติแล้ว' : 'รอตรวจสอบ';
-        const tr = document.createElement('tr'); tr.className = 'border-b hover:bg-gray-50';
+    
+    selectedUserId = null; 
+    updateActionButtons(null);
+
+    if (usersArray.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-gray-500 font-medium">ไม่พบข้อมูลสมาชิกที่ค้นหา</td></tr>`;
+        return;
+    }
+
+    usersArray.forEach(user => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-gray-100 hover:bg-blue-50 transition-colors duration-200 user-row cursor-pointer';
+        tr.setAttribute('data-id', user.id);
+        
+        tr.addEventListener('click', function() { selectUserRow(this, user); });
+
+        let roleBadge = user.role === 'admin' 
+            ? `<span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Admin</span>`
+            : `<span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">User</span>`;
+
         tr.innerHTML = `
-            <td class="p-4 text-gray-500">${user.id}</td>
-            <td class="p-4 font-medium">${user.username}<div class="text-sm text-gray-400">${user.email}</div></td>
-            <td class="p-4"><span class="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600 uppercase font-bold">${user.role}</span></td>
-            <td class="p-4"><span class="px-2 py-1 rounded text-xs font-semibold ${statusColor}">${statusText}</span></td>
-            <td class="p-4 text-right space-x-2">
-                ${user.status === 'pending' ? `<button onclick="updateUserStatus(${user.id}, 'approved')" class="bg-green-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold">อนุมัติ</button>` : `<button onclick="updateUserStatus(${user.id}, 'pending')" class="bg-yellow-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold">ระงับ</button>`}
-                <button onclick="promptChangePassword(${user.id})" class="bg-blue-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold">เปลี่ยนรหัส</button>
-                <button onclick="confirmDeleteUser(${user.id})" class="bg-red-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold">ลบ</button>
+            <td class="p-4 text-center font-bold text-gray-500">${user.id}</td>
+            <td class="p-4">
+                <div class="font-extrabold text-base text-black">${user.username}</div>
+                <div class="text-xs text-gray-500 font-medium mt-0.5">${user.email}</div>
             </td>
+            <td class="p-4 text-center">${roleBadge}</td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-window.updateUserStatus = async (id, newStatus) => {
-    try {
-        const formData = new FormData(); formData.append('user_id', id); formData.append('status', newStatus);
-        const response = await fetch(getApiUrl('update_user_status'), fetchOptions('POST', formData));
-        const result = await response.json();
-        if (result.status === 'success') { showToast('อัปเดตสถานะแล้ว'); fetchUsers(); }
-    } catch(error) {}
-};
+function selectUserRow(rowElement, userData) {
+    document.querySelectorAll('.user-row').forEach(row => { row.classList.remove('bg-blue-100', 'border-l-4', 'border-blue-500'); });
+    rowElement.classList.add('bg-blue-100', 'border-l-4', 'border-blue-500');
+    selectedUserId = userData.id;
+    updateActionButtons(userData);
+}
 
+function updateActionButtons(userData) {
+    const btnPwd = document.getElementById('btn-action-password');
+    const btnDel = document.getElementById('btn-action-delete');
+    const statusEl = document.getElementById('user-selection-status');
+
+    if(btnPwd && btnDel && statusEl) {
+        if (selectedUserId && userData) {
+            btnPwd.disabled = false; btnPwd.classList.remove('opacity-50', 'cursor-not-allowed');
+            btnDel.disabled = false; btnDel.classList.remove('opacity-50', 'cursor-not-allowed');
+            statusEl.innerHTML = `เลือกผู้ใช้งาน: <span class="text-blue-600 font-bold">${userData.username}</span> (ID: ${userData.id})`;
+        } else {
+            btnPwd.disabled = true; btnPwd.classList.add('opacity-50', 'cursor-not-allowed');
+            btnDel.disabled = true; btnDel.classList.add('opacity-50', 'cursor-not-allowed');
+            statusEl.innerHTML = 'ยังไม่ได้เลือกผู้ใช้งาน (คลิกที่ตารางเพื่อเลือก)';
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ระบบค้นหา
+    const searchInput = document.getElementById('user-search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            const filteredUsers = allUsersData.filter(user => 
+                (user.username && user.username.toLowerCase().includes(searchTerm)) || 
+                (user.email && user.email.toLowerCase().includes(searchTerm))
+            );
+            renderUserTable(filteredUsers); 
+        });
+    }
+
+    // ปุ่มเปลี่ยนรหัส
+    const btnPwd = document.getElementById('btn-action-password');
+    if (btnPwd) {
+        btnPwd.addEventListener('click', () => {
+            if (selectedUserId) { promptChangePassword(selectedUserId); }
+        });
+    }
+
+    // ปุ่มลบ
+    const btnDel = document.getElementById('btn-action-delete');
+    if (btnDel) {
+        btnDel.addEventListener('click', () => {
+            if (selectedUserId) { confirmDeleteUser(selectedUserId); }
+        });
+    }
+});
+
+// ฟังก์ชันลบผู้ใช้ (Popup เดิม)
 let deleteTargetId = null;
 window.confirmDeleteUser = (id) => { deleteTargetId = id; document.getElementById('confirm-modal').classList.remove('hidden'); };
 window.closeConfirmModal = () => { deleteTargetId = null; document.getElementById('confirm-modal').classList.add('hidden'); };
@@ -167,6 +235,7 @@ document.getElementById('confirm-delete-btn')?.addEventListener('click', async (
     closeConfirmModal();
 });
 
+// ฟังก์ชันเปลี่ยนรหัสผ่าน (Popup เดิม)
 let passwordTargetId = null;
 window.promptChangePassword = (id) => { passwordTargetId = id; document.getElementById('new-password-input').value = ''; document.getElementById('password-modal').classList.remove('hidden'); };
 window.closePasswordModal = () => { passwordTargetId = null; document.getElementById('password-modal').classList.add('hidden'); };
@@ -959,12 +1028,11 @@ async function loadCourseData(id) {
             
             if(c.details) {
                 try {
-                    // 🌟 แปลง JSON ให้รองรับรูปแบบข้อมูลได้อย่างถูกต้อง
                     let detailsArray = typeof c.details === 'string' ? JSON.parse(c.details) : c.details;
                     
                     if(Array.isArray(detailsArray) && detailsArray.length > 0) {
                         detailsArray.forEach(item => {
-                            addCourseContent(item.type, item.value);
+                            addCourseContent(item.type, item.value, item.layout || 'col-1'); // รองรับ layout ที่คุณเคยขอไว้
                         });
                     } else {
                         addCourseContent('text');
@@ -982,34 +1050,74 @@ async function loadCourseData(id) {
 
 let courseImgCounter = 0;
 
-window.addCourseContent = (type, value = '') => {
+window.addCourseContent = (type, value = '', layout = 'col-1') => {
     const container = document.getElementById('course-content-container');
+    
+    // บังคับให้ Container จัดเรียงแบบ Grid ซ้ายไปขวา
+    if(container.classList.contains('space-y-4')) {
+        container.classList.remove('space-y-4');
+        container.className = 'flex flex-wrap -mx-2 items-stretch';
+    } else if(!container.classList.contains('flex')) {
+        container.className = 'flex flex-wrap -mx-2 items-stretch';
+    }
+
     const itemDiv = document.createElement('div');
-    itemDiv.className = 'relative course-item border border-gray-400 p-1 rounded-[1.2rem] bg-white shadow-sm mb-4';
+    
+    // คำนวณความกว้างตอนโหลดครั้งแรก
+    let widthClass = 'w-full';
+    if(layout === 'col-2') widthClass = 'w-1/2';
+    if(layout === 'col-3') widthClass = 'w-1/3';
+    if(layout === 'col-4') widthClass = 'w-1/4';
+
+    itemDiv.className = `course-item px-2 mb-4 transition-all duration-300 ${widthClass}`;
     itemDiv.setAttribute('data-type', type);
     
-    const deleteBtn = `<button type="button" onclick="this.parentElement.remove()" class="absolute -top-3 -right-3 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition z-10 text-xs">✕</button>`;
+    // 🌟 ชุดปุ่มควบคุม (กากบาทลบ + วงกลมเลือกคอลัมน์) อยู่มุมขวาบน
+    const controls = `
+        <div class="absolute -top-3 -right-1 flex flex-col gap-1 z-50 items-center">
+            <button type="button" onclick="this.closest('.course-item').remove()" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition text-sm" title="ลบเนื้อหานี้">✕</button>
+            <div class="relative" title="แบ่งคอลัมน์">
+                <select class="course-layout-select w-8 h-8 rounded-full bg-blue-600 text-white text-center font-bold shadow hover:bg-blue-700 cursor-pointer appearance-none outline-none text-sm text-center" style="text-align-last:center;" onchange="changeLayout(this)">
+                    <option value="col-1" ${layout === 'col-1'?'selected':''}>1</option>
+                    <option value="col-2" ${layout === 'col-2'?'selected':''}>2</option>
+                    <option value="col-3" ${layout === 'col-3'?'selected':''}>3</option>
+                    <option value="col-4" ${layout === 'col-4'?'selected':''}>4</option>
+                </select>
+            </div>
+        </div>
+    `;
+
+    let innerContent = '';
 
     if (type === 'text') {
-        itemDiv.innerHTML = deleteBtn + `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-[1.2rem] min-h-[120px] course-text-input text-sm font-semibold placeholder-gray-400" placeholder="Details ....">${value}</textarea>`;
+        innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50" placeholder="พิมพ์ข้อความที่นี่...">${value}</textarea>`;
     } else if (type === 'image') {
         courseImgCounter++;
         const previewId = `course-img-preview-${courseImgCounter}`;
         const inputId = `course-img-input-${courseImgCounter}`;
         const imgDisplay = value ? value : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
-        itemDiv.innerHTML = deleteBtn + `
-            <div class="relative rounded-xl overflow-hidden bg-[#b2b2b2] h-48 group flex items-center justify-center m-1">
-                <img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-contain">
-                <label class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition">📷 เลือกรูปภาพ / Crop</span>
+        
+        innerContent = `
+            <div class="relative rounded-xl overflow-hidden bg-gray-200 h-full min-h-[150px] group flex items-center justify-center">
+                <img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-cover relative z-0">
+                <label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0">
+                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 อัปโหลดรูป</span>
                     <input type="file" id="${inputId}" class="hidden course-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)">
                     <input type="hidden" class="course-img-old" value="${value}">
                 </label>
             </div>
         `;
     } else if (type === 'video') {
-        itemDiv.innerHTML = deleteBtn + `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-[1.2rem] course-video-input text-sm font-semibold placeholder-gray-400" placeholder="Link to your Video / Youtube / Vimeo" value="${value}">`;
+        innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl course-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${value}">`;
     }
+
+    itemDiv.innerHTML = `
+        <div class="border-2 border-gray-200 p-2 rounded-2xl bg-white shadow-sm relative h-full flex flex-col hover:border-blue-400 transition-colors">
+            ${controls}
+            ${innerContent}
+        </div>
+    `;
+
     container.appendChild(itemDiv);
 };
 
@@ -1031,6 +1139,9 @@ window.saveCourse = async () => {
         contentItems.forEach((item, index) => {
             const type = item.getAttribute('data-type');
             formData.append('content_types[]', type);
+
+            const layoutSelect = item.querySelector('.course-layout-select');
+            formData.append('content_layouts[]', layoutSelect ? layoutSelect.value : 'col-1');
             
             if (type === 'text') {
                 formData.append('content_values[]', item.querySelector('.course-text-input').value);
@@ -1090,30 +1201,45 @@ window.saveCMBigband = async () => {
         formData.append('website', document.getElementById('cmb-web').value);
         formData.append('tiktok', document.getElementById('cmb-tk').value);
         formData.append('email', document.getElementById('cmb-email').value);
-        formData.append('details', document.getElementById('cmb-details').value);
 
-        const videoInputs = document.querySelectorAll('.cmb-video');
-        videoInputs.forEach(input => { if(input.value.trim()) formData.append('video_links[]', input.value.trim()); });
-
-        const bannerFile = document.getElementById('cmb-banner').files[0];
-        const profileFile = document.getElementById('cmb-profile').files[0];
+        const bannerFile = window.croppedImagesData && window.croppedImagesData['cmb-banner'] ? window.croppedImagesData['cmb-banner'] : document.getElementById('cmb-banner').files[0];
+        const profileFile = window.croppedImagesData && window.croppedImagesData['cmb-profile'] ? window.croppedImagesData['cmb-profile'] : document.getElementById('cmb-profile').files[0];
         
-        if(bannerFile) formData.append('banner_image', bannerFile);
-        if(profileFile) formData.append('profile_image', profileFile);
+        if(bannerFile) formData.append('banner_image', bannerFile, 'banner.jpg');
+        if(profileFile) formData.append('profile_image', profileFile, 'profile.jpg');
+
+        const contentItems = document.querySelectorAll('.cmb-item');
+        contentItems.forEach((item, index) => {
+            const type = item.getAttribute('data-type');
+            formData.append('content_types[]', type);
+            
+            const layoutSelect = item.querySelector('.cmb-layout-select');
+            formData.append('content_layouts[]', layoutSelect ? layoutSelect.value : 'col-1');
+            
+            if (type === 'text') {
+                formData.append('content_values[]', item.querySelector('.cmb-text-input').value);
+            } else if (type === 'video') {
+                formData.append('content_values[]', item.querySelector('.cmb-video-input').value);
+            } else if (type === 'image') {
+                const fileInput = item.querySelector('.cmb-img-input');
+                const oldInput = item.querySelector('.cmb-img-old');
+                if (fileInput && fileInput.id && window.croppedImagesData[fileInput.id]) {
+                    formData.append(`content_images_${index}`, window.croppedImagesData[fileInput.id], 'cmb_img.jpg');
+                    formData.append('content_values[]', `has_image`);
+                } else if (fileInput && fileInput.files[0]) {
+                    formData.append(`content_images_${index}`, fileInput.files[0]);
+                    formData.append('content_values[]', `has_image`);
+                } else {
+                    formData.append('content_values[]', oldInput ? oldInput.value : '');
+                }
+            }
+        });
 
         showToast('กำลังบันทึกข้อมูล CMBigband...');
         const response = await fetch(getApiUrl('save_cmbigband'), fetchOptions('POST', formData));
         const result = await response.json();
-        
-        if (result.status === 'success') {
-            showToast('บันทึกข้อมูลสำเร็จ!');
-            const section = document.getElementById('section-cmbigband');
-            section.querySelectorAll('input:not([type="radio"]):not([type="checkbox"]), textarea').forEach(el => el.value = '');
-            section.querySelectorAll('.upload-box').forEach(el => { el.style.backgroundImage = ''; const span = el.querySelector('span'); if(span) span.classList.remove('bg-black/60', 'text-white', 'px-4', 'py-2', 'rounded-full'); });
-            
-            document.getElementById('cmb-video-container').innerHTML = `<div class="flex gap-4"><input type="text" class="input-style flex-1 cmb-video" placeholder="Link to your Video / Youtube / Vimeo"><button type="button" onclick="addVideoRow('cmb-video-container', 'cmb-video')" class="bg-yellow-500 text-black px-8 py-2 rounded-full font-bold shadow hover:bg-yellow-600">Add</button></div>`;
-            document.getElementById('main-content').scrollTop = 0;
-        } else { showToast('ข้อผิดพลาด: ' + result.message); }
+        if (result.status === 'success') { showToast('บันทึกข้อมูลสำเร็จ!'); window.croppedImagesData = {}; } 
+        else { showToast('ข้อผิดพลาด: ' + result.message); }
     } catch(e) { showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'); }
 };
 

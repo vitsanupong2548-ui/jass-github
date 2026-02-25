@@ -88,22 +88,42 @@
 
     <main class="flex-1 h-full overflow-y-auto bg-white hidden relative" id="main-content">
         
-        <section id="section-admin" class="content-section p-8 max-w-6xl mx-auto">
+      <section id="section-admin" class="content-section p-8 max-w-6xl mx-auto hidden">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">จัดการสมาชิก (User Management)</h2>
-            <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
-                <table class="w-full text-left border-collapse">
+            
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                <div class="relative w-full md:w-1/3">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <input type="text" id="user-search-input" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition font-medium" placeholder="ค้นหาชื่อผู้ใช้ หรือ อีเมล...">
+                </div>
+
+                <div class="flex gap-3 w-full md:w-auto">
+                    <button id="btn-action-password" disabled class="bg-blue-500 text-white px-6 py-2 rounded-lg font-bold shadow-sm opacity-50 cursor-not-allowed hover:bg-blue-600 transition flex items-center gap-2">
+                        🔑 เปลี่ยนรหัสผ่าน
+                    </button>
+                    <button id="btn-action-delete" disabled class="bg-red-500 text-white px-6 py-2 rounded-lg font-bold shadow-sm opacity-50 cursor-not-allowed hover:bg-red-600 transition flex items-center gap-2">
+                        🗑️ ลบผู้ใช้
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-left border-collapse cursor-pointer">
                     <thead>
-                        <tr class="bg-gray-100 border-b">
-                            <th class="p-4 font-semibold text-gray-600">ID</th>
-                            <th class="p-4 font-semibold text-gray-600">ชื่อผู้ใช้ (Username)</th>
-                            <th class="p-4 font-semibold text-gray-600">บทบาท (Role)</th>
-                            <th class="p-4 font-semibold text-gray-600">สถานะ (Status)</th>
-                            <th class="p-4 font-semibold text-gray-600 text-right">การจัดการ</th>
+                        <tr class="bg-gray-50 text-gray-700 text-sm uppercase tracking-wider border-b border-gray-200">
+                            <th class="p-4 font-bold w-16 text-center">ID</th>
+                            <th class="p-4 font-bold">ชื่อผู้ใช้ (Username / Email)</th>
+                            <th class="p-4 font-bold w-32 text-center">บทบาท (Role)</th>
                         </tr>
                     </thead>
-                    <tbody id="user-table-body"></tbody>
+                    <tbody id="user-table-body" class="text-gray-800">
+                        </tbody>
                 </table>
             </div>
+            
+            <p id="user-selection-status" class="text-sm font-medium text-gray-500 mt-4 text-right">ยังไม่ได้เลือกผู้ใช้งาน</p>
         </section>
 
         <section id="section-festival" class="content-section hidden">
@@ -519,6 +539,7 @@
                 </div>
             </div>
         </section>
+
         <section id="section-forum" class="content-section hidden p-8 max-w-6xl mx-auto">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">Forum Q&A</h2>
             <div class="bg-white border rounded-xl shadow-sm p-16 text-center text-gray-500"><p class="text-xl font-semibold mb-2">ระบบจัดการ Forum Q&A</p><p>อยู่ระหว่างการพัฒนา...</p></div>

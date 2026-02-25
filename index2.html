@@ -42,17 +42,17 @@
                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                  </button>
              </div>
-             <nav class="flex-grow">
+            <nav class="flex-grow">
                  <ul class="space-y-6">
-                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300 border-b border-white/20 pb-2">Festival</a></li>
-                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Event</a></li>
-                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Booking</a></li>
-                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Artists</a></li>
-                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Network</a></li>
-                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Courses</a></li>
-                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Big Band</a></li>
-                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Forum</a></li>
-                     <li><a href="#" class="text-3xl font-menu font-light text-white block hover:text-gray-300">Store</a></li>
+                     <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300 border-b border-white/20 pb-2" data-trigger="#festival-content">Festival</a></li>
+                     <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#festival-content">Event</a></li>
+                     <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#festival-content">Booking</a></li>
+                     <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#artists-content">Artists</a></li>
+                     <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#artists-content">Network</a></li>
+                     <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#courses-content">Courses</a></li>
+                     <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#bigband-content">Big Band</a></li>
+                     <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#forum-content">Forum</a></li>
+                     <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#store-content">Store</a></li>
                  </ul>
              </nav>
         </div>
@@ -67,7 +67,7 @@
             </div>
             <nav class="flex items-center space-x-4 md:space-x-6">
                 <button class="hidden sm:block border border-gray-400 text-white font-menu font-light px-6 py-2 rounded-full hover:bg-white hover:text-black transition-colors">Book Now</button>
-                <a href="admin.php" id="go-admin" class="font-menu font-light text-xl hover:text-gray-300 cursor-pointer">Log in</a>
+                <button id="header-auth-btn" class="font-menu font-light text-xl hover:text-gray-300 cursor-pointer">Log in</button>
                 <button id="menu-toggle" class="p-2 hover:bg-white/10 rounded-full transition-colors">
                     <svg class="w-7 h-7" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect y="10" width="2" height="12" rx="1" fill="white"/><rect x="4" y="6" width="2" height="20" rx="1" fill="white"/><rect x="8" width="2" height="32" rx="1" fill="white"/><rect x="12" y="13" width="2" height="6" rx="1" fill="white"/><rect x="16" width="2" height="32" rx="1" fill="white"/><rect x="20" y="6" width="2" height="20" rx="1" fill="white"/><rect x="24" y="10" width="2" height="12" rx="1" fill="white"/></svg>
                 </button>
@@ -184,20 +184,20 @@
                 </div>
             </div>
 
-            <nav class="flex justify-center flex-wrap gap-x-8 gap-y-4 mb-10 text-sm font-menu font-light text-gray-400">
-                <a href="#" class="hover:text-white transition-colors">Festival</a>
-                <a href="#" class="hover:text-white transition-colors">Event</a>
-                <a href="#" class="hover:text-white transition-colors">Booking</a>
-                <a href="#" class="hover:text-white transition-colors">Artists</a>
-                <a href="#" class="hover:text-white transition-colors">Network</a>
-                <a href="#" class="hover:text-white transition-colors">Courses</a>
-                <a href="#" class="hover:text-white transition-colors">CMSJ Bigband</a>
-                <a href="#" class="hover:text-white transition-colors">Forum</a>
-                <a href="#" class="hover:text-white transition-colors">Store</a>
+           <nav class="flex justify-center flex-wrap gap-x-8 gap-y-4 mb-10 text-sm font-menu font-light text-gray-400">
+                <a href="#" class="nav-trigger hover:text-white transition-colors" data-trigger="#festival-content">Festival</a>
+                <a href="#" class="nav-trigger hover:text-white transition-colors" data-trigger="#festival-content">Event</a>
+                <a href="#" class="nav-trigger hover:text-white transition-colors" data-trigger="#festival-content">Booking</a>
+                <a href="#" class="nav-trigger hover:text-white transition-colors" data-trigger="#artists-content">Artists</a>
+                <a href="#" class="nav-trigger hover:text-white transition-colors" data-trigger="#artists-content">Network</a>
+                <a href="#" class="nav-trigger hover:text-white transition-colors" data-trigger="#courses-content">Courses</a>
+                <a href="#" class="nav-trigger hover:text-white transition-colors" data-trigger="#bigband-content">CMSJ Bigband</a>
+                <a href="#" class="nav-trigger hover:text-white transition-colors" data-trigger="#forum-content">Forum</a>
+                <a href="#" class="nav-trigger hover:text-white transition-colors" data-trigger="#store-content">Store</a>
             </nav>
 
             <div class="text-center text-gray-600 text-xs tracking-wide">
-                <p>&copy; 2025 Chiang Mai Jazz City. All Rights Reserved.</p>
+                <p>&copy; 2026 Chiang Mai Jazz City. All Rights Reserved.</p>
             </div>
         </footer>
     </div>
@@ -794,7 +794,52 @@
     </div> 
 
    
+<div id="auth-modal" class="fixed inset-0 z-[300] hidden flex items-center justify-center">
+        <div id="auth-backdrop" class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"></div>
+        
+        <div class="relative bg-[#0a0a0a] border border-white/10 p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-md transform transition-all">
+            <button id="close-auth-btn" class="absolute top-5 right-5 text-gray-400 hover:text-white transition">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
 
+            <div id="login-form-container">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-header font-bold text-white mb-2">Welcome Back</h2>
+                    <p class="text-sm text-gray-400 font-body">Please log in to explore Chiang Mai Jazz City</p>
+                </div>
+                <form id="front-login-form" class="space-y-5">
+                    <div>
+                        <input type="text" id="login-username" class="w-full bg-white/5 border border-white/10 text-white rounded-xl px-5 py-3 outline-none focus:border-[#0c32f9] transition-all font-body" placeholder="Username" required>
+                    </div>
+                    <div>
+                        <input type="password" id="login-password" class="w-full bg-white/5 border border-white/10 text-white rounded-xl px-5 py-3 outline-none focus:border-[#0c32f9] transition-all font-body" placeholder="Password" required>
+                    </div>
+                    <p id="login-error" class="text-red-500 text-sm hidden text-center"></p>
+                    <button type="submit" class="w-full bg-[#0c32f9] text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition-colors shadow-lg mt-2">Log In</button>
+                </form>
+                <div class="mt-6 text-center text-sm text-gray-400">
+                    Don't have an account? <button type="button" id="show-register-btn" class="text-white font-bold hover:underline">Sign up</button>
+                </div>
+            </div>
+
+            <div id="register-form-container" class="hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-header font-bold text-white mb-2">Join the City</h2>
+                    <p class="text-sm text-gray-400 font-body">Create an account to unlock all features</p>
+                </div>
+                <form id="front-register-form" class="space-y-4">
+                    <input type="text" id="reg-username" class="w-full bg-white/5 border border-white/10 text-white rounded-xl px-5 py-3 outline-none focus:border-[#10a349] transition-all font-body" placeholder="Username" required>
+                    <input type="email" id="reg-email" class="w-full bg-white/5 border border-white/10 text-white rounded-xl px-5 py-3 outline-none focus:border-[#10a349] transition-all font-body" placeholder="Email Address" required>
+                    <input type="password" id="reg-password" class="w-full bg-white/5 border border-white/10 text-white rounded-xl px-5 py-3 outline-none focus:border-[#10a349] transition-all font-body" placeholder="Password" required>
+                    <p id="reg-msg" class="text-sm hidden text-center"></p>
+                    <button type="submit" class="w-full bg-[#10a349] text-white font-bold py-3.5 rounded-xl hover:bg-green-700 transition-colors shadow-lg mt-2">Sign Up</button>
+                </form>
+                <div class="mt-6 text-center text-sm text-gray-400">
+                    Already have an account? <button type="button" id="show-login-btn" class="text-white font-bold hover:underline">Log in</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script src="script.js?v=999"></script>
     <script src="main.js?v=999"></script>

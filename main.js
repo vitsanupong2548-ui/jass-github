@@ -113,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (menuBackdrop) menuBackdrop.addEventListener('click', closeMenu);
 });
 
-
 // ==========================================
 // 3. ระบบแสดงรายละเอียดศิลปิน (Artist Detail)
 // ==========================================
@@ -737,3 +736,178 @@ window.applyDataToDOM = async function(container) {
         }
     }
 };
+
+// ==========================================
+// 5. ระบบ Authentication (Login / Register) Frontend
+// ==========================================
+document.addEventListener('DOMContentLoaded', async () => {
+    const authModal = document.getElementById('auth-modal');
+    const authBackdrop = document.getElementById('auth-backdrop');
+    const closeAuthBtn = document.getElementById('close-auth-btn');
+    const loginContainer = document.getElementById('login-form-container');
+    const registerContainer = document.getElementById('register-form-container');
+    const showRegisterBtn = document.getElementById('show-register-btn');
+    const showLoginBtn = document.getElementById('show-login-btn');
+    const headerAuthBtn = document.getElementById('header-auth-btn'); 
+
+    // 1. เช็คสถานะการล็อกอินตอนเปิดเว็บ
+    try {
+        const res = await fetch('backend.php?action=check_auth');
+        const result = await res.json();
+        if (result.status === 'success' && result.logged_in) {
+            window.isUserLoggedIn = true;
+            if(headerAuthBtn) {
+                headerAuthBtn.textContent = 'Log out';
+                headerAuthBtn.classList.add('text-red-500');
+            }
+        } else {
+            window.isUserLoggedIn = false;
+        }
+    } catch(e) {}
+
+    // 2. การควบคุมการเปิดปิด Modal
+    const closeAuthModal = () => { if(authModal) authModal.classList.add('hidden'); };
+    if (closeAuthBtn) closeAuthBtn.addEventListener('click', closeAuthModal);
+    if (authBackdrop) authBackdrop.addEventListener('click', closeAuthModal);
+    if (showRegisterBtn) showRegisterBtn.addEventListener('click', () => { loginContainer.classList.add('hidden'); registerContainer.classList.remove('hidden'); });
+    if (showLoginBtn) showLoginBtn.addEventListener('click', () => { registerContainer.classList.add('hidden'); loginContainer.classList.remove('hidden'); });
+
+    // 3. กดปุ่ม Login มุมขวาบน
+    if(headerAuthBtn) {
+        headerAuthBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (window.isUserLoggedIn) {
+                await fetch('backend.php?action=logout');
+                window.isUserLoggedIn = false;
+                window.location.reload(); 
+            } else {
+                if(loginContainer) loginContainer.classList.remove('hidden');
+                if(registerContainer) registerContainer.classList.add('hidden');
+                if(authModal) authModal.classList.remove('hidden');
+            }
+        });
+    }
+
+    // 4. ส่งฟอร์ม Login
+    const loginForm = document.getElementById('front-login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorMsg = document.getElementById('login-error');
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            
+            errorMsg.classList.add('hidden');
+            submitBtn.textContent = 'Logging in...'; 
+            submitBtn.disabled = true;
+            
+            const formData = new FormData();
+            formData.append('username', document.getElementById('login-username').value);
+            formData.append('password', document.getElementById('login-password').value);
+
+            try {
+                const res = await fetch('backend.php?action=login', { method: 'POST', body: formData });
+                const result = await res.json();
+                
+                if (result.status === 'success') {
+                    if (result.role === 'admin') {
+                        window.location.href = 'admin.php'; 
+                    } else {
+                        window.isUserLoggedIn = true;
+                        if(headerAuthBtn) {
+                            headerAuthBtn.textContent = 'Log out';
+                            headerAuthBtn.classList.add('text-red-500');
+                        }
+                        closeAuthModal();
+                    }
+                } else {
+                    errorMsg.textContent = result.message;
+                    errorMsg.classList.remove('hidden');
+                }
+            } catch(err) {
+                errorMsg.textContent = "Cannot connect to server.";
+                errorMsg.classList.remove('hidden');
+            } finally {
+                submitBtn.textContent = 'Log In';
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    // 5. ส่งฟอร์ม Register
+    const regForm = document.getElementById('front-register-form');
+    if (regForm) {
+        regForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msgEl = document.getElementById('reg-msg');
+            const submitBtn = regForm.querySelector('button[type="submit"]');
+            
+            msgEl.classList.remove('hidden', 'text-red-500', 'text-green-500');
+            submitBtn.textContent = 'Signing up...';
+            submitBtn.disabled = true;
+            
+            const formData = new FormData();
+            formData.append('username', document.getElementById('reg-username').value);
+            formData.append('email', document.getElementById('reg-email').value);
+            formData.append('password', document.getElementById('reg-password').value);
+
+            try {
+                const res = await fetch('backend.php?action=register', { method: 'POST', body: formData });
+                const result = await res.json();
+                
+                if (result.status === 'success') {
+                    msgEl.textContent = "Registration successful! Please wait for admin approval.";
+                    msgEl.classList.add('text-green-500');
+                    regForm.reset();
+                    setTimeout(() => showLoginBtn.click(), 2000);
+                } else {
+                    msgEl.textContent = result.message;
+                    msgEl.classList.add('text-red-500');
+                }
+            } catch(err) {
+                msgEl.textContent = "Cannot connect to server.";
+                msgEl.classList.add('text-red-500');
+            } finally {
+                submitBtn.textContent = 'Sign Up';
+                submitBtn.disabled = false;
+            }
+        });
+    }
+});
+// ==========================================
+// 6. ระบบเชื่อมโยงเมนูลิงก์ (Navigation Triggers)
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    const navTriggers = document.querySelectorAll('.nav-trigger');
+    const closeMenuBtn = document.getElementById('close-menu-btn');
+
+    navTriggers.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('data-trigger');
+            
+            // 1. ปิดเมนูมือถือ (ถ้าเปิดอยู่)
+            if (closeMenuBtn && !document.getElementById('mobile-menu-container').classList.contains('hidden')) {
+                closeMenuBtn.click();
+            }
+            
+            // 2. ถ้ามีการเปิดหน้าการ์ดอื่นค้างไว้ ให้จำลองการกดปุ่มปิดก่อน (✕)
+            const activeCloseBtn = document.querySelector('.close-btn');
+            if (activeCloseBtn) {
+                activeCloseBtn.click();
+            }
+            
+            // 3. ค้นหากล่องการ์ดที่ตรงกับลิงก์
+            const targetCard = document.querySelector(`.card[data-target="${targetId}"]`);
+            
+            if (targetCard) {
+                // เลื่อนหน้าจอกลับไปด้านบนสุด
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // หน่วงเวลาเล็กน้อยให้เมนูหรือการ์ดเก่าปิดเสร็จก่อน แล้วค่อยสั่งคลิกการ์ดใหม่
+                setTimeout(() => {
+                    targetCard.click(); // สั่งให้จำลองการคลิกการ์ด (ระบบจะเช็ค Login ให้อัตโนมัติ)
+                }, 300);
+            }
+        });
+    });
+});
