@@ -450,6 +450,20 @@ switch($action) {
     // ==========================================
     // 4. ระบบ CMBIGBAND
     // ==========================================
+    case 'get_cmbigband':
+        try {
+            $stmt = $pdo->query("SELECT * FROM cmbigband ORDER BY id DESC LIMIT 1");
+            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($data) {
+                echo json_encode(['status' => 'success', 'data' => $data]);
+            } else {
+                echo json_encode(['status' => 'success', 'data' => null]);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+
     case 'save_cmbigband':
         $title = $_POST['title'] ?? '';
         $genre = $_POST['genre'] ?? '';
@@ -459,13 +473,11 @@ switch($action) {
         $website = $_POST['website'] ?? '';
         $tiktok = $_POST['tiktok'] ?? '';
         $email = $_POST['email'] ?? '';
-        $details = $_POST['details'] ?? '';
         
-        $video_links = isset($_POST['video_links']) ? json_encode($_POST['video_links']) : '[]';
-
         $upload_dir = 'uploads/cmbigband/';
         if (!file_exists($upload_dir)) mkdir($upload_dir, 0777, true);
 
+        // 1. จัดการรูป Banner & Profile
         $banner_path = null; 
         $profile_path = null;
 
@@ -474,38 +486,60 @@ switch($action) {
             $banner_path = $upload_dir . 'banner_' . time() . '_' . uniqid() . '.' . $ext;
             move_uploaded_file($_FILES['banner_image']['tmp_name'], $banner_path);
         }
-
         if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
             $ext = pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION);
             $profile_path = $upload_dir . 'profile_' . time() . '_' . uniqid() . '.' . $ext;
             move_uploaded_file($_FILES['profile_image']['tmp_name'], $profile_path);
         }
 
-        try {
-            $pdo->exec("CREATE TABLE IF NOT EXISTS `cmbigband` (
-              `id` int(11) NOT NULL AUTO_INCREMENT,
-              `title` varchar(255) NOT NULL,
-              `genre` varchar(100),
-              `details` text,
-              `facebook` varchar(255),
-              `whatsapp` varchar(255),
-              `instagram` varchar(255),
-              `website` varchar(255),
-              `tiktok` varchar(255),
-              `email` varchar(100),
-              `video_link` text,
-              `banner_image` varchar(255),
-              `profile_image` varchar(255),
-              `created_at` timestamp DEFAULT current_timestamp(),
-              PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+        // 2. จัดการ Page Builder (Text, Image, Video พร้อม Layout)
+        $content_array = [];
+        $content_types = isset($_POST['content_types']) ? $_POST['content_types'] : [];
+        $content_values = isset($_POST['content_values']) ? $_POST['content_values'] : [];
+        $content_layouts = isset($_POST['content_layouts']) ? $_POST['content_layouts'] : [];
 
-            $stmt = $pdo->prepare("INSERT INTO cmbigband (title, genre, details, facebook, whatsapp, instagram, website, tiktok, email, video_link, banner_image, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$title, $genre, $details, $facebook, $whatsapp, $instagram, $website, $tiktok, $email, $video_links, $banner_path, $profile_path]);
+        for ($i = 0; $i < count($content_types); $i++) {
+            $type = $content_types[$i];
+            $value = $content_values[$i] ?? '';
+            $layout = $content_layouts[$i] ?? 'col-1';
+
+            if ($type === 'image') {
+                $file_key = "content_images_" . $i;
+                if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
+                    $ext = pathinfo($_FILES[$file_key]['name'], PATHINFO_EXTENSION);
+                    $filename = "cmb_content_" . time() . "_" . uniqid() . "." . $ext;
+                    $target_file = $upload_dir . $filename;
+                    if (move_uploaded_file($_FILES[$file_key]['tmp_name'], $target_file)) {
+                        $value = $target_file; 
+                    }
+                }
+            }
+            $content_array[] = ['type' => $type, 'value' => $value, 'layout' => $layout];
+        }
+        $details_json = json_encode($content_array, JSON_UNESCAPED_UNICODE);
+
+        // 3. บันทึกลงฐานข้อมูล (มี 1 record เสมอ)
+        try {
+            $stmt = $pdo->query("SELECT id FROM cmbigband LIMIT 1");
+            $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($existing) {
+                $id = $existing['id'];
+                $sql = "UPDATE cmbigband SET title=?, genre=?, details=?, facebook=?, whatsapp=?, instagram=?, website=?, tiktok=?, email=?";
+                $params = [$title, $genre, $details_json, $facebook, $whatsapp, $instagram, $website, $tiktok, $email];
+                if ($banner_path) { $sql .= ", banner_image=?"; $params[] = $banner_path; }
+                if ($profile_path) { $sql .= ", profile_image=?"; $params[] = $profile_path; }
+                $sql .= " WHERE id=?"; $params[] = $id;
+                
+                $pdo->prepare($sql)->execute($params);
+            } else {
+                $stmt = $pdo->prepare("INSERT INTO cmbigband (title, genre, details, facebook, whatsapp, instagram, website, tiktok, email, banner_image, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$title, $genre, $details_json, $facebook, $whatsapp, $instagram, $website, $tiktok, $email, $banner_path, $profile_path]);
+            }
             
             echo json_encode(['status' => 'success', 'message' => 'บันทึกข้อมูล CMBigband สำเร็จ!']);
         } catch (Exception $e) {
-            echo json_encode(['status' => 'error', 'message' => 'เกิดข้อผิดพลาดจากฐานข้อมูล: ' . $e->getMessage()]);
+            echo json_encode(['status' => 'error', 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()]);
         }
         break;
 
@@ -570,14 +604,16 @@ switch($action) {
             }
         }
 
-        // --- 2. จัดการ Content (Text, Image, Video) แพ็ครวมเป็น JSON ---
+     // --- 2. จัดการ Content (Text, Image, Video) แพ็ครวมเป็น JSON ---
         $content_array = [];
         $content_types = isset($_POST['content_types']) ? $_POST['content_types'] : [];
         $content_values = isset($_POST['content_values']) ? $_POST['content_values'] : [];
+        $content_layouts = isset($_POST['content_layouts']) ? $_POST['content_layouts'] : []; // 🌟 เพิ่มบรรทัดนี้
 
         for ($i = 0; $i < count($content_types); $i++) {
             $type = $content_types[$i];
             $value = $content_values[$i] ?? '';
+            $layout = $content_layouts[$i] ?? 'col-1'; // 🌟 เพิ่มบรรทัดนี้
 
             if ($type === 'image') {
                 $file_key = "content_images_" . $i;
@@ -592,8 +628,8 @@ switch($action) {
                 }
             }
             
-            // นำข้อมูลแพ็คใส่ Array (แม้จะว่างเปล่าก็ให้เก็บไว้ เพื่อไม่ให้กล่องหาย)
-            $content_array[] = ['type' => $type, 'value' => $value];
+            // 🌟 นำข้อมูลแพ็คใส่ Array (เพิ่ม layout เข้าไปด้วย)
+            $content_array[] = ['type' => $type, 'value' => $value, 'layout' => $layout];
         }
         $details_json = json_encode($content_array, JSON_UNESCAPED_UNICODE);
 

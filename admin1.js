@@ -183,9 +183,9 @@ async function loadCourseData(id) {
                 try {
                     let detailsArray = typeof c.details === 'string' ? JSON.parse(c.details) : c.details;
                     
-                    if(Array.isArray(detailsArray) && detailsArray.length > 0) {
+                  if(Array.isArray(detailsArray) && detailsArray.length > 0) {
                         detailsArray.forEach(item => {
-                            addCourseContent(item.type, item.value);
+                            addCourseContent(item.type, item.value, item.layout || 'col-1'); // 🌟 แก้บรรทัดนี้
                         });
                     } else {
                         addCourseContent('text');
@@ -203,32 +203,49 @@ async function loadCourseData(id) {
 
 let courseImgCounter = 0;
 
-window.addCourseContent = (type, value = '') => {
+// 🌟 เปลี่ยนบรรทัดแรกให้รับค่า layout
+window.addCourseContent = (type, value = '', layout = 'col-1') => {
     const container = document.getElementById('course-content-container');
     const itemDiv = document.createElement('div');
     itemDiv.className = 'relative course-item border border-gray-400 p-1 rounded-[1.2rem] bg-white shadow-sm mb-4';
     itemDiv.setAttribute('data-type', type);
     
-    const deleteBtn = `<button type="button" onclick="this.parentElement.remove()" class="absolute -top-3 -right-3 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition z-10 text-xs">✕</button>`;
+    const deleteBtn = `<button type="button" onclick="this.parentElement.remove()" class="absolute -top-3 -right-3 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition z-50 text-xs">✕</button>`;
 
     if (type === 'text') {
         itemDiv.innerHTML = deleteBtn + `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-[1.2rem] min-h-[120px] course-text-input text-sm font-semibold placeholder-gray-400" placeholder="รายละเอียดคอร์ส...."></textarea>`;
         itemDiv.querySelector('.course-text-input').value = value;
+        
     } else if (type === 'image') {
         courseImgCounter++;
         const previewId = `course-img-preview-${courseImgCounter}`;
         const inputId = `course-img-input-${courseImgCounter}`;
         const imgDisplay = value ? value : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
+        
+        // 🌟 แก้ไข: จัดให้ Dropdown และปุ่มเลือกรูป อยู่ข้างกันตรงกลาง (เป็นทรงแคปซูลคู่กัน)
         itemDiv.innerHTML = deleteBtn + `
-            <div class="relative rounded-xl overflow-hidden bg-[#b2b2b2] h-48 group flex items-center justify-center m-1">
-                <img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-contain">
-                <label class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition">📷 เลือกรูปภาพ / Crop</span>
-                    <input type="file" id="${inputId}" class="hidden course-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)">
-                    <input type="hidden" class="course-img-old" value="${value}">
-                </label>
+            <div class="relative rounded-xl overflow-hidden bg-[#b2b2b2] h-56 group flex items-center justify-center m-1 border border-gray-300">
+                <img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-contain relative z-0">
+                
+                <div class="absolute inset-0 bg-black/40 flex flex-row items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    
+                    <select class="course-img-layout bg-white/90 text-gray-800 text-sm font-bold px-4 py-2.5 rounded-full shadow-md outline-none cursor-pointer hover:bg-white transition text-center text-center appearance-none">
+                        <option value="col-1" ${layout === 'col-1' ? 'selected' : ''}>เต็มหน้า (1 รูป)</option>
+                        <option value="col-2" ${layout === 'col-2' ? 'selected' : ''}>ครึ่งหน้า (2 รูป/แถว)</option>
+                        <option value="col-3" ${layout === 'col-3' ? 'selected' : ''}>1/3 หน้า (3 รูป/แถว)</option>
+                        <option value="col-4" ${layout === 'col-4' ? 'selected' : ''}>1/4 หน้า (4 รูป/แถว)</option>
+                    </select>
+
+                    <label class="bg-white/90 text-gray-800 text-sm font-bold px-4 py-2.5 rounded-full shadow-md hover:bg-white transition cursor-pointer m-0 flex items-center">
+                        📷 เลือกรูปภาพ / Crop
+                        <input type="file" id="${inputId}" class="hidden course-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)">
+                        <input type="hidden" class="course-img-old" value="${value}">
+                    </label>
+
+                </div>
             </div>
         `;
+        
     } else if (type === 'video') {
         itemDiv.innerHTML = deleteBtn + `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-[1.2rem] course-video-input text-sm font-semibold placeholder-gray-400" placeholder="Link to your Video / Youtube / Vimeo">`;
         itemDiv.querySelector('.course-video-input').value = value;
@@ -254,6 +271,10 @@ window.saveCourse = async () => {
         contentItems.forEach((item, index) => {
             const type = item.getAttribute('data-type');
             formData.append('content_types[]', type);
+            
+            // 🌟 เพิ่มการดึงค่าจาก Dropdown
+            const layoutSelect = item.querySelector('.course-img-layout');
+            formData.append('content_layouts[]', layoutSelect ? layoutSelect.value : 'col-1');
             
             if (type === 'text') {
                 formData.append('content_values[]', item.querySelector('.course-text-input').value);

@@ -462,55 +462,63 @@
             </div>
         </section>
 
-        <section id="section-cmbigband" class="content-section hidden">
-            <div class="bg-gray-400 text-black p-6 sticky top-0 z-10 shadow-md">
-                <h2 class="text-3xl font-bold">CMBigband</h2>
+       <section id="section-cmbigband" class="content-section hidden">
+            <div class="bg-gray-400 text-black p-6 sticky top-0 z-10 shadow-md flex justify-between items-center">
+                <h2 class="text-3xl font-bold">CMSJ Bigband</h2>
             </div>
-            <div class="p-8 max-w-4xl mx-auto space-y-6">
-                <div class="grid grid-cols-2 gap-4 h-44 mb-6">
-                    <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
-                        <img id="cmbigband-banner-img" src="https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner" class="w-full h-full object-cover">
-                        <label for="cmb-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                            <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner</span>
-                            <input type="file" id="cmb-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'cmbigband-banner-img', 3/1)">
-                        </label>
+            
+            <div class="p-8 max-w-5xl mx-auto space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                    <div class="grid grid-cols-2 gap-4 h-44 mb-6">
+                        <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
+                            <img id="cmbigband-banner-img" src="https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner" class="w-full h-full object-cover">
+                            <label for="cmb-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner</span>
+                                <input type="file" id="cmb-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'cmbigband-banner-img', 16/9)">
+                            </label>
+                        </div>
+                        <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
+                            <img id="cmbigband-profile-img" src="https://placehold.co/600x600/e5e7eb/a3a3a3?text=No+Profile" class="w-full h-full object-contain bg-gray-200">
+                            <label for="cmb-profile" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">👤 เปลี่ยน Profile</span>
+                                <input type="file" id="cmb-profile" class="hidden" accept="image/*" onchange="previewImage(this, 'cmbigband-profile-img', NaN)">
+                            </label>
+                        </div>
                     </div>
-                    <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
-                        <img id="cmbigband-profile-img" src="https://placehold.co/600x600/e5e7eb/a3a3a3?text=No+Profile" class="w-full h-full object-contain bg-gray-200">
-                        <label for="cmb-profile" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                            <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">👤 เปลี่ยน Profile</span>
-                            <input type="file" id="cmb-profile" class="hidden" accept="image/*" onchange="previewImage(this, 'cmbigband-profile-img', NaN)">
-                        </label>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <input type="text" id="cmb-title" class="input-style" placeholder="Band Title">
-                    <input type="text" id="cmb-genre" class="input-style" placeholder="Genre">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="flex items-center gap-2"><div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">f</div><input type="text" id="cmb-fb" class="input-style" placeholder="Facebook"></div>
-                        <div class="flex items-center gap-2"><div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">WA</div><input type="text" id="cmb-wa" class="input-style" placeholder="WhatsApp"></div>
-                        <div class="flex items-center gap-2"><div class="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold">IG</div><input type="text" id="cmb-ig" class="input-style" placeholder="Instagram"></div>
-                        <div class="flex items-center gap-2"><div class="w-8 h-8 bg-gray-600 text-white rounded-full flex items-center justify-center font-bold">W</div><input type="text" id="cmb-web" class="input-style" placeholder="Website"></div>
-                        <div class="flex items-center gap-2"><div class="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold">TK</div><input type="text" id="cmb-tk" class="input-style" placeholder="TikTok"></div>
-                        <div class="flex items-center gap-2"><div class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold">@</div><input type="text" id="cmb-email" class="input-style" placeholder="Email"></div>
-                    </div>
-                    <textarea id="cmb-details" class="textarea-style min-h-[150px]" placeholder="Details ...."></textarea>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Video</h3>
-                    <div id="cmb-video-container" class="space-y-2">
-                        <div class="flex gap-4">
-                            <input type="text" class="input-style flex-1 cmb-video" placeholder="Link to your Video / Youtube / Vimeo">
-                            <button type="button" onclick="addVideoRow('cmb-video-container', 'cmb-video')" class="bg-yellow-500 text-black px-8 py-2 rounded-full font-bold shadow hover:bg-yellow-600">Add</button>
+                    
+                    <div class="space-y-4">
+                        <input type="text" id="cmb-title" class="input-style font-bold text-lg" placeholder="ชื่อวง (Band Title)">
+                        <input type="text" id="cmb-genre" class="input-style" placeholder="แนวเพลง (Genre)">
+                        
+                        <div class="grid grid-cols-2 gap-4 pt-2">
+                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">f</div><input type="text" id="cmb-fb" class="input-style" placeholder="Facebook URL"></div>
+                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">WA</div><input type="text" id="cmb-wa" class="input-style" placeholder="WhatsApp"></div>
+                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold">IG</div><input type="text" id="cmb-ig" class="input-style" placeholder="Instagram URL"></div>
+                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-gray-600 text-white rounded-full flex items-center justify-center font-bold">W</div><input type="text" id="cmb-web" class="input-style" placeholder="Website URL"></div>
+                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold">TK</div><input type="text" id="cmb-tk" class="input-style" placeholder="TikTok URL"></div>
+                            <div class="flex items-center gap-2"><div class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center font-bold">@</div><input type="text" id="cmb-email" class="input-style" placeholder="Email"></div>
                         </div>
                     </div>
                 </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                    <div class="flex items-center justify-between mb-4 border-b pb-4">
+                        <h3 class="text-xl font-bold">รายละเอียด (Page Builder)</h3>
+                        <div class="flex gap-3">
+                            <button type="button" onclick="addCmbContent('text')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Text</button>
+                            <button type="button" onclick="addCmbContent('image')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Image</button>
+                            <button type="button" onclick="addCmbContent('video')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Video</button>
+                        </div>
+                    </div>
+                    
+                    <div id="cmb-content-container" class="flex flex-wrap -mx-2 items-stretch"></div>
+                </div>
+
                 <div class="pb-10 text-center mt-8">
-                    <button type="button" class="bg-green-500 text-white px-12 py-3 rounded-full font-bold text-xl shadow-lg hover:bg-green-600" onclick="saveCMBigband()">บันทึกข้อมูล CMBigband (Save)</button>
+                    <button type="button" class="bg-green-500 text-white px-12 py-4 rounded-full font-bold text-xl shadow-xl hover:bg-green-600 transition transform hover:-translate-y-1" onclick="saveCMBigband()">บันทึกข้อมูล CMBigband (Save)</button>
                 </div>
             </div>
         </section>
-
         <section id="section-forum" class="content-section hidden p-8 max-w-6xl mx-auto">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">Forum Q&A</h2>
             <div class="bg-white border rounded-xl shadow-sm p-16 text-center text-gray-500"><p class="text-xl font-semibold mb-2">ระบบจัดการ Forum Q&A</p><p>อยู่ระหว่างการพัฒนา...</p></div>
@@ -558,6 +566,308 @@
 
     <div id="toast-container"></div>
     <script src="admin.js?v=999"></script>
-    <script src="admin1.js?v=1000"></script> </body>
+    <script src="admin1.js?v=1001"></script>
+<script>
+// 1. ฟังก์ชันเปลี่ยนขนาดกล่อง (ให้เห็นผลทันทีในหน้า Admin)
+window.changeLayout = (selectEl) => {
+    const item = selectEl.closest('.course-item');
+    item.classList.remove('w-full', 'w-1/2', 'w-1/3', 'w-1/4'); // ล้างค่าเดิม
+    const val = selectEl.value;
+    if(val === 'col-1') item.classList.add('w-full');
+    if(val === 'col-2') item.classList.add('w-1/2');
+    if(val === 'col-3') item.classList.add('w-1/3');
+    if(val === 'col-4') item.classList.add('w-1/4');
+};
+
+// 2. ฟังก์ชันสร้างกล่องเนื้อหาใหม่
+window.addCourseContent = (type, value = '', layout = 'col-1') => {
+    const container = document.getElementById('course-content-container');
+    
+    // บังคับให้ Container จัดเรียงแบบ Grid ซ้ายไปขวา
+    if(container.classList.contains('space-y-4')) {
+        container.classList.remove('space-y-4');
+        container.className = 'flex flex-wrap -mx-2 items-stretch';
+    } else if(!container.classList.contains('flex')) {
+        container.className = 'flex flex-wrap -mx-2 items-stretch';
+    }
+
+    const itemDiv = document.createElement('div');
+    
+    // คำนวณความกว้างตอนโหลดครั้งแรก
+    let widthClass = 'w-full';
+    if(layout === 'col-2') widthClass = 'w-1/2';
+    if(layout === 'col-3') widthClass = 'w-1/3';
+    if(layout === 'col-4') widthClass = 'w-1/4';
+
+    itemDiv.className = `course-item px-2 mb-4 transition-all duration-300 ${widthClass}`;
+    itemDiv.setAttribute('data-type', type);
+    
+    // 🌟 ชุดปุ่มควบคุม (กากบาทลบ + วงกลมเลือกคอลัมน์) อยู่มุมขวาบน
+    const controls = `
+        <div class="absolute -top-3 -right-1 flex flex-col gap-1 z-50 items-center">
+            <button type="button" onclick="this.closest('.course-item').remove()" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition text-sm" title="ลบเนื้อหานี้">✕</button>
+            <div class="relative" title="แบ่งคอลัมน์">
+                <select class="course-layout-select w-8 h-8 rounded-full bg-blue-600 text-white text-center font-bold shadow hover:bg-blue-700 cursor-pointer appearance-none outline-none text-sm text-center" style="text-align-last:center;" onchange="changeLayout(this)">
+                    <option value="col-1" ${layout === 'col-1'?'selected':''}>1</option>
+                    <option value="col-2" ${layout === 'col-2'?'selected':''}>2</option>
+                    <option value="col-3" ${layout === 'col-3'?'selected':''}>3</option>
+                    <option value="col-4" ${layout === 'col-4'?'selected':''}>4</option>
+                </select>
+            </div>
+        </div>
+    `;
+
+    let innerContent = '';
+
+    // โครงสร้างข้างในกล่อง
+    if (type === 'text') {
+        innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50" placeholder="พิมพ์ข้อความที่นี่...">${value}</textarea>`;
+    } else if (type === 'image') {
+        courseImgCounter++;
+        const previewId = `course-img-preview-${courseImgCounter}`;
+        const inputId = `course-img-input-${courseImgCounter}`;
+        const imgDisplay = value ? value : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
+        
+        innerContent = `
+            <div class="relative rounded-xl overflow-hidden bg-gray-200 h-full min-h-[150px] group flex items-center justify-center">
+                <img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-cover relative z-0">
+                <label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0">
+                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 อัปโหลดรูป</span>
+                    <input type="file" id="${inputId}" class="hidden course-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)">
+                    <input type="hidden" class="course-img-old" value="${value}">
+                </label>
+            </div>
+        `;
+    } else if (type === 'video') {
+        innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl course-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${value}">`;
+    }
+
+    // ห่อเนื้อหาด้วยกล่องดีไซน์ (มีกรอบสีเทาอ่อน)
+    itemDiv.innerHTML = `
+        <div class="border-2 border-gray-200 p-2 rounded-2xl bg-white shadow-sm relative h-full flex flex-col hover:border-blue-400 transition-colors">
+            ${controls}
+            ${innerContent}
+        </div>
+    `;
+
+    container.appendChild(itemDiv);
+};
+
+// 3. ฟังก์ชันบันทึกข้อมูล (ดึงค่าจากวงกลม)
+const originalSaveCourse = window.saveCourse; // เก็บของเก่าไว้ (ถ้ามี)
+window.saveCourse = async () => {
+    try {
+        const formData = new FormData();
+        const courseId = document.getElementById('edit-course-id').value;
+        if (courseId) formData.append('course_id', courseId);
+        
+        formData.append('slot_number', document.getElementById('edit-course-slot').value);
+        formData.append('title', document.getElementById('course-title').value);
+        formData.append('creator', document.getElementById('course-creator').value);
+        
+        window.croppedImagesData = window.croppedImagesData || {};
+        const bannerFile = window.croppedImagesData['course-banner'] || document.getElementById('course-banner').files[0];
+        if(bannerFile) formData.append('banner_image', bannerFile, window.croppedImagesData['course-banner'] ? 'banner.jpg' : bannerFile.name);
+
+        const contentItems = document.querySelectorAll('.course-item');
+        contentItems.forEach((item, index) => {
+            const type = item.getAttribute('data-type');
+            formData.append('content_types[]', type);
+            
+            // 🌟 ดึงค่า Layout จากปุ่มวงกลม
+            const layoutSelect = item.querySelector('.course-layout-select');
+            formData.append('content_layouts[]', layoutSelect ? layoutSelect.value : 'col-1');
+            
+            if (type === 'text') {
+                formData.append('content_values[]', item.querySelector('.course-text-input').value);
+            } else if (type === 'video') {
+                formData.append('content_values[]', item.querySelector('.course-video-input').value);
+            } else if (type === 'image') {
+                const fileInput = item.querySelector('.course-img-input');
+                const oldInput = item.querySelector('.course-img-old');
+                if (fileInput && fileInput.id && window.croppedImagesData[fileInput.id]) {
+                    formData.append(`content_images_${index}`, window.croppedImagesData[fileInput.id], 'course_img.jpg');
+                    formData.append('content_values[]', `has_image`);
+                } else if (fileInput && fileInput.files[0]) {
+                    formData.append(`content_images_${index}`, fileInput.files[0]);
+                    formData.append('content_values[]', `has_image`);
+                } else {
+                    formData.append('content_values[]', oldInput ? oldInput.value : '');
+                }
+            }
+        });
+
+        showToast('กำลังบันทึกข้อมูล Course...');
+        const response = await fetch(getApiUrl('save_course'), fetchOptions('POST', formData));
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            showToast('บันทึกคอร์สเรียนสำเร็จ!');
+            fetchCourses();
+            closeCourseForm();
+        } else { showToast('ข้อผิดพลาด: ' + result.message); }
+    } catch (error) { showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'); }
+};
+
+// ==========================================
+// ส่วนควบคุม Page Builder ของ CMBigband
+// ==========================================
+let cmbImgCounter = 0;
+
+window.addCmbContent = (type, value = '', layout = 'col-1') => {
+    const container = document.getElementById('cmb-content-container');
+    const itemDiv = document.createElement('div');
+    
+    let widthClass = 'w-full';
+    if(layout === 'col-2') widthClass = 'w-1/2';
+    if(layout === 'col-3') widthClass = 'w-1/3';
+    if(layout === 'col-4') widthClass = 'w-1/4';
+
+    itemDiv.className = `course-item cmb-item px-2 mb-4 transition-all duration-300 ${widthClass}`;
+    itemDiv.setAttribute('data-type', type);
+    
+    const controls = `
+        <div class="absolute -top-3 -right-1 flex flex-col gap-1 z-50 items-center">
+            <button type="button" onclick="this.closest('.cmb-item').remove()" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition text-sm">✕</button>
+            <div class="relative">
+                <select class="cmb-layout-select w-8 h-8 rounded-full bg-blue-600 text-white text-center font-bold shadow hover:bg-blue-700 cursor-pointer appearance-none outline-none text-sm text-center" style="text-align-last:center;" onchange="changeLayout(this)">
+                    <option value="col-1" ${layout === 'col-1'?'selected':''}>1</option>
+                    <option value="col-2" ${layout === 'col-2'?'selected':''}>2</option>
+                    <option value="col-3" ${layout === 'col-3'?'selected':''}>3</option>
+                    <option value="col-4" ${layout === 'col-4'?'selected':''}>4</option>
+                </select>
+            </div>
+        </div>
+    `;
+
+    let innerContent = '';
+    if (type === 'text') {
+        innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50" placeholder="พิมพ์เนื้อหาที่นี่...">${value}</textarea>`;
+    } else if (type === 'image') {
+        cmbImgCounter++;
+        const previewId = `cmb-img-preview-${cmbImgCounter}`;
+        const inputId = `cmb-img-input-${cmbImgCounter}`;
+        const imgDisplay = value ? value : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
+        
+        innerContent = `
+            <div class="relative rounded-xl overflow-hidden bg-gray-200 h-full min-h-[150px] group flex items-center justify-center">
+                <img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-cover relative z-0">
+                <label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0">
+                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 อัปโหลดรูป</span>
+                    <input type="file" id="${inputId}" class="hidden cmb-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)">
+                    <input type="hidden" class="cmb-img-old" value="${value}">
+                </label>
+            </div>
+        `;
+    } else if (type === 'video') {
+        innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl cmb-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${value}">`;
+    }
+
+    itemDiv.innerHTML = `
+        <div class="border-2 border-gray-200 p-2 rounded-2xl bg-white shadow-sm relative h-full flex flex-col hover:border-blue-400 transition-colors">
+            ${controls}
+            ${innerContent}
+        </div>
+    `;
+    container.appendChild(itemDiv);
+};
+
+// ดึงข้อมูลเดิมมาแสดง
+window.loadCmbData = async () => {
+    try {
+        const res = await fetch(getApiUrl('get_cmbigband'));
+        const result = await res.json();
+        if (result.status === 'success' && result.data) {
+            const data = result.data;
+            document.getElementById('cmb-title').value = data.title || '';
+            document.getElementById('cmb-genre').value = data.genre || '';
+            document.getElementById('cmb-fb').value = data.facebook || '';
+            document.getElementById('cmb-wa').value = data.whatsapp || '';
+            document.getElementById('cmb-ig').value = data.instagram || '';
+            document.getElementById('cmb-web').value = data.website || '';
+            document.getElementById('cmb-tk').value = data.tiktok || '';
+            document.getElementById('cmb-email').value = data.email || '';
+
+            if(data.banner_image) document.getElementById('cmbigband-banner-img').src = data.banner_image;
+            if(data.profile_image) document.getElementById('cmbigband-profile-img').src = data.profile_image;
+
+            const container = document.getElementById('cmb-content-container');
+            container.innerHTML = '';
+            if(data.details) {
+                try {
+                    let detailsArray = JSON.parse(data.details);
+                    if(Array.isArray(detailsArray)) {
+                        detailsArray.forEach(item => addCmbContent(item.type, item.value, item.layout || 'col-1'));
+                    }
+                } catch(e) {}
+            }
+        }
+    } catch(e) {}
+};
+
+// บันทึกข้อมูล
+window.saveCMBigband = async () => {
+    try {
+        const formData = new FormData();
+        formData.append('title', document.getElementById('cmb-title').value);
+        formData.append('genre', document.getElementById('cmb-genre').value);
+        formData.append('facebook', document.getElementById('cmb-fb').value);
+        formData.append('whatsapp', document.getElementById('cmb-wa').value);
+        formData.append('instagram', document.getElementById('cmb-ig').value);
+        formData.append('website', document.getElementById('cmb-web').value);
+        formData.append('tiktok', document.getElementById('cmb-tk').value);
+        formData.append('email', document.getElementById('cmb-email').value);
+
+        const bannerFile = window.croppedImagesData && window.croppedImagesData['cmb-banner'] ? window.croppedImagesData['cmb-banner'] : document.getElementById('cmb-banner').files[0];
+        const profileFile = window.croppedImagesData && window.croppedImagesData['cmb-profile'] ? window.croppedImagesData['cmb-profile'] : document.getElementById('cmb-profile').files[0];
+        
+        if(bannerFile) formData.append('banner_image', bannerFile, 'banner.jpg');
+        if(profileFile) formData.append('profile_image', profileFile, 'profile.jpg');
+
+        const contentItems = document.querySelectorAll('.cmb-item');
+        contentItems.forEach((item, index) => {
+            const type = item.getAttribute('data-type');
+            formData.append('content_types[]', type);
+            
+            const layoutSelect = item.querySelector('.cmb-layout-select');
+            formData.append('content_layouts[]', layoutSelect ? layoutSelect.value : 'col-1');
+            
+            if (type === 'text') {
+                formData.append('content_values[]', item.querySelector('.cmb-text-input').value);
+            } else if (type === 'video') {
+                formData.append('content_values[]', item.querySelector('.cmb-video-input').value);
+            } else if (type === 'image') {
+                const fileInput = item.querySelector('.cmb-img-input');
+                const oldInput = item.querySelector('.cmb-img-old');
+                if (fileInput && fileInput.id && window.croppedImagesData[fileInput.id]) {
+                    formData.append(`content_images_${index}`, window.croppedImagesData[fileInput.id], 'cmb_img.jpg');
+                    formData.append('content_values[]', `has_image`);
+                } else if (fileInput && fileInput.files[0]) {
+                    formData.append(`content_images_${index}`, fileInput.files[0]);
+                    formData.append('content_values[]', `has_image`);
+                } else {
+                    formData.append('content_values[]', oldInput ? oldInput.value : '');
+                }
+            }
+        });
+
+        showToast('กำลังบันทึกข้อมูล CMBigband...');
+        const response = await fetch(getApiUrl('save_cmbigband'), fetchOptions('POST', formData));
+        const result = await response.json();
+        if (result.status === 'success') { showToast('บันทึกข้อมูลสำเร็จ!'); window.croppedImagesData = {}; } 
+        else { showToast('ข้อผิดพลาด: ' + result.message); }
+    } catch(e) { showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'); }
+};
+
+// สั่งโหลดข้อมูลตอนกดเข้าเมนู
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+        if(link.getAttribute('data-target') === 'section-cmbigband') {
+            loadCmbData();
+        }
+    });
+});
+</script>
+
 </body>
 </html>
