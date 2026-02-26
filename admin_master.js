@@ -84,9 +84,19 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
     } catch (error) { showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'); }
 });
 
-document.getElementById('logout-btn')?.addEventListener('click', () => {
-    loginScreen.classList.remove('hidden'); sidebar.classList.add('hidden'); mainContent.classList.add('hidden');
-    document.getElementById('password').value = ''; 
+// --- โค้ดปุ่มออกจากระบบ (แบบใหม่ เคลียร์ Session แล้วเด้งกลับหน้าแรก) ---
+document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    try {
+        await fetch(getApiUrl('logout')); // สั่งให้ Backend ยกเลิกการล็อกอิน
+        window.location.href = 'index2.html'; // เด้งกลับหน้าเว็บหลัก
+    } catch(e) {
+        window.location.href = 'index2.html';
+    }
+});
+
+// --- สั่งให้โหลดตารางข้อมูลผู้ใช้งานทันทีที่เปิดหน้า Admin ---
+document.addEventListener('DOMContentLoaded', () => {
+    fetchUsers();
 });
 
 const navLinks = document.querySelectorAll('.nav-link');
@@ -95,13 +105,15 @@ function switchTab(targetId) {
     const target = document.getElementById(targetId);
     if(target) target.classList.remove('hidden');
     navLinks.forEach(link => {
-        link.classList.remove('bg-gray-100', 'bg-blue-100', 'bg-yellow-100', 'bg-green-100', 'bg-gray-200');
+        link.classList.remove('bg-gray-100', 'bg-blue-100', 'bg-yellow-100', 'bg-green-100', 'bg-gray-200', 'bg-orange-100', 'bg-pink-100'); // <--- เพิ่มสีใหม่ตรงนี้
         if(link.getAttribute('data-target') === targetId) {
             if(targetId.includes('festival')) link.classList.add('bg-blue-100');
             else if(targetId.includes('admin')) link.classList.add('bg-gray-100');
             else if(targetId.includes('musician')) link.classList.add('bg-yellow-100');
             else if(targetId.includes('courses')) link.classList.add('bg-green-100');
             else if(targetId.includes('cmbigband')) link.classList.add('bg-gray-200');
+            else if(targetId.includes('forum')) link.classList.add('bg-orange-100'); // 🌟 เพิ่มสีสำหรับ Forum
+            else if(targetId.includes('store')) link.classList.add('bg-pink-100');   // 🌟 เพิ่มสีสำหรับ Store
             else link.classList.add('bg-gray-100');
         }
     });

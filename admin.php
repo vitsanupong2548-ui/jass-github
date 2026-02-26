@@ -1,3 +1,11 @@
+<?php
+session_start();
+// ตรวจสอบสิทธิ์ว่าล็อกอินเป็น admin หรือไม่ ถ้าไม่ใช่ให้เด้งกลับหน้าแรก
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: index2.html");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -28,47 +36,11 @@
 </head>
 <body class="h-screen flex overflow-hidden">
 
-    <div id="login-screen" class="fixed inset-0 flex items-center justify-center z-50 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=2000&auto=format&fit=crop');">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-        <div id="login-container" class="relative bg-gray-900/80 border border-yellow-600/30 p-10 rounded-3xl shadow-[0_0_50px_rgba(202,138,4,0.15)] w-full max-w-md transition-all duration-500 backdrop-blur-md">
-            <div class="text-center mb-8">
-                <h2 class="text-4xl font-bold text-yellow-500 tracking-wider mb-1">JAZZ <span class="text-white font-light">ADMIN</span></h2>
-                <p class="text-gray-400 text-sm tracking-widest uppercase">Music & Event Management</p>
-            </div>
-            <form id="login-form" class="space-y-5">
-                <div>
-                    <label class="block text-gray-400 mb-2 text-sm tracking-wide">ชื่อผู้ใช้ / Username</label>
-                    <input type="text" id="username" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3 outline-none focus:border-yellow-500 transition-all placeholder-gray-600" placeholder="admin" required>
-                </div>
-                <div>
-                    <label class="block text-gray-400 mb-2 text-sm tracking-wide">รหัสผ่าน / Password</label>
-                    <input type="password" id="password" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3 outline-none focus:border-yellow-500 transition-all placeholder-gray-600" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="w-full mt-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-gray-900 font-bold py-3 rounded-xl hover:from-yellow-500 hover:to-yellow-400 transition-all transform hover:-translate-y-1 shadow-lg text-lg">เข้าสู่ระบบ</button>
-            </form>
-            <div class="mt-8 text-center border-t border-gray-700/50 pt-6">
-                <span class="text-sm text-gray-400">ยังไม่มีบัญชีใช่ไหม?</span>
-                <button id="show-register" type="button" class="text-sm text-yellow-500 font-bold hover:underline ml-1 transition-colors">สมัครสมาชิก</button>
-            </div>
-        </div>
-
-        <div id="register-container" class="relative bg-gray-900/80 border border-yellow-600/30 p-10 rounded-3xl shadow-[0_0_50px_rgba(202,138,4,0.15)] w-full max-w-md hidden transition-all duration-500 backdrop-blur-md">
-            <div class="text-center mb-8"><h2 class="text-3xl font-bold text-white tracking-wide mb-1">JOIN THE <span class="text-yellow-500">BAND</span></h2></div>
-            <form id="register-form" class="space-y-4">
-                <input type="text" id="reg-username" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3" placeholder="Username" required>
-                <input type="email" id="reg-email" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3" placeholder="Email" required>
-                <input type="password" id="reg-password" class="w-full bg-gray-800/50 border border-gray-700 text-white rounded-xl px-4 py-3" placeholder="Password" required>
-                <button type="submit" class="w-full mt-4 bg-gradient-to-r from-yellow-600 to-yellow-500 text-gray-900 font-bold py-3 rounded-xl text-lg">ลงทะเบียน</button>
-            </form>
-            <div class="mt-8 text-center border-t border-gray-700/50 pt-6"><button id="show-login" type="button" class="text-sm text-yellow-500 font-bold hover:underline">กลับไปเข้าสู่ระบบ</button></div>
-        </div>
-    </div>
-
-    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col h-full z-10 hidden" id="sidebar">
+   <aside class="w-64 bg-white border-r border-gray-200 flex flex-col h-full z-10" id="sidebar">
         <div class="p-6"><h1 class="text-2xl font-bold">Admin Panel</h1></div>
         <nav class="flex-1 overflow-y-auto">
             <ul class="space-y-1">
-                <li><a href="#" data-target="section-admin" class="nav-link block px-6 py-3 font-semibold hover:bg-gray-100 text-gray-800">Admin (User Mgt.)</a></li>
+                <li><a href="#" data-target="section-admin" class="nav-link block px-6 py-3 font-semibold bg-gray-100 text-gray-800">Admin (User Mgt.)</a></li>
                 <li><a href="#" data-target="section-festival" class="nav-link block px-6 py-3 font-semibold hover:bg-blue-100 text-gray-800">Festival & Event</a></li>
                 <li>
                     <a href="#" data-target="section-musician" class="nav-link block px-6 py-3 font-semibold hover:bg-yellow-100 text-gray-800 flex justify-between items-center">Musician Network</a>
@@ -79,6 +51,9 @@
                 </li>
                 <li><a href="#" data-target="section-courses" class="nav-link block px-6 py-3 font-semibold hover:bg-green-100 text-gray-800">Courses Library</a></li>
                 <li><a href="#" data-target="section-cmbigband" class="nav-link block px-6 py-3 font-semibold hover:bg-gray-200 text-gray-800">CMBigband</a></li>
+                
+                <li><a href="#" data-target="section-forum" class="nav-link block px-6 py-3 font-semibold hover:bg-orange-100 text-gray-800">Forum Q&A</a></li>
+                <li><a href="#" data-target="section-store" class="nav-link block px-6 py-3 font-semibold hover:bg-pink-100 text-gray-800">Store & Merch</a></li>
             </ul>
         </nav>
         <div class="p-4 border-t border-gray-200">
@@ -86,9 +61,9 @@
         </div>
     </aside>
 
-    <main class="flex-1 h-full overflow-y-auto bg-white hidden relative" id="main-content">
+    <main class="flex-1 h-full overflow-y-auto bg-white relative" id="main-content">
         
-        <section id="section-admin" class="content-section p-8 max-w-6xl mx-auto hidden">
+        <section id="section-admin" class="content-section p-8 max-w-6xl mx-auto">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">จัดการสมาชิก (User Management)</h2>
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                 <div class="relative w-full md:w-1/3">
@@ -531,7 +506,8 @@
             
             <div class="p-8 max-w-5xl mx-auto space-y-6">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <div class="grid grid-cols-2 gap-4 h-44 mb-6">
+                    
+                    <div class="grid grid-cols-2 gap-4 h-44 mb-4">
                         <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-gray-100 group">
                             <img id="cmbigband-banner-img" src="https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner" class="w-full h-full object-cover">
                             <label for="cmb-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
@@ -548,9 +524,17 @@
                         </div>
                     </div>
                     
+                    <div class="flex justify-end mb-4">
+                        <div class="flex items-center gap-3 text-sm font-bold bg-gray-50 px-5 py-2 rounded-full border border-gray-200 shadow-sm w-fit">
+                            <button type="button" class="admin-lang-btn text-red-500 border-b-2 border-red-500 pb-0.5" data-form="cmb" onclick="switchAdminLang(this, 'en', 'cmb')">GB English</button>
+                            <span class="text-gray-300">|</span>
+                            <button type="button" class="admin-lang-btn text-gray-400 hover:text-gray-800 transition pb-0.5" data-form="cmb" onclick="switchAdminLang(this, 'th', 'cmb')">TH ไทย</button>
+                        </div>
+                    </div>
+
                     <div class="space-y-4">
-                        <input type="text" id="cmb-title" class="input-style font-bold text-lg lang-en" placeholder="Band Title (EN)">
-                        <input type="text" id="cmb-title-th" class="input-style font-bold text-lg lang-th hidden" placeholder="ชื่อวง (TH)">
+                        <input type="text" id="cmb-title" class="input-style font-bold text-lg lang-en w-full" placeholder="Band Title (EN)">
+                        <input type="text" id="cmb-title-th" class="input-style font-bold text-lg lang-th hidden w-full" placeholder="ชื่อวง (TH)">
                         
                         <input type="text" id="cmb-genre" class="input-style lang-en" placeholder="Genre (EN)">
                         <input type="text" id="cmb-genre-th" class="input-style lang-th hidden" placeholder="แนวเพลง (TH)">
@@ -567,19 +551,12 @@
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-4 border-b pb-4 gap-4">
-                        <div>
-                            <h3 class="text-xl font-bold mb-2">รายละเอียด (Page Builder)</h3>
-                            <div class="flex items-center gap-3 text-sm font-bold bg-gray-50 px-4 py-1.5 rounded-full border border-gray-200 w-fit">
-                                <button type="button" class="admin-lang-btn text-red-500 border-b-2 border-red-500 pb-0.5" data-form="cmb" onclick="switchAdminLang(this, 'en', 'cmb')">GB English</button>
-                                <span class="text-gray-300">|</span>
-                                <button type="button" class="admin-lang-btn text-gray-400 hover:text-gray-800 transition pb-0.5" data-form="cmb" onclick="switchAdminLang(this, 'th', 'cmb')">TH ไทย</button>
-                            </div>
-                        </div>
+                    <div class="flex flex-col sm:flex-row items-center justify-between mb-4 border-b pb-4 gap-4">
+                        <h3 class="text-xl font-bold">รายละเอียด (Page Builder)</h3>
                         <div class="flex gap-3">
-                            <button type="button" onclick="addCmbContent('text')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Text</button>
-                            <button type="button" onclick="addCmbContent('image')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Image</button>
-                            <button type="button" onclick="addCmbContent('video')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Video</button>
+                            <button type="button" onclick="addCmbContent('text')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition shadow-sm">Add Text</button>
+                            <button type="button" onclick="addCmbContent('image')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition shadow-sm">Add Image</button>
+                            <button type="button" onclick="addCmbContent('video')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition shadow-sm">Add Video</button>
                         </div>
                     </div>
                     
@@ -639,7 +616,7 @@
 
     <div id="toast-container"></div>
     
-   <script src="admin_master.js?v=1"></script>
+   <script src="admin_master.js?v=2"></script>
     
 <script>
 window.changeLayout = (selectEl) => {

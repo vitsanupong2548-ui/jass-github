@@ -16,7 +16,7 @@ async function initFrontend() {
     const promises = Array.from(includes).map(async el => {
         const file = el.getAttribute('data-include');
         try {
-            const html = await (await fetch(file)).text();
+            const html = await (await fetch(file + '?v=' + new Date().getTime())).text();
             el.innerHTML = html;
         } catch(err) {}
     });
@@ -607,7 +607,7 @@ window.applyDataToDOM = async function(container) {
         }
     }
 
-    // --------------------------------------------------
+// --------------------------------------------------
     // C. ส่วนของ CMSJ Bigband (ระบบ Page Builder)
     // --------------------------------------------------
     const isBigband = container.querySelector('#dyn-bigband_main_title');
@@ -636,13 +636,20 @@ window.applyDataToDOM = async function(container) {
                         e.preventDefault();
                         e.stopPropagation();
 
+                        // 🌟 1. สั่งให้กล่องหลักขยายความสูง (เหมือนหน้าคอร์สเรียน) จะได้ไม่ดูเตี้ย
+                        const mainContainer = document.querySelector('.main-container');
+                        if (mainContainer && !mainContainer.dataset.initialHeight) {
+                            mainContainer.dataset.initialHeight = mainContainer.offsetHeight;
+                            mainContainer.style.height = `${mainContainer.offsetHeight * 2.5}px`; 
+                        }
+
                         let detailsHtml = '<div class="w-full flex flex-wrap -mx-2 items-stretch">';
                         const targetDetails = window.currentLang === 'th' ? bbData.details_th : bbData.details;
                         
-                        if (targetDetails) {
+                        if (targetDetails && targetDetails !== 'null' && targetDetails !== '[]') {
                             try {
                                 let detailsArray = typeof targetDetails === 'string' ? JSON.parse(targetDetails) : targetDetails;
-                                if (Array.isArray(detailsArray)) {
+                                if (Array.isArray(detailsArray) && detailsArray.length > 0) {
                                     detailsArray.forEach(item => {
                                         let widthClass = 'w-full'; 
                                         if (item.layout === 'col-2') widthClass = 'w-1/2'; 
@@ -651,7 +658,7 @@ window.applyDataToDOM = async function(container) {
 
                                         detailsHtml += `<div class="${widthClass} px-2 mb-6 flex flex-col justify-start">`;
                                         if (item.type === 'text') {
-                                            detailsHtml += `<div class="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-[#050505] font-medium leading-relaxed w-full break-words">${item.value.replace(/\n/g, '<br>')}</div>`;
+                                            detailsHtml += `<div class="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-[#050505] font-medium leading-relaxed w-full break-words">${item.value ? item.value.replace(/\n/g, '<br>') : ''}</div>`;
                                         } else if (item.type === 'image') {
                                             detailsHtml += `<img src="${item.value}" class="w-full h-auto object-cover rounded-2xl shadow-sm border border-gray-200">`;
                                         } else if (item.type === 'video') {
@@ -662,8 +669,14 @@ window.applyDataToDOM = async function(container) {
                                         }
                                         detailsHtml += `</div>`; 
                                     });
+                                } else {
+                                     detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">ยังไม่มีรายละเอียด (คุณสามารถเพิ่มได้ที่หน้า Admin -> Page Builder)</div>`;
                                 }
-                            } catch(e) {}
+                            } catch(e) {
+                                console.error('Error parsing details JSON', e);
+                            }
+                        } else {
+                            detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">ยังไม่มีรายละเอียด (คุณสามารถเพิ่มได้ที่หน้า Admin -> Page Builder)</div>`;
                         }
                         detailsHtml += '</div>';
 
@@ -671,20 +684,21 @@ window.applyDataToDOM = async function(container) {
                         const genre = (window.currentLang === 'th' && bbData.genre_th) ? bbData.genre_th : (bbData.genre || '');
                         const bannerImgUrl = bbData.banner_image || 'https://placehold.co/1200x400/333/ccc?text=Bigband';
 
+                        // 🌟 2. เปลี่ยน h-full เป็น min-h-[85vh] เพื่อบังคับให้กล่องขาวสูงลงมาถึงข้างล่างเสมอ
                         detailView.innerHTML = `
-                            <div class="w-full h-full overflow-y-auto hide-scrollbar bg-white text-[#050505] rounded-2xl relative shadow-2xl transition-opacity duration-500 opacity-0" id="bigband-detail-inner"> 
+                            <div class="w-full min-h-[85vh] overflow-y-auto hide-scrollbar bg-[#f8f9fa] text-[#050505] rounded-2xl relative shadow-2xl transition-opacity duration-500 opacity-0" id="bigband-detail-inner"> 
                                 <button id="bb-back-btn" class="absolute top-4 left-4 md:top-6 md:left-6 z-50 bg-black/60 hover:bg-black text-white px-5 py-2.5 rounded-full font-bold flex items-center gap-2 transition-colors shadow-lg border border-white/20 backdrop-blur-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                                     Go Back
                                 </button>
-                                <div class="w-full h-[30vh] md:h-[40vh] min-h-[300px] overflow-hidden rounded-t-2xl relative bg-black">
-                                    <img src="${bannerImgUrl}" class="absolute inset-0 w-full h-full object-cover object-center opacity-80">
+                                <div class="w-full h-[30vh] md:h-[40vh] min-h-[300px] overflow-hidden rounded-t-2xl relative bg-black border-b border-gray-200">
+                                    <img src="${bannerImgUrl}" class="absolute inset-0 w-full h-full object-cover object-center opacity-90">
                                 </div>
                                 <main class="p-6 md:p-10 lg:p-12 pb-32 max-w-5xl mx-auto">
                                     <div class="flex flex-col gap-4 content-visible">
                                         <div class="mb-4 mt-4">
-                                            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-header font-bold text-[#050505] mb-4 tracking-tight leading-tight break-words">${title}</h1>
-                                            ${genre ? `<p class="text-gray-600 font-medium mb-4 text-base sm:text-lg break-words">${genre}</p>` : ''}
+                                            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-header font-bold text-[#050505] mb-2 tracking-tight leading-tight break-words">${title}</h1>
+                                            ${genre ? `<p class="text-gray-600 font-bold mb-4 text-base sm:text-lg break-words uppercase tracking-wide">${genre}</p>` : ''}
                                             <hr class="border-gray-300 border-t-2 my-6 w-full">
                                         </div>
                                         <div class="w-full">${detailsHtml}</div>
@@ -701,18 +715,13 @@ window.applyDataToDOM = async function(container) {
                             if(innerDetail) innerDetail.classList.remove('opacity-0');
                         }, 50);
 
-                        const leftPane = mainContainer.querySelector('.md\\:col-span-1');
-                        if (leftPane) leftPane.classList.add('hidden');
-                        const rightPane = container.querySelector('.clone-main-content').parentElement;
-                        if (rightPane && rightPane.classList.contains('md:col-span-3')) {
-                            rightPane.classList.remove('md:col-span-3');
-                            rightPane.classList.add('md:col-span-4');
-                        }
-
+                        // 5. ปิดหน้า Detail กลับสู่ Main View
                         detailView.querySelector('#bb-back-btn').addEventListener('click', (e2) => {
                             e2.preventDefault();
                             e2.stopPropagation();
-                            
+
+                            // 🌟 3. คืนค่าความสูงกลับเป็นปกติเมื่อกดปุ่มย้อนกลับ
+                            const mainContainer = document.querySelector('.main-container');
                             if (mainContainer && mainContainer.dataset.initialHeight) {
                                 mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`;
                                 delete mainContainer.dataset.initialHeight;
@@ -725,17 +734,13 @@ window.applyDataToDOM = async function(container) {
                                 detailView.classList.add('hidden');
                                 gridView.classList.remove('hidden');
                                 detailView.innerHTML = ''; 
-                                
-                                if (leftPane) leftPane.classList.remove('hidden');
-                                if (rightPane && rightPane.classList.contains('md:col-span-4')) {
-                                    rightPane.classList.remove('md:col-span-4');
-                                    rightPane.classList.add('md:col-span-3');
-                                }
                             }, 300);
                         });
                     });
                 }
-            } catch (error) {}
+            } catch (error) {
+                console.error('Error fetching CMBigband:', error);
+            }
         }
     }
 };
@@ -914,4 +919,60 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+});
+
+// ==========================================
+// 7. ระบบปุ่ม Learn More ไปยังหน้า About us Bigband
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // หาปุ่ม Learn More ในหน้าแรก
+    const learnMoreBtn = document.querySelector('a.inline-flex.items-center.gap-3');
+
+    if (learnMoreBtn) {
+        learnMoreBtn.addEventListener('click', (e) => {
+            e.preventDefault(); 
+
+            // 1. ปิดเมนูมือถือ (ถ้าเปิดอยู่)
+            const closeMenuBtn = document.getElementById('close-menu-btn');
+            if (closeMenuBtn && !document.getElementById('mobile-menu-container').classList.contains('hidden')) {
+                closeMenuBtn.click();
+            }
+
+            // 2. ปิดหน้าต่างการ์ดอื่นที่อาจจะเปิดค้างอยู่
+            const activeCloseBtn = document.querySelector('.close-btn');
+            if (activeCloseBtn) {
+                activeCloseBtn.click();
+            }
+
+            // 3. หากล่อง Bigband สีเทาในหน้าแรก
+            const bigbandCard = document.querySelector('.card[data-target="#bigband-content"]');
+            
+            if (bigbandCard) {
+                // สั่งคลิกจำลองเพื่อเปิดหน้า Bigband หลักขึ้นมาก่อน
+                bigbandCard.click(); 
+
+                // 🌟 หน่วงเวลา 0.3 วินาที รอให้กล่องขยายตัวเสร็จ แล้วค่อยเลื่อนหน้าจอให้พอดี
+                setTimeout(() => {
+                    const mainContainer = document.querySelector('.main-container');
+                    if (mainContainer) {
+                        // ใช้ block: 'center' เพื่อให้กล่องอยู่กึ่งกลางจอพอดีสวยๆ
+                        mainContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+
+                    // 🌟 หน่วงเวลาอีก 0.4 วินาที หลังจากเลื่อนจอเสร็จ ให้คลิกเข้าไปดูรายละเอียดลึก
+                    setTimeout(() => {
+                        const bigbandLinks = document.querySelectorAll('.bigband-link');
+                        for (let link of bigbandLinks) {
+                            // เช็คว่าลิงก์ไหนที่กำลังแสดงผลอยู่บนหน้าจอจริงๆ ให้คลิกตัวนั้น
+                            if (link.getBoundingClientRect().width > 0) {
+                                link.click();
+                                break; 
+                            }
+                        }
+                    }, 400); 
+
+                }, 300);
+            }
+        });
+    }
 });
