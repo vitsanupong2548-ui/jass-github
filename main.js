@@ -102,10 +102,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // 🌟 แปลภาษา UI ทันทีที่โหลด (ตอนนี้โหลดหลัง initFrontend เลยจะครอบคลุมไฟล์ย่อยด้วย)
-    translateUI(window.currentLang);
+    if (typeof translateUI === 'function') translateUI(window.currentLang);
 
-    // 🌟 ฟังก์ชันสลับภาษา (กดปุ๊บ จำค่า แล้วโหลดใหม่)
     window.switchFrontLang = function(btn, lang) {
         if(window.currentLang === lang) return; 
         localStorage.setItem('siteLang', lang); 
@@ -249,7 +247,7 @@ window.showArtistDetailContent = function(artistType, artistNum, linkElement = n
 }
 
 // ==========================================
-// 4. ระบบจัดการหน้าต่างแบบ Dynamic (Festival, Courses, Bigband)
+// 4. ระบบจัดการหน้าต่างแบบ Dynamic
 // ==========================================
 window.applyDataToDOM = async function(container) {
     
@@ -322,7 +320,7 @@ window.applyDataToDOM = async function(container) {
                         let detailDiv = document.getElementById('event-detail-content-' + event.id);
                         if(!detailDiv) { detailDiv = document.createElement('div'); detailDiv.id = 'event-detail-content-' + event.id; detailDiv.className = 'hidden'; hiddenContainer.appendChild(detailDiv); }
                         const dateFormatted = `${String(startD.getDate()).padStart(2, '0')} ${monthNames[startD.getMonth()]} ${startD.getFullYear()}`;
-                        detailDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h1 class="text-3xl sm:text-4xl lg:text-5xl font-header font-bold mb-1 tracking-tight break-words">${title}</h1><h2 class="text-2xl sm:text-3xl lg:text-4xl font-header font-bold mb-6 tracking-tight text-gray-700">${event.location || 'Chiangmai Jazz City'}</h2><p class="text-sm sm:text-base font-medium mb-4 text-black">${dateFormatted}</p><hr class="border-gray-300 border-t-2 mb-6"><div class="prose prose-sm sm:prose-base max-w-none text-black font-medium leading-relaxed text-sm whitespace-pre-line break-words">${detailsText ? detailsText.replace(/\n/g, '<br>') : 'ไม่มีรายละเอียด...'}</div></div></div>`;
+                       detailDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h1 class="text-3xl sm:text-4xl lg:text-5xl font-header font-bold mb-2 tracking-tight break-words">${title}</h1><h3 class="text-lg md:text-xl font-bold mb-4 text-gray-500 break-words">${event.location || 'Chiangmai Jazz City'}</h3><p class="text-sm sm:text-base font-medium mb-6 text-black">${dateFormatted}</p><hr class="border-gray-300 border-t-2 mb-6"><div class="prose prose-sm sm:prose-base max-w-none text-black font-medium leading-relaxed text-sm whitespace-pre-line break-words">${detailsText ? detailsText.replace(/\n/g, '<br>') : 'ไม่มีรายละเอียด...'}</div></div></div>`;
 
                         let bookDiv = document.getElementById('book-now-content-' + event.id);
                         if(!bookDiv) { bookDiv = document.createElement('div'); bookDiv.id = 'book-now-content-' + event.id; bookDiv.className = 'hidden'; hiddenContainer.appendChild(bookDiv); }
@@ -606,8 +604,105 @@ window.applyDataToDOM = async function(container) {
             } catch (error) { console.error('Error fetching courses:', error); }
         }
     }
+    // --------------------------------------------------
+    // ฟังก์ชันสำหรับ Feedback & Review (เพิ่มใหม่)
+    // --------------------------------------------------
+    window.courseReviewsData = [];
+    window.courseReviewCurrentPage = 1;
+    const COURSE_REVIEWS_PER_PAGE = 3; // หน้าละ 3 รีวิว
 
-// --------------------------------------------------
+    window.loadCourseReviews = async function() {
+        try {
+            const res = await fetch('backend.php?action=get_course_reviews');
+            const result = await res.json();
+            if(result.status === 'success') {
+                window.courseReviewsData = result.data;
+                window.courseReviewCurrentPage = 1;
+                renderCourseReviews();
+            }
+        } catch(e) {}
+    }
+
+   // 🌟 ฟังก์ชันเปลี่ยนหน้ารีวิวคอร์สเรียน (แก้หน้าจอกระโดดแล้ว)
+    window.changeCourseReviewPage = function(newPage) {
+        window.courseReviewCurrentPage = newPage;
+        renderCourseReviews();
+        
+        // ค้นหากล่องเลื่อนเนื้อหาเฉพาะของ Course (กล่องสีเขียว)
+        const scrollContainer = document.querySelector('.clone-content');
+        const reviewSection = document.getElementById('course-review-section');
+        
+        if (scrollContainer && reviewSection) {
+            const containerRect = scrollContainer.getBoundingClientRect();
+            const sectionRect = reviewSection.getBoundingClientRect();
+            
+            // เลื่อนเฉพาะกล่องด้านใน ไปที่คำว่า Feedback & Review (เว้นขอบบนนิดนึง)
+            const scrollPos = scrollContainer.scrollTop + (sectionRect.top - containerRect.top) - 40;
+            scrollContainer.scrollTo({ top: scrollPos, behavior: 'smooth' });
+        }
+    }
+
+    function renderCourseReviews() {
+        const listContainer = document.getElementById('course-reviews-list');
+        const pageContainer = document.getElementById('course-review-pagination');
+        if(!listContainer) return;
+
+        let html = '';
+        if(window.courseReviewsData.length === 0) {
+            html = '<p class="text-white/60 italic">ยังไม่มีรีวิว</p>';
+            if(pageContainer) pageContainer.innerHTML = '';
+        } else {
+            const startIndex = (window.courseReviewCurrentPage - 1) * COURSE_REVIEWS_PER_PAGE;
+            const endIndex = startIndex + COURSE_REVIEWS_PER_PAGE;
+            const paginatedItems = window.courseReviewsData.slice(startIndex, endIndex);
+
+            paginatedItems.forEach(review => {
+                const d = new Date(review.created_at);
+                const dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                
+                // ดาว 5 ดวงตายตัวตามคำขอ
+                const starsHtml = `<div class="text-white text-lg tracking-widest mb-1">★★★★★</div>`;
+
+                html += `
+                <div class="border-b border-white/30 pb-6 mb-2">
+                    <h4 class="text-xl md:text-2xl font-bold text-white mb-1">${review.reviewer_name}</h4>
+                    <div class="flex items-center gap-3 mb-3">
+                        ${starsHtml}
+                        <span class="text-xs md:text-sm text-white/80 font-medium">${dateStr}</span>
+                    </div>
+                    <p class="text-sm md:text-base text-white font-medium leading-relaxed break-words whitespace-pre-line">${review.review_text}</p>
+                </div>
+                `;
+            });
+
+            // สร้างปุ่ม Pagination
+            const totalPages = Math.ceil(window.courseReviewsData.length / COURSE_REVIEWS_PER_PAGE);
+            if (totalPages > 1 && pageContainer) {
+                let pageHtml = `<div class="flex items-center gap-2 font-bold text-lg text-white">`;
+                
+                pageHtml += `<button onclick="event.stopPropagation(); window.changeCourseReviewPage(${window.courseReviewCurrentPage - 1})" class="hover:text-gray-300 transition" ${window.courseReviewCurrentPage === 1 ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>&lt;&lt; Previous</button><span class="px-2">|</span>`;
+                
+                for (let i = 1; i <= totalPages; i++) {
+                    const isActive = i === window.courseReviewCurrentPage ? 'text-white underline underline-offset-4' : 'text-white/60 hover:text-white transition';
+                    pageHtml += `<button onclick="event.stopPropagation(); window.changeCourseReviewPage(${i})" class="${isActive}">${i}</button>`;
+                    if(i < totalPages) pageHtml += `<span class="px-2 text-white/60">|</span>`;
+                }
+                
+                pageHtml += `<span class="px-2">|</span><button onclick="event.stopPropagation(); window.changeCourseReviewPage(${window.courseReviewCurrentPage + 1})" class="hover:text-gray-300 transition" ${window.courseReviewCurrentPage === totalPages ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>Next &gt;&gt;</button>`;
+                pageHtml += `</div>`;
+                pageContainer.innerHTML = pageHtml;
+            } else if (pageContainer) {
+                pageContainer.innerHTML = '';
+            }
+        }
+        listContainer.innerHTML = html;
+    }
+
+    // 🌟 สั่งให้โหลดรีวิวทันทีที่เปิดหน้า Course
+    if (isCourse) {
+        window.loadCourseReviews();
+    }
+    // --------------------------------------------------
     // C. ส่วนของ CMSJ Bigband (ระบบ Page Builder)
     // --------------------------------------------------
     const isBigband = container.querySelector('#dyn-bigband_main_title');
@@ -636,7 +731,6 @@ window.applyDataToDOM = async function(container) {
                         e.preventDefault();
                         e.stopPropagation();
 
-                        // 🌟 1. สั่งให้กล่องหลักขยายความสูง (เหมือนหน้าคอร์สเรียน) จะได้ไม่ดูเตี้ย
                         const mainContainer = document.querySelector('.main-container');
                         if (mainContainer && !mainContainer.dataset.initialHeight) {
                             mainContainer.dataset.initialHeight = mainContainer.offsetHeight;
@@ -672,9 +766,7 @@ window.applyDataToDOM = async function(container) {
                                 } else {
                                      detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">ยังไม่มีรายละเอียด (คุณสามารถเพิ่มได้ที่หน้า Admin -> Page Builder)</div>`;
                                 }
-                            } catch(e) {
-                                console.error('Error parsing details JSON', e);
-                            }
+                            } catch(e) {}
                         } else {
                             detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">ยังไม่มีรายละเอียด (คุณสามารถเพิ่มได้ที่หน้า Admin -> Page Builder)</div>`;
                         }
@@ -684,7 +776,6 @@ window.applyDataToDOM = async function(container) {
                         const genre = (window.currentLang === 'th' && bbData.genre_th) ? bbData.genre_th : (bbData.genre || '');
                         const bannerImgUrl = bbData.banner_image || 'https://placehold.co/1200x400/333/ccc?text=Bigband';
 
-                        // 🌟 2. เปลี่ยน h-full เป็น min-h-[85vh] เพื่อบังคับให้กล่องขาวสูงลงมาถึงข้างล่างเสมอ
                         detailView.innerHTML = `
                             <div class="w-full min-h-[85vh] overflow-y-auto hide-scrollbar bg-[#f8f9fa] text-[#050505] rounded-2xl relative shadow-2xl transition-opacity duration-500 opacity-0" id="bigband-detail-inner"> 
                                 <button id="bb-back-btn" class="absolute top-4 left-4 md:top-6 md:left-6 z-50 bg-black/60 hover:bg-black text-white px-5 py-2.5 rounded-full font-bold flex items-center gap-2 transition-colors shadow-lg border border-white/20 backdrop-blur-sm">
@@ -715,12 +806,10 @@ window.applyDataToDOM = async function(container) {
                             if(innerDetail) innerDetail.classList.remove('opacity-0');
                         }, 50);
 
-                        // 5. ปิดหน้า Detail กลับสู่ Main View
                         detailView.querySelector('#bb-back-btn').addEventListener('click', (e2) => {
                             e2.preventDefault();
                             e2.stopPropagation();
 
-                            // 🌟 3. คืนค่าความสูงกลับเป็นปกติเมื่อกดปุ่มย้อนกลับ
                             const mainContainer = document.querySelector('.main-container');
                             if (mainContainer && mainContainer.dataset.initialHeight) {
                                 mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`;
@@ -738,9 +827,17 @@ window.applyDataToDOM = async function(container) {
                         });
                     });
                 }
-            } catch (error) {
-                console.error('Error fetching CMBigband:', error);
-            }
+            } catch (error) {}
+        }
+    }
+
+    // --------------------------------------------------
+    // D. 🌟 ส่วนของ Forum Q&A (ดึงข้อมูลทันทีที่เปิดการ์ด)
+    // --------------------------------------------------
+    const isForum = container.querySelector('#forum-questions-list');
+    if (isForum) {
+        if(typeof window.loadForumTopics === 'function') {
+            window.loadForumTopics();
         }
     }
 };
@@ -758,7 +855,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const showLoginBtn = document.getElementById('show-login-btn');
     const headerAuthBtn = document.getElementById('header-auth-btn'); 
 
-    // 1. เช็คสถานะการล็อกอินตอนเปิดเว็บ
     try {
         const res = await fetch('backend.php?action=check_auth');
         const result = await res.json();
@@ -773,14 +869,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch(e) {}
 
-    // 2. การควบคุมการเปิดปิด Modal
     const closeAuthModal = () => { if(authModal) authModal.classList.add('hidden'); };
     if (closeAuthBtn) closeAuthBtn.addEventListener('click', closeAuthModal);
     if (authBackdrop) authBackdrop.addEventListener('click', closeAuthModal);
     if (showRegisterBtn) showRegisterBtn.addEventListener('click', () => { loginContainer.classList.add('hidden'); registerContainer.classList.remove('hidden'); });
     if (showLoginBtn) showLoginBtn.addEventListener('click', () => { registerContainer.classList.add('hidden'); loginContainer.classList.remove('hidden'); });
 
-    // 3. กดปุ่ม Login มุมขวาบน
     if(headerAuthBtn) {
         headerAuthBtn.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -796,7 +890,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 4. ส่งฟอร์ม Login
     const loginForm = document.getElementById('front-login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -841,7 +934,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // 5. ส่งฟอร์ม Register
+    // ส่งฟอร์ม Register
     const regForm = document.getElementById('front-register-form');
     if (regForm) {
         regForm.addEventListener('submit', async (e) => {
@@ -863,7 +956,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const result = await res.json();
                 
                 if (result.status === 'success') {
-                    msgEl.textContent = "Registration successful! Please wait for admin approval.";
+                    msgEl.textContent = result.message || "สมัครสมาชิกสำเร็จ! กำลังพาท่านไปหน้าเข้าสู่ระบบ...";
                     msgEl.classList.add('text-green-500');
                     regForm.reset();
                     setTimeout(() => showLoginBtn.click(), 2000);
@@ -883,291 +976,449 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ==========================================
-// 6. ระบบเชื่อมโยงเมนูลิงก์ (Navigation Triggers)
+// 8. ระบบ Forum Q&A (สมบูรณ์แบบ + แปลภาษา 100%)
 // ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    const navTriggers = document.querySelectorAll('.nav-trigger');
-    const closeMenuBtn = document.getElementById('close-menu-btn');
 
-    navTriggers.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetId = link.getAttribute('data-trigger');
-            
-            // 1. ปิดเมนูมือถือ (ถ้าเปิดอยู่)
-            if (closeMenuBtn && !document.getElementById('mobile-menu-container').classList.contains('hidden')) {
-                closeMenuBtn.click();
-            }
-            
-            // 2. ถ้ามีการเปิดหน้าการ์ดอื่นค้างไว้ ให้จำลองการกดปุ่มปิดก่อน (✕)
-            const activeCloseBtn = document.querySelector('.close-btn');
-            if (activeCloseBtn) {
-                activeCloseBtn.click();
-            }
-            
-            // 3. ค้นหากล่องการ์ดที่ตรงกับลิงก์
-            const targetCard = document.querySelector(`.card[data-target="${targetId}"]`);
-            
-            if (targetCard) {
-                // เลื่อนหน้าจอกลับไปด้านบนสุด
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                
-                // หน่วงเวลาเล็กน้อยให้เมนูหรือการ์ดเก่าปิดเสร็จก่อน แล้วค่อยสั่งคลิกการ์ดใหม่
-                setTimeout(() => {
-                    targetCard.click(); // สั่งให้จำลองการคลิกการ์ด (ระบบจะเช็ค Login ให้อัตโนมัติ)
-                }, 300);
-            }
-        });
-    });
-});
+window.showCustomAlert = function(message) {
+    const existing = document.getElementById('custom-alert-modal');
+    if (existing) existing.remove();
+    const modal = document.createElement('div');
+    modal.id = 'custom-alert-modal';
+    modal.className = 'fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4';
+    modal.innerHTML = `<div class="bg-[#1a1a1a] border border-white/20 p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center"><div class="text-3xl mb-4">🔔</div><p class="text-white text-base font-medium mb-8 whitespace-pre-line">${message}</p><button class="bg-[#EF5F4D] hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full transition w-full shadow-lg" onclick="this.closest('#custom-alert-modal').remove()">OK</button></div>`;
+    document.body.appendChild(modal);
+}
 
-// ==========================================
-// 7. ระบบปุ่ม Learn More ไปยังหน้า About us Bigband
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    // หาปุ่ม Learn More ในหน้าแรก
-    const learnMoreBtn = document.querySelector('a.inline-flex.items-center.gap-3');
+window.showCustomConfirm = function(message, onConfirm) {
+    const existing = document.getElementById('custom-confirm-modal');
+    if (existing) existing.remove();
+    const modal = document.createElement('div');
+    modal.id = 'custom-confirm-modal';
+    modal.className = 'fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4';
+    modal.innerHTML = `<div class="bg-[#1a1a1a] border border-white/20 p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center"><div class="text-4xl mb-4">🚨</div><p class="text-white text-base font-medium mb-8 whitespace-pre-line">${message}</p><div class="flex justify-center gap-3"><button class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-full transition w-full shadow-lg btn-cancel">Cancel</button><button class="bg-[#EF5F4D] hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full transition w-full shadow-lg btn-confirm">Confirm</button></div></div>`;
+    document.body.appendChild(modal);
+    modal.querySelector('.btn-cancel').addEventListener('click', () => modal.remove());
+    modal.querySelector('.btn-confirm').addEventListener('click', () => { modal.remove(); if (onConfirm) onConfirm(); });
+}
 
-    if (learnMoreBtn) {
-        learnMoreBtn.addEventListener('click', (e) => {
-            e.preventDefault(); 
+window.forumTopicsData = [];
+window.topicCurrentPage = 1;
+const TOPICS_PER_PAGE = 5; 
 
-            // 1. ปิดเมนูมือถือ (ถ้าเปิดอยู่)
-            const closeMenuBtn = document.getElementById('close-menu-btn');
-            if (closeMenuBtn && !document.getElementById('mobile-menu-container').classList.contains('hidden')) {
-                closeMenuBtn.click();
-            }
+window.currentTopicDetailData = null;
+window.commentCurrentPage = 1;
+const COMMENTS_PER_PAGE = 5; 
 
-            // 2. ปิดหน้าต่างการ์ดอื่นที่อาจจะเปิดค้างอยู่
-            const activeCloseBtn = document.querySelector('.close-btn');
-            if (activeCloseBtn) {
-                activeCloseBtn.click();
-            }
-
-            // 3. หากล่อง Bigband สีเทาในหน้าแรก
-            const bigbandCard = document.querySelector('.card[data-target="#bigband-content"]');
-            
-            if (bigbandCard) {
-                // สั่งคลิกจำลองเพื่อเปิดหน้า Bigband หลักขึ้นมาก่อน
-                bigbandCard.click(); 
-
-                // 🌟 หน่วงเวลา 0.3 วินาที รอให้กล่องขยายตัวเสร็จ แล้วค่อยเลื่อนหน้าจอให้พอดี
-                setTimeout(() => {
-                    const mainContainer = document.querySelector('.main-container');
-                    if (mainContainer) {
-                        // ใช้ block: 'center' เพื่อให้กล่องอยู่กึ่งกลางจอพอดีสวยๆ
-                        mainContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-
-                    // 🌟 หน่วงเวลาอีก 0.4 วินาที หลังจากเลื่อนจอเสร็จ ให้คลิกเข้าไปดูรายละเอียดลึก
-                    setTimeout(() => {
-                        const bigbandLinks = document.querySelectorAll('.bigband-link');
-                        for (let link of bigbandLinks) {
-                            // เช็คว่าลิงก์ไหนที่กำลังแสดงผลอยู่บนหน้าจอจริงๆ ให้คลิกตัวนั้น
-                            if (link.getBoundingClientRect().width > 0) {
-                                link.click();
-                                break; 
-                            }
-                        }
-                    }, 400); 
-
-                }, 300);
-            }
-        });
-
+function generatePagination(totalItems, itemsPerPage, currentPage, type) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    if (totalPages <= 1) return '';
+    let html = `<div class="flex items-center gap-2 mt-4">`;
+    html += `<button class="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white font-bold transition" onclick="event.stopPropagation(); window.changeForumPage('${type}', ${currentPage - 1})" ${currentPage === 1 ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>&laquo;</button>`;
+    for (let i = 1; i <= totalPages; i++) {
+        const activeClass = i === currentPage ? 'bg-[#EF5F4D] border border-white/50 text-white shadow-md' : 'bg-white/10 hover:bg-white/20 text-white/70';
+        html += `<button class="w-8 h-8 rounded-lg text-sm font-bold transition ${activeClass}" onclick="event.stopPropagation(); window.changeForumPage('${type}', ${i})">${i}</button>`;
     }
-});
-// ==========================================
-// 8. ระบบ Forum Q&A (เต็มรูปแบบ: โพสต์ + รูป + วิดีโอ + คอมเมนต์)
-// ==========================================
+    html += `<button class="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg text-white font-bold transition" onclick="event.stopPropagation(); window.changeForumPage('${type}', ${currentPage + 1})" ${currentPage === totalPages ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>&raquo;</button>`;
+    html += `</div>`;
+    return html;
+}
+
+window.changeForumPage = function(type, newPage) {
+    const scrollContainer = document.querySelector('.clone-content'); 
+    if (type === 'topic') {
+        window.topicCurrentPage = newPage;
+        renderForumTopics();
+        if (scrollContainer) scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (type === 'comment') {
+        window.commentCurrentPage = newPage;
+        renderForumComments();
+        if (scrollContainer) {
+            const commentsHeader = document.querySelector('#dyn-forum_title_comments');
+            if (commentsHeader) {
+                const containerRect = scrollContainer.getBoundingClientRect();
+                const headerRect = commentsHeader.getBoundingClientRect();
+                const scrollPos = scrollContainer.scrollTop + (headerRect.top - containerRect.top) - 80;
+                scrollContainer.scrollTo({ top: scrollPos, behavior: 'smooth' });
+            }
+        }
+    }
+}
 
 window.loadForumTopics = async function() {
-    const listContainers = document.querySelectorAll('#forum-questions-list');
-    if(listContainers.length === 0) return;
-
     try {
         const res = await fetch('backend.php?action=get_forum_topics');
         const result = await res.json();
-        
         if(result.status === 'success') {
-            let html = '';
-            if(result.data.length === 0) {
-                html = '<p class="text-white/80 mt-4 text-center">ยังไม่มีคำถาม เป็นคนแรกที่ตั้งคำถามสิ!</p>';
-            } else {
-                result.data.forEach(topic => {
-                    const d = new Date(topic.created_at);
-                    const dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-                    
-                    const hasMedia = (topic.image_url || topic.video_link) ? '<span class="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded text-white font-bold inline-flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"></path></svg>Media</span>' : '';
-
-                    html += `
-                    <div class="border-b border-white/30 pb-5 group mt-2 forum-topic-item cursor-pointer w-full overflow-hidden" data-topic-id="${topic.id}">
-                        <h4 class="text-xl sm:text-2xl font-bold mb-1 group-hover:underline text-white break-words break-all line-clamp-2">${topic.title} ${hasMedia}</h4>
-                        <p class="text-sm text-white/80">by <span class="font-bold text-white">${topic.username}</span> - posted on ${dateStr} <span class="ml-2 text-xs opacity-70">👁️ ${topic.views || 0} Views</span></p>
-                    </div>
-                    `;
-                });
-            }
-            listContainers.forEach(c => c.innerHTML = html);
+            window.forumTopicsData = result.data;
+            window.topicCurrentPage = 1; 
+            renderForumTopics();
         }
-    } catch(e) { console.error("Error loading forum topics:", e); }
+    } catch(e) { console.error(e); }
+}
+
+function renderForumTopics() {
+    const listContainers = document.querySelectorAll('#forum-questions-list');
+    const pageContainers = document.querySelectorAll('#forum-topic-pagination');
+    if(listContainers.length === 0) return;
+
+    let t = {};
+    if (typeof siteTranslations !== 'undefined' && siteTranslations[window.currentLang]) {
+        t = siteTranslations[window.currentLang];
+    }
+
+    let html = '';
+    if(window.forumTopicsData.length === 0) {
+        html = `<p class="text-white/80 mt-4 text-center">${t.forum_no_topics || 'No topics yet.'}</p>`;
+        pageContainers.forEach(c => c.innerHTML = '');
+    } else {
+        const startIndex = (window.topicCurrentPage - 1) * TOPICS_PER_PAGE;
+        const endIndex = startIndex + TOPICS_PER_PAGE;
+        const paginatedItems = window.forumTopicsData.slice(startIndex, endIndex);
+
+        paginatedItems.forEach(topic => {
+            const d = new Date(topic.created_at);
+            const dateStr = d.toLocaleDateString(window.currentLang === 'th' ? 'th-TH' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            
+            const mediaTxt = t.forum_has_media || 'Media';
+            const byTxt = t.forum_posted_by || 'by';
+            
+            const hasMedia = (topic.image_url || topic.video_link) ? `<span class="ml-2 text-[10px] bg-white/20 px-2 py-0.5 rounded text-white font-bold inline-flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"></path></svg>${mediaTxt}</span>` : '';
+
+            html += `
+            <div class="border-b border-white/30 pb-4 group mt-2 forum-topic-item cursor-pointer w-full overflow-hidden bg-black/10 hover:bg-black/30 p-4 rounded-xl transition" data-topic-id="${topic.id}">
+                <h4 class="text-xl sm:text-2xl font-bold mb-1 group-hover:text-yellow-400 text-white break-words break-all line-clamp-2 transition">${topic.title} ${hasMedia}</h4>
+                <p class="text-xs sm:text-sm text-white/60 mt-2">${byTxt} <span class="font-bold text-white">${topic.username}</span> • ${dateStr} 
+                    <span class="ml-2 bg-white/10 px-2 py-0.5 rounded text-xs">👁️ ${topic.views || 0}</span> 
+                    <span class="ml-1 bg-white/10 px-2 py-0.5 rounded text-xs">💬 ${topic.comment_count || 0}</span>
+                </p>
+            </div>
+            `;
+        });
+        pageContainers.forEach(c => c.innerHTML = generatePagination(window.forumTopicsData.length, TOPICS_PER_PAGE, window.topicCurrentPage, 'topic'));
+    }
+    listContainers.forEach(c => c.innerHTML = html);
+    if(typeof window.translateUI === 'function') window.translateUI();
 }
 
 window.loadForumTopicDetail = async function(topicId) {
     try {
         const res = await fetch(`backend.php?action=get_forum_topic_detail&topic_id=${topicId}`);
         const result = await res.json();
+        
+        let t = {};
+        if (typeof siteTranslations !== 'undefined' && siteTranslations[window.currentLang]) {
+            t = siteTranslations[window.currentLang];
+        }
 
         if(result.status === 'success') {
+            window.currentTopicDetailData = result.data;
+            window.commentCurrentPage = 1; 
+            
             const topic = result.data.topic;
-            const comments = result.data.comments;
-
+            const currentUserId = result.data.current_user_id;
+            window.currentUserId = currentUserId; 
+            
             const d = new Date(topic.created_at);
-            const dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const dateStr = d.toLocaleDateString(window.currentLang === 'th' ? 'th-TH' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
-            // 🌟 สร้าง HTML สำหรับรูปภาพและวิดีโอแบบอัปโหลดเข้าเซิร์ฟเวอร์
             let mediaHtml = '';
-            if (topic.image_url) {
-                mediaHtml += `<img src="${topic.image_url}" class="w-full max-w-3xl rounded-xl mt-6 border border-white/20 shadow-md">`;
-            }
-            if (topic.video_link) {
-                // ใช้แท็ก <video> ของ HTML5 เพื่อเล่นวิดีโอที่อัปโหลดไว้
-                mediaHtml += `
-                <div class="w-full max-w-3xl aspect-video mt-6 rounded-xl overflow-hidden border border-white/20 shadow-md bg-black">
-                    <video controls preload="metadata" class="w-full h-full object-contain">
-                        <source src="${topic.video_link}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>`;
-            }
+            if (topic.image_url) mediaHtml += `<img src="${topic.image_url}" class="w-full max-w-3xl rounded-xl mt-6 border border-white/20 shadow-md">`; 
+            if (topic.video_link) mediaHtml += `<div class="w-full max-w-3xl aspect-video mt-6 rounded-xl overflow-hidden border border-white/20 shadow-md bg-black"><video controls preload="metadata" class="w-full h-full object-contain"><source src="${topic.video_link}" type="video/mp4"></video></div>`;
+
+            const isOwner = (currentUserId > 0 && topic.user_id == currentUserId);
+            const actionBtnsHtml = isOwner ? `
+                <div class="absolute top-4 right-4 flex gap-2 z-20" id="forum-owner-actions">
+                    <button id="btn-edit-topic" class="bg-white/20 hover:bg-white/40 text-white px-5 py-1.5 rounded-full text-xs sm:text-sm font-bold transition shadow-sm">${t.forum_btn_edit || 'Edit'}</button>
+                    <button id="btn-delete-topic" data-topic-id="${topic.id}" class="bg-red-500/80 hover:bg-red-600 text-white px-5 py-1.5 rounded-full text-xs sm:text-sm font-bold transition shadow-sm">${t.forum_btn_delete || 'Delete'}</button>
+                </div>
+            ` : '';
+
+            const editFormHtml = isOwner ? `
+                <div id="forum-edit-form" class="hidden w-full bg-black/40 p-5 rounded-xl border border-white/30">
+                    <input type="text" id="edit-forum-title" class="w-full bg-transparent text-white border-b border-white/30 outline-none text-xl font-bold mb-4 pb-2" value="${topic.title.replace(/"/g, '&quot;')}">
+                    <textarea id="edit-forum-content" class="w-full bg-transparent text-white border border-white/30 rounded-lg p-3 outline-none h-32 font-body resize-none w-full mb-4">${topic.content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                    
+                    <div class="flex flex-wrap gap-4 mb-4">
+                        <label class="cursor-pointer bg-white/10 hover:bg-white/20 px-4 py-3 rounded-lg text-sm font-bold transition flex flex-col items-center flex-1">
+                            <span class="mb-1 text-yellow-300">📸 ${window.currentLang === 'th' ? 'เปลี่ยนรูปภาพ' : 'Change Photo'}</span>
+                            <input type="file" id="edit-forum-image" class="hidden" accept="image/*">
+                            <span id="edit-img-name" class="text-[10px] text-white/70 font-normal mt-1 text-center"></span>
+                        </label>
+                        <label class="cursor-pointer bg-white/10 hover:bg-white/20 px-4 py-3 rounded-lg text-sm font-bold transition flex flex-col items-center flex-1">
+                            <span class="mb-1 text-pink-300">🎥 ${window.currentLang === 'th' ? 'เปลี่ยนวิดีโอ' : 'Change Video'}</span>
+                            <input type="file" id="edit-forum-video" class="hidden" accept="video/mp4,video/x-m4v,video/*">
+                            <span id="edit-vid-name" class="text-[10px] text-white/70 font-normal mt-1 text-center"></span>
+                        </label>
+                    </div>
+
+                    <div class="flex justify-end gap-3 mt-4 border-t border-white/20 pt-4">
+                        <button id="btn-cancel-edit" class="px-5 py-2 bg-gray-500 hover:bg-gray-600 rounded-lg text-white font-bold transition shadow-sm text-sm">${t.forum_edit_cancel || 'Cancel'}</button>
+                        <button id="btn-save-edit" data-topic-id="${topic.id}" class="px-5 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-white font-bold transition shadow-sm text-sm">${t.forum_edit_save || 'Save Changes'}</button>
+                    </div>
+                </div>
+            ` : '';
 
             document.getElementById('forum-topic-content').innerHTML = `
-                <div class="w-full overflow-hidden">
-                    <h2 class="text-3xl sm:text-4xl font-bold mb-2 break-words break-all">${topic.title}</h2>
-                    <p class="text-sm text-white/70 mb-6">Posted by <span class="font-bold text-white">${topic.username}</span> on ${dateStr} • 👁️ ${topic.views} Views</p>
-                    <div class="text-lg leading-relaxed font-medium whitespace-pre-line break-words break-all">${topic.content}</div>
-                    ${mediaHtml} </div>
+                ${actionBtnsHtml}
+                <div id="forum-display-content" class="w-full overflow-hidden relative">
+                    <h2 class="text-3xl sm:text-4xl font-bold mb-2 break-words break-all pr-32 leading-tight">${topic.title}</h2>
+                    <p class="text-xs sm:text-sm text-white/70 mb-6 font-medium">${t.forum_posted_by || 'by'} <span class="font-bold text-white">${topic.username}</span> • ${dateStr} • 👁️ ${topic.views}</p>
+                    <div class="text-base sm:text-lg leading-relaxed font-medium whitespace-pre-line break-words break-all">${topic.content}</div>
+                    ${mediaHtml}
+                </div>
+                ${editFormHtml}
             `;
 
-            const commentsList = document.getElementById('forum-comments-list');
-            let commentsHtml = '';
-            if(comments.length === 0) { commentsHtml = '<p class="text-white/60 italic text-center py-4">ยังไม่มีความคิดเห็น มาเป็นคนแรกที่ตอบกระทู้นี้กันเถอะ!</p>'; } 
-            else {
-                comments.forEach(c => {
-                    const cd = new Date(c.created_at);
-                    const cDateStr = cd.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                    commentsHtml += `
-                        <div class="bg-white/5 p-4 rounded-xl border border-white/10 shadow-sm w-full overflow-hidden">
-                            <p class="text-sm text-white/60 mb-2"><span class="font-bold text-[#e2574c] bg-white px-2 py-0.5 rounded text-xs mr-2">${c.username}</span> ${cDateStr}</p>
-                            <p class="text-base font-medium whitespace-pre-line break-words break-all">${c.comment_text}</p>
-                        </div>
-                    `;
-                });
-            }
-            commentsList.innerHTML = commentsHtml;
+            const replyBtnEl = document.getElementById('dyn-forum_btn_reply');
+            if (replyBtnEl) replyBtnEl.setAttribute('data-topic-id', topic.id);
 
-            document.getElementById('forum-reply-btn').setAttribute('data-topic-id', topic.id);
             document.getElementById('forum-main-view').classList.add('hidden');
             document.getElementById('forum-detail-view').classList.remove('hidden');
             document.querySelector('.clone-content')?.scrollTo({ top: 0, behavior: 'smooth' });
-        } else { alert('ไม่พบกระทู้นี้ หรืออาจจะถูกลบไปแล้ว'); }
-    } catch(e) { console.error("Error loading topic detail:", e); }
+
+            renderForumComments();
+            if(typeof window.translateUI === 'function') window.translateUI();
+        } else { showCustomAlert('ไม่พบกระทู้นี้ หรืออาจจะถูกลบไปแล้ว'); }
+    } catch(e) {}
+}
+
+function renderForumComments() {
+    const commentsList = document.getElementById('forum-comments-list');
+    const pageContainer = document.getElementById('forum-comment-pagination');
+    if(!commentsList || !window.currentTopicDetailData) return;
+
+    let t = {};
+    if (typeof siteTranslations !== 'undefined' && siteTranslations[window.currentLang]) {
+        t = siteTranslations[window.currentLang];
+    }
+
+    const comments = window.currentTopicDetailData.comments;
+    let html = '';
+
+    if(comments.length === 0) {
+        html = `<div class="bg-black/10 rounded-xl p-8 text-center text-white/50 italic border border-white/10">${t.forum_no_comments || 'No comments yet.'}</div>`;
+        pageContainer.innerHTML = '';
+    } else {
+        const startIndex = (window.commentCurrentPage - 1) * COMMENTS_PER_PAGE;
+        const endIndex = startIndex + COMMENTS_PER_PAGE;
+        const paginatedComments = comments.slice(startIndex, endIndex);
+
+        paginatedComments.forEach(c => {
+            const cd = new Date(c.created_at);
+            const cDateStr = cd.toLocaleDateString(window.currentLang === 'th' ? 'th-TH' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            
+            const isLiked = localStorage.getItem(`liked_comment_${c.id}_user_${window.currentUserId}`);
+            const heartColor = isLiked ? 'text-pink-500' : 'text-white/50 hover:text-pink-400';
+
+            html += `
+                <div class="bg-black/20 p-5 rounded-2xl border border-white/10 shadow-sm w-full overflow-hidden transition hover:bg-black/30 relative">
+                    <div class="flex flex-col mb-3 border-b border-white/10 pb-3">
+                        <p class="text-sm font-bold text-white leading-none">${c.username}</p>
+                        <p class="text-[10px] text-white/50 mt-1">${cDateStr}</p>
+                    </div>
+                    <p class="text-sm sm:text-base font-medium whitespace-pre-line break-words break-all text-white/90">${c.comment_text}</p>
+                    
+                    <div class="flex justify-end mt-2">
+                        <button class="btn-like-comment flex items-center gap-1.5 text-xs font-bold transition bg-white/5 px-3 py-1.5 rounded-full ${heartColor}" data-id="${c.id}">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            <span class="like-count">${c.likes || 0}</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        pageContainer.innerHTML = generatePagination(comments.length, COMMENTS_PER_PAGE, window.commentCurrentPage, 'comment');
+    }
+    commentsList.innerHTML = html;
 }
 
 if (!window.forumClickListenerActive) {
     document.addEventListener('click', async (e) => {
         
-        // ดักจับปุ่ม + Photo
-        if (e.target && e.target.id === 'btn-add-photo') {
+        const likeBtn = e.target.closest('.btn-like-comment');
+        if (likeBtn && !likeBtn.disabled) {
             e.preventDefault();
-            const container = e.target.closest('.bg-white\\/20');
-            container.querySelector('#forum-image-input').click();
+            if (!window.isUserLoggedIn || !window.currentUserId) {
+                showCustomAlert(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนกดถูกใจความคิดเห็นครับ!' : 'Please login to like comments!');
+                return;
+            }
+            const commentId = likeBtn.getAttribute('data-id');
+            const countSpan = likeBtn.querySelector('.like-count');
+            const storageKey = `liked_comment_${commentId}_user_${window.currentUserId}`;
+            const isLiked = localStorage.getItem(storageKey); 
+            likeBtn.disabled = true;
+
+            const fd = new FormData();
+            fd.append('comment_id', commentId);
+            fd.append('action_type', isLiked ? 'unlike' : 'like');
+
+            try {
+                const res = await fetch('backend.php?action=like_forum_comment', { method: 'POST', body: fd });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    countSpan.textContent = result.likes;
+                    if (isLiked) {
+                        localStorage.removeItem(storageKey); 
+                        likeBtn.classList.remove('text-pink-500');
+                        likeBtn.classList.add('text-white/50', 'hover:text-pink-400');
+                    } else {
+                        localStorage.setItem(storageKey, 'true'); 
+                        likeBtn.classList.remove('text-white/50', 'hover:text-pink-400');
+                        likeBtn.classList.add('text-pink-500');
+                    }
+                    likeBtn.classList.add('scale-110'); 
+                    setTimeout(()=> likeBtn.classList.remove('scale-110'), 200);
+                }
+            } catch(err) { }
+            finally { likeBtn.disabled = false; }
         }
 
-        // ดักจับปุ่ม + Video (เปลี่ยนเป็นเลือกไฟล์)
-        if (e.target && e.target.id === 'btn-add-video') {
+        if (e.target.closest('#dyn-forum_btn_write_comment')) {
             e.preventDefault();
-            const container = e.target.closest('.bg-white\\/20');
-            container.querySelector('#forum-video-input').click();
+            if (!window.isUserLoggedIn) {
+                showCustomAlert(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็นครับ!' : 'Please login first!');
+                document.getElementById('login-form-container')?.classList.remove('hidden');
+                document.getElementById('register-form-container')?.classList.add('hidden');
+                document.getElementById('auth-modal')?.classList.remove('hidden');
+                return;
+            }
+            document.getElementById('forum-comment-box-container').classList.remove('hidden');
+            e.target.closest('#dyn-forum_btn_write_comment').classList.add('hidden');
+            document.getElementById('dyn-forum_input_comment').focus();
         }
 
-        // กดปุ่ม "Post"
-        const postBtn = e.target.closest('#forum-post-btn');
+        if (e.target.closest('#dyn-forum_btn_cancel')) {
+            e.preventDefault();
+            document.getElementById('forum-comment-box-container').classList.add('hidden');
+            document.getElementById('dyn-forum_btn_write_comment').classList.remove('hidden');
+            document.getElementById('dyn-forum_input_comment').value = '';
+        }
+
+        if (e.target.closest('#btn-edit-topic')) {
+            e.preventDefault();
+            document.getElementById('forum-display-content').classList.add('hidden');
+            document.getElementById('forum-edit-form').classList.remove('hidden');
+            document.getElementById('forum-owner-actions').classList.add('hidden'); 
+        }
+
+        if (e.target.closest('#btn-cancel-edit')) {
+            e.preventDefault();
+            document.getElementById('forum-edit-form').classList.add('hidden');
+            document.getElementById('forum-display-content').classList.remove('hidden');
+            document.getElementById('forum-owner-actions').classList.remove('hidden');
+        }
+
+        const saveEditBtn = e.target.closest('#btn-save-edit');
+        if (saveEditBtn) {
+            e.preventDefault();
+            const topicId = saveEditBtn.getAttribute('data-topic-id');
+            const newTitle = document.getElementById('edit-forum-title').value.trim();
+            const newContent = document.getElementById('edit-forum-content').value.trim();
+            const newImg = document.getElementById('edit-forum-image');
+            const newVid = document.getElementById('edit-forum-video');
+
+            if (!newTitle || !newContent) { showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : 'Please fill all fields'); return; }
+
+            const originalText = saveEditBtn.textContent;
+            saveEditBtn.textContent = 'Saving...';
+            saveEditBtn.disabled = true;
+
+            const fd = new FormData();
+            fd.append('topic_id', topicId); 
+            fd.append('title', newTitle); 
+            fd.append('content', newContent);
+            if (newImg && newImg.files.length > 0) fd.append('topic_image', newImg.files[0]);
+            if (newVid && newVid.files.length > 0) fd.append('topic_video', newVid.files[0]);
+
+            try {
+                const res = await fetch('backend.php?action=edit_forum_topic', { method: 'POST', body: fd });
+                const result = await res.json();
+                if (result.status === 'success') loadForumTopicDetail(topicId); 
+                else showCustomAlert('Error: ' + result.message);
+            } catch (err) { showCustomAlert('อัปโหลดล้มเหลว ตรวจสอบขนาดไฟล์'); } 
+            finally { saveEditBtn.textContent = originalText; saveEditBtn.disabled = false; }
+        }
+
+        const deleteTopicBtn = e.target.closest('#btn-delete-topic');
+        if (deleteTopicBtn) {
+            e.preventDefault();
+            const msg = window.currentLang === 'th' ? 'คุณแน่ใจหรือไม่ที่จะลบกระทู้นี้?\n(คอมเมนต์ทั้งหมดจะถูกลบถาวร)' : 'Are you sure you want to delete this topic?';
+            showCustomConfirm(msg, async () => {
+                const topicId = deleteTopicBtn.getAttribute('data-topic-id');
+                const fd = new FormData();
+                fd.append('topic_id', topicId);
+
+                try {
+                    const res = await fetch('backend.php?action=delete_own_forum_topic', { method: 'POST', body: fd });
+                    const result = await res.json();
+                    if (result.status === 'success') {
+                        showCustomAlert(window.currentLang === 'th' ? 'ลบกระทู้เรียบร้อยแล้ว' : 'Topic deleted');
+                        document.getElementById('forum-detail-view').classList.add('hidden');
+                        document.getElementById('forum-main-view').classList.remove('hidden');
+                        loadForumTopics(); 
+                    } else { showCustomAlert('Error: ' + result.message); }
+                } catch (err) { showCustomAlert('Connection Error'); }
+            });
+        }
+
+        if (e.target.closest('#dyn-forum_btn_photo')) { e.preventDefault(); e.target.closest('.bg-white\\/20').querySelector('#forum-image-input').click(); }
+        if (e.target.closest('#dyn-forum_btn_video')) { e.preventDefault(); e.target.closest('.bg-white\\/20').querySelector('#forum-video-input').click(); }
+
+        const postBtn = e.target.closest('#dyn-forum_btn_post');
         if (postBtn) {
             e.preventDefault();
             if (window.isPostingTopic) return; 
-
-            if (!window.isUserLoggedIn) {
-                alert('กรุณาเข้าสู่ระบบก่อนตั้งคำถามครับ!');
-                return;
-            }
+            if (!window.isUserLoggedIn) { showCustomAlert(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนตั้งคำถามครับ!' : 'Please login first!'); return; }
 
             const container = postBtn.closest('.bg-white\\/20');
-            const titleInput = container.querySelector('#forum-title');
-            const contentInput = container.querySelector('#forum-content');
-            const imgInput = container.querySelector('#forum-image-input');
-            const vidInput = container.querySelector('#forum-video-input'); // วิดีโอตอนนี้เป็นไฟล์แล้ว
+            const titleInput = container.querySelector('#dyn-forum_input_title'); 
+            const contentInput = container.querySelector('#dyn-forum_input_content');
+            const imgInput = container.querySelector('#forum-image-input'); 
+            const vidInput = container.querySelector('#forum-video-input');
 
-            if (!titleInput.value.trim() || !contentInput.value.trim()) {
-                alert('กรุณากรอกหัวข้อและรายละเอียดให้ครบถ้วนครับ');
-                return;
-            }
+            if (!titleInput.value.trim() || !contentInput.value.trim()) { showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกหัวข้อและรายละเอียดให้ครบถ้วน' : 'Please fill all fields'); return; }
 
             window.isPostingTopic = true;
             const originalText = postBtn.textContent;
-            postBtn.textContent = 'Uploading & Posting...';
-            postBtn.disabled = true;
+            postBtn.textContent = 'Posting...'; postBtn.disabled = true;
 
             const fd = new FormData();
-            fd.append('title', titleInput.value);
-            fd.append('content', contentInput.value);
-            
-            // 🌟 แนบไฟล์รูปและวิดีโอ
-            if (imgInput.files.length > 0) fd.append('topic_image', imgInput.files[0]);
-            if (vidInput.files.length > 0) fd.append('topic_video', vidInput.files[0]);
+            fd.append('title', titleInput.value); fd.append('content', contentInput.value);
+            if (imgInput && imgInput.files.length > 0) fd.append('topic_image', imgInput.files[0]);
+            if (vidInput && vidInput.files.length > 0) fd.append('topic_video', vidInput.files[0]);
 
             try {
                 const res = await fetch('backend.php?action=save_forum_topic', { method: 'POST', body: fd });
                 const result = await res.json();
                 if (result.status === 'success') {
-                    // รีเซ็ตฟอร์ม
-                    titleInput.value = '';
-                    contentInput.value = '';
-                    imgInput.value = '';
-                    vidInput.value = '';
-                    document.getElementById('forum-media-preview').classList.add('hidden');
-                    document.getElementById('forum-img-preview').classList.add('hidden');
-                    document.getElementById('forum-vid-preview').classList.add('hidden');
-                    
+                    titleInput.value = ''; contentInput.value = '';
+                    if(imgInput) imgInput.value = ''; if(vidInput) vidInput.value = '';
+                    const preview = document.getElementById('forum-media-preview'); if(preview) preview.classList.add('hidden');
                     loadForumTopics(); 
-                } else { alert('เกิดข้อผิดพลาด: ' + result.message); }
-            } catch(err) { alert('อัปโหลดล้มเหลว (อาจไฟล์ใหญ่เกินไป หรือขาดการเชื่อมต่อ)'); } 
-            finally {
-                postBtn.textContent = originalText;
-                postBtn.disabled = false;
-                window.isPostingTopic = false;
-            }
+                } else { showCustomAlert('เกิดข้อผิดพลาด: ' + result.message); }
+            } catch(err) { showCustomAlert('อัปโหลดล้มเหลว ลองตรวจสอบขนาดไฟล์'); } 
+            finally { postBtn.textContent = originalText; postBtn.disabled = false; window.isPostingTopic = false; }
         }
 
         const topicItem = e.target.closest('.forum-topic-item');
-        if (topicItem && !e.target.closest('#forum-post-btn')) {
-            const topicId = topicItem.getAttribute('data-topic-id');
-            loadForumTopicDetail(topicId);
+        if (topicItem && !e.target.closest('#dyn-forum_btn_post')) {
+            loadForumTopicDetail(topicItem.getAttribute('data-topic-id'));
         }
 
-        const backBtn = e.target.closest('#forum-back-btn');
+        const backBtn = e.target.closest('#dyn-forum_btn_back');
         if (backBtn) {
             document.getElementById('forum-detail-view').classList.add('hidden');
             document.getElementById('forum-main-view').classList.remove('hidden');
             loadForumTopics(); 
         }
 
-        const replyBtn = e.target.closest('#forum-reply-btn');
+        const replyBtn = e.target.closest('#dyn-forum_btn_reply');
         if (replyBtn) {
             e.preventDefault();
             if (window.isPostingReply) return; 
-            if (!window.isUserLoggedIn) { alert('กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็นครับ!'); return; }
-            const commentInput = document.getElementById('forum-comment-input');
+            if (!window.isUserLoggedIn) { showCustomAlert(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อน!' : 'Please login!'); return; }
+            
+            const commentInput = document.getElementById('dyn-forum_input_comment');
             const commentText = commentInput.value.trim();
             const topicId = replyBtn.getAttribute('data-topic-id');
 
@@ -1175,58 +1426,60 @@ if (!window.forumClickListenerActive) {
 
             window.isPostingReply = true;
             const originalText = replyBtn.textContent;
-            replyBtn.textContent = 'Sending...';
-            replyBtn.disabled = true;
+            replyBtn.textContent = 'Sending...'; replyBtn.disabled = true;
 
             const fd = new FormData();
-            fd.append('topic_id', topicId);
-            fd.append('comment_text', commentText);
+            fd.append('topic_id', topicId); fd.append('comment_text', commentText);
 
-            try {
+           try {
                 const res = await fetch('backend.php?action=save_forum_comment', { method: 'POST', body: fd });
                 const result = await res.json();
                 if (result.status === 'success') {
                     commentInput.value = '';
+                    document.getElementById('forum-comment-box-container').classList.add('hidden');
+                    document.getElementById('dyn-forum_btn_write_comment').classList.remove('hidden');
                     loadForumTopicDetail(topicId);
                 }
-            } catch(err) {} 
-            finally {
-                replyBtn.textContent = originalText;
-                replyBtn.disabled = false;
-                window.isPostingReply = false; 
-            }
+            } catch(err) {}
+            finally { replyBtn.textContent = originalText; replyBtn.disabled = false; window.isPostingReply = false; }
         }
     });
 
-    // 🌟 ดักจับการเลือกไฟล์ (โชว์ชื่อไฟล์ให้ User รู้ว่าเลือกแล้ว)
     document.addEventListener('change', (e) => {
         const previewContainer = document.getElementById('forum-media-preview');
         
-        // ถ้ารูปเปลี่ยน
         if (e.target && e.target.id === 'forum-image-input') {
             const imgPreview = document.getElementById('forum-img-preview');
             const imgName = document.getElementById('forum-img-name');
             if (e.target.files.length > 0) {
-                imgName.textContent = e.target.files[0].name;
-                imgPreview.classList.remove('hidden');
-                previewContainer.classList.remove('hidden');
-                previewContainer.classList.add('flex');
-            } else {
-                imgPreview.classList.add('hidden');
-            }
+                if(imgName) imgName.textContent = e.target.files[0].name;
+                if(imgPreview) imgPreview.classList.remove('hidden');
+                if(previewContainer) { previewContainer.classList.remove('hidden'); previewContainer.classList.add('flex'); }
+            } else { if(imgPreview) imgPreview.classList.add('hidden'); }
         }
         
-        // ถ้าวิดีโอเปลี่ยน
         if (e.target && e.target.id === 'forum-video-input') {
             const vidPreview = document.getElementById('forum-vid-preview');
             const vidName = document.getElementById('forum-vid-name');
             if (e.target.files.length > 0) {
-                vidName.textContent = e.target.files[0].name;
-                vidPreview.classList.remove('hidden');
-                previewContainer.classList.remove('hidden');
-                previewContainer.classList.add('flex');
-            } else {
-                vidPreview.classList.add('hidden');
+                if(vidName) vidName.textContent = e.target.files[0].name;
+                if(vidPreview) vidPreview.classList.remove('hidden');
+                if(previewContainer) { previewContainer.classList.remove('hidden'); previewContainer.classList.add('flex'); }
+            } else { if(vidPreview) vidPreview.classList.add('hidden'); }
+        }
+
+        if (e.target && e.target.id === 'edit-forum-image') {
+            const nameSpan = document.getElementById('edit-img-name');
+            if(e.target.files.length > 0) {
+                nameSpan.textContent = "✔ เลือก: " + e.target.files[0].name;
+                nameSpan.classList.replace('text-white/70', 'text-green-300');
+            }
+        }
+        if (e.target && e.target.id === 'edit-forum-video') {
+            const nameSpan = document.getElementById('edit-vid-name');
+            if(e.target.files.length > 0) {
+                nameSpan.textContent = "✔ เลือก: " + e.target.files[0].name;
+                nameSpan.classList.replace('text-white/70', 'text-green-300');
             }
         }
     });

@@ -631,7 +631,181 @@ window.saveCourse = async () => {
         if (result.status === 'success') { showToast('บันทึกคอร์สเรียนสำเร็จ!'); fetchCourses(); closeCourseForm(); } else { showToast('ข้อผิดพลาด: ' + result.message); }
     } catch (e) {}
 };
+//
+// =====================================================================
+// --- ระบบจัดการ Feedback & Review ---
+// =====================================================================
+document.getElementById('btn-toggle-review-ui')?.addEventListener('click', () => {
+    document.getElementById('course-main-wrapper').classList.add('hidden');
+    document.getElementById('course-review-wrapper').classList.remove('hidden');
+    fetchCourseReviews();
+});
 
+document.getElementById('btn-back-to-courses')?.addEventListener('click', () => {
+    document.getElementById('course-review-wrapper').classList.add('hidden');
+    document.getElementById('course-main-wrapper').classList.remove('hidden');
+    selectedReviewId = null; // เคลียร์ค่าที่เลือกไว้
+    updateReviewActionButtons();
+});
+
+let allCourseReviews = [];
+let selectedReviewId = null;
+
+async function fetchCourseReviews() {
+    try {
+        const res = await fetch(getApiUrl('get_course_reviews'));
+        const result = await res.json();
+        if (result.status === 'success') {
+            allCourseReviews = result.data;
+            renderReviewTable(allCourseReviews); // ส่งข้อมูลไปวาดตาราง
+        }
+    } catch(e) {}
+}
+
+// 🌟 ฟังก์ชันวาดตารางใหม่ (อัปเดตตัวเลขข้อมูลแล้ว)
+function renderReviewTable(reviewsArray) {
+    const tbody = document.getElementById('review-table-body');
+    const countBadge = document.getElementById('review-count-badge'); // ดึง ID ของป้ายบอกจำนวน
+    
+    if (!tbody) return;
+    
+    // อัปเดตตัวเลขบอกจำนวน
+    if (countBadge) {
+        countBadge.textContent = `${reviewsArray.length} รายการ`;
+    }
+
+    tbody.innerHTML = '';
+    selectedReviewId = null; // รีเซ็ตการเลือกทุกครั้งที่วาดตารางใหม่
+    updateReviewActionButtons();
+
+    if(reviewsArray.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-gray-500 font-medium">ไม่พบข้อมูลรีวิว</td></tr>';
+        return;
+    }
+
+    reviewsArray.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-gray-100 hover:bg-green-50 transition-colors duration-200 review-row select-none';
+        tr.setAttribute('data-id', r.id);
+        
+        // เมื่อคลิกที่แถว
+        tr.addEventListener('click', () => selectReviewRow(tr, r.id));
+
+        tr.innerHTML = `
+            <td class="p-4 text-center">
+                <input type="radio" name="review_selector" class="w-4 h-4 text-green-600 border-gray-300 pointer-events-none">
+            </td>
+            <td class="p-4 font-bold text-gray-800">${r.reviewer_name}</td>
+            <td class="p-4 text-sm text-gray-600 line-clamp-1 max-w-[400px]">${r.review_text}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// 🌟 ฟังก์ชันเมื่อกดเลือกแถว
+function selectReviewRow(rowElement, id) {
+    // ล้างสีแถวอื่นๆ ออก
+    document.querySelectorAll('.review-row').forEach(row => { 
+        row.classList.remove('bg-green-100', 'border-l-4', 'border-[#10a349]'); 
+        row.querySelector('input[type="radio"]').checked = false;
+    });
+    
+    // ใส่สีและติ๊กถูกให้แถวที่เลือก
+    rowElement.classList.add('bg-green-100', 'border-l-4', 'border-[#10a349]');
+    rowElement.querySelector('input[type="radio"]').checked = true;
+    
+    selectedReviewId = id;
+    updateReviewActionButtons();
+}
+
+// 🌟 ฟังก์ชันเปิด/ปิด ปุ่มแก้ไขและลบ
+function updateReviewActionButtons() {
+    const btnEdit = document.getElementById('btn-action-edit-review');
+    const btnDel = document.getElementById('btn-action-delete-review');
+    if(btnEdit && btnDel) {
+        if (selectedReviewId) { 
+            btnEdit.disabled = false; btnEdit.classList.remove('opacity-50', 'cursor-not-allowed'); 
+            btnDel.disabled = false; btnDel.classList.remove('opacity-50', 'cursor-not-allowed'); 
+        } else { 
+            btnEdit.disabled = true; btnEdit.classList.add('opacity-50', 'cursor-not-allowed'); 
+            btnDel.disabled = true; btnDel.classList.add('opacity-50', 'cursor-not-allowed'); 
+        }
+    }
+}
+
+// 🌟 ระบบค้นหา (Search)
+document.getElementById('review-search-input')?.addEventListener('input', (e) => { 
+    const searchTerm = e.target.value.toLowerCase().trim(); 
+    // กรองหาชื่อคนรีวิวที่มีตัวอักษรที่พิมพ์
+    const filteredReviews = allCourseReviews.filter(r => r.reviewer_name.toLowerCase().includes(searchTerm));
+    renderReviewTable(filteredReviews); 
+});
+
+// 🌟 การกดปุ่มแก้ไข
+document.getElementById('btn-action-edit-review')?.addEventListener('click', () => {
+    if(!selectedReviewId) return;
+    const r = allCourseReviews.find(x => x.id == selectedReviewId);
+    if(r) {
+        document.getElementById('edit-review-id').value = r.id;
+        document.getElementById('review-name').value = r.reviewer_name;
+        document.getElementById('review-text').value = r.review_text;
+        document.getElementById('review-form-title').textContent = `✏️ แก้ไขรีวิวของ: ${r.reviewer_name}`;
+        document.getElementById('cancel-review-btn').classList.remove('hidden');
+        document.getElementById('review-form-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+
+// 🌟 การกดปุ่มลบ
+document.getElementById('btn-action-delete-review')?.addEventListener('click', async () => {
+    if(!selectedReviewId) return;
+    if(!confirm('🚨 คุณแน่ใจหรือไม่ที่จะลบรีวิวนี้ทิ้ง?')) return;
+    
+    const fd = new FormData(); 
+    fd.append('review_id', selectedReviewId);
+    try {
+        const res = await fetch(getApiUrl('delete_course_review'), fetchOptions('POST', fd));
+        const result = await res.json();
+        showToast(result.message);
+        if (result.status === 'success') {
+            document.getElementById('review-search-input').value = ''; // เคลียร์ช่องค้นหา
+            fetchCourseReviews();
+            cancelEditReview();
+        }
+    } catch(e) {}
+});
+
+window.cancelEditReview = () => {
+    document.getElementById('edit-review-id').value = '';
+    document.getElementById('review-name').value = '';
+    document.getElementById('review-text').value = '';
+    document.getElementById('review-form-title').textContent = `✨ เพิ่มรีวิวใหม่`;
+    document.getElementById('cancel-review-btn').classList.add('hidden');
+};
+
+window.saveCourseReview = async () => {
+    const reviewerName = document.getElementById('review-name').value.trim();
+    const reviewText = document.getElementById('review-text').value.trim();
+    if(!reviewerName || !reviewText) {
+        showToast('กรุณากรอกชื่อและเนื้อหารีวิวให้ครบ');
+        return;
+    }
+
+    const fd = new FormData();
+    fd.append('review_id', document.getElementById('edit-review-id').value);
+    fd.append('reviewer_name', reviewerName);
+    fd.append('review_text', reviewText);
+    
+    try {
+        const res = await fetch(getApiUrl('save_course_review'), fetchOptions('POST', fd));
+        const result = await res.json();
+        showToast(result.message);
+        if (result.status === 'success') {
+            document.getElementById('review-search-input').value = ''; // เคลียร์ช่องค้นหา
+            fetchCourseReviews();
+            cancelEditReview();
+        }
+    } catch(e) {}
+};
 // =====================================================================
 // --- 7. CMBigband Logic ---
 // =====================================================================

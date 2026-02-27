@@ -149,11 +149,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     <input type="text" id="ev-short-desc" class="input-style lang-en" placeholder="Short Description (EN)">
                     <input type="text" id="ev-short-desc-th" class="input-style lang-th hidden" placeholder="คำอธิบายแบบย่อ (TH)">
                     
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label class="block text-xs text-gray-500 ml-2 mb-1">Start Date</label><div class="flex gap-2"><input type="date" id="ev-start-date" class="input-style"><input type="time" id="ev-start-time" class="input-style w-32" value="12:00"></div></div>
-                        <div><label class="block text-xs text-gray-500 ml-2 mb-1">End Date</label><div class="flex gap-2"><input type="date" id="ev-end-date" class="input-style"><input type="time" id="ev-end-time" class="input-style w-32" value="15:00"></div></div>
+                   <div class="grid grid-cols-2 gap-4">
+                        <div><label class="block text-xs text-gray-500 ml-2 mb-1">Start Date</label><div class="flex gap-2"><input type="date" id="ev-start-date" class="input-style text-sm"><input type="time" id="ev-start-time" class="input-style w-32 text-sm" value="12:00"></div></div>
+                        <div><label class="block text-xs text-gray-500 ml-2 mb-1">End Date</label><div class="flex gap-2"><input type="date" id="ev-end-date" class="input-style text-sm"><input type="time" id="ev-end-time" class="input-style w-32 text-sm" value="15:00"></div></div>
                     </div>
-                    <input type="text" id="ev-location" class="input-style" placeholder="Location (Map Search)">
+                    <input type="text" id="ev-location" class="input-style text-sm text-gray-700" placeholder="Location (Map Search)">
                     
                     <textarea id="ev-details" class="textarea-style lang-en" placeholder="Details (EN) ...."></textarea>
                     <textarea id="ev-details-th" class="textarea-style lang-th hidden" placeholder="รายละเอียดแบบเต็ม (TH) ...."></textarea>
@@ -418,84 +418,154 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             </div>
         </section>
 
-        <section id="section-courses" class="content-section hidden">
-            <div class="bg-[#10a349] text-white p-6 sticky top-0 z-10 shadow-sm flex flex-col gap-4">
+<section id="section-courses" class="content-section hidden">
+            <div class="bg-[#10a349] text-white p-6 sticky top-0 z-10 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h2 class="text-3xl font-extrabold">Courses Library</h2>
+                <button type="button" id="btn-toggle-review-ui" class="bg-white text-[#10a349] hover:bg-gray-100 px-5 py-2.5 rounded-full font-bold shadow transition flex items-center gap-2">
+                    ⭐ จัดการ Feedback & Review
+                </button>
             </div>
             
             <div class="p-8 max-w-5xl mx-auto">
-                <div class="mb-10 bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
-                    <h3 class="text-xl font-extrabold mb-4 border-b border-gray-200 pb-3 text-gray-900">ตารางรายชื่อคอร์สเรียนทั้งหมด</h3>
-                    <div class="overflow-hidden rounded-xl border border-gray-200">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-100 border-b border-gray-200 text-sm">
-                                    <th class="p-4 font-bold text-gray-700">ID / ช่อง</th>
-                                    <th class="p-4 font-bold text-gray-700">ชื่อคอร์สเรียน</th>
-                                    <th class="p-4 font-bold text-gray-700">ผู้สอน (Creator)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="course-table-body">
-                                <tr><td colspan="3" class="p-4 text-center text-gray-500 font-medium">กำลังโหลดข้อมูล...</td></tr>
-                            </tbody>
-                        </table>
+                
+                <div id="course-main-wrapper" class="space-y-10">
+                    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+                        <h3 class="text-xl font-extrabold mb-4 border-b border-gray-200 pb-3 text-gray-900">ตารางรายชื่อคอร์สเรียนทั้งหมด</h3>
+                        <div class="overflow-hidden rounded-xl border border-gray-200">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-100 border-b border-gray-200 text-sm">
+                                        <th class="p-4 font-bold text-gray-700">ID / ช่อง</th>
+                                        <th class="p-4 font-bold text-gray-700">ชื่อคอร์สเรียน</th>
+                                        <th class="p-4 font-bold text-gray-700">ผู้สอน (Creator)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="course-table-body">
+                                    <tr><td colspan="3" class="p-4 text-center text-gray-500 font-medium">กำลังโหลดข้อมูล...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
 
-                <div class="space-y-4">
-                    <h3 class="text-xl font-extrabold mb-4 border-b border-gray-200 pb-2">Courses Library (จัดเรียงกล่องไดนามิก)</h3>
-                    
-                    <div id="course-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6"></div>
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-extrabold mb-4 border-b border-gray-200 pb-2">Courses Library (จัดเรียงกล่องไดนามิก)</h3>
+                        
+                        <div id="course-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-6"></div>
 
-                    <div id="course-form-container" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hidden">
-                        <div class="flex justify-between items-end mb-4 border-b pb-2">
-                            <div>
-                                <h4 id="course-form-title" class="text-xl font-extrabold text-[#10a349]">เพิ่มข้อมูล Course</h4>
-                                <input type="hidden" id="edit-course-slot" value="">
-                                <input type="hidden" id="edit-course-id" value="">
+                        <div id="course-form-container" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hidden">
+                            <div class="flex justify-between items-end mb-4 border-b pb-2">
+                                <div>
+                                    <h4 id="course-form-title" class="text-xl font-extrabold text-[#10a349]">เพิ่มข้อมูล Course</h4>
+                                    <input type="hidden" id="edit-course-slot" value="">
+                                    <input type="hidden" id="edit-course-id" value="">
+                                </div>
+                                <div class="flex items-center gap-3 text-sm font-bold bg-gray-50 px-4 py-1.5 rounded-full border border-gray-200">
+                                    <button type="button" class="admin-lang-btn text-red-500 border-b-2 border-red-500 pb-0.5" data-form="course" onclick="switchAdminLang(this, 'en', 'course')">GB English</button>
+                                    <span class="text-gray-300">|</span>
+                                    <button type="button" class="admin-lang-btn text-gray-400 hover:text-gray-800 transition pb-0.5" data-form="course" onclick="switchAdminLang(this, 'th', 'course')">TH ไทย</button>
+                                </div>
                             </div>
-                            <div class="flex items-center gap-3 text-sm font-bold bg-gray-50 px-4 py-1.5 rounded-full border border-gray-200">
-                                <button type="button" class="admin-lang-btn text-red-500 border-b-2 border-red-500 pb-0.5" data-form="course" onclick="switchAdminLang(this, 'en', 'course')">GB English</button>
-                                <span class="text-gray-300">|</span>
-                                <button type="button" class="admin-lang-btn text-gray-400 hover:text-gray-800 transition pb-0.5" data-form="course" onclick="switchAdminLang(this, 'th', 'course')">TH ไทย</button>
-                            </div>
-                        </div>
-                        
-                        <div class="w-full h-40 md:h-56 mb-5">
-                            <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-[#b2b2b2] group h-full flex items-center justify-center">
-                                <img id="course-banner-img" src="https://placehold.co/1200x400/b2b2b2/000?text=No+Banner" class="w-full h-full object-cover">
-                                <label for="course-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                    <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner / Crop</span>
-                                    <input type="file" id="course-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'course-banner-img')">
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-3 mb-5">
-                            <input type="text" id="course-title" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-en" placeholder="Course Title (EN)">
-                            <input type="text" id="course-title-th" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-th hidden" placeholder="ชื่อคอร์สเรียน (TH)">
                             
-                            <input type="text" id="course-creator" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-en" placeholder="Creator (EN)">
-                            <input type="text" id="course-creator-th" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-th hidden" placeholder="ผู้จัดทำ/ผู้สอน (TH)">
-                        </div>
+                            <div class="w-full h-40 md:h-56 mb-5">
+                                <div class="relative rounded-xl overflow-hidden border border-gray-300 bg-[#b2b2b2] group h-full flex items-center justify-center">
+                                    <img id="course-banner-img" src="https://placehold.co/1200x400/b2b2b2/000?text=No+Banner" class="w-full h-full object-cover">
+                                    <label for="course-banner" class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                        <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-sm hover:bg-white transition flex items-center gap-2">📷 เปลี่ยน Banner / Crop</span>
+                                        <input type="file" id="course-banner" class="hidden" accept="image/*" onchange="previewImage(this, 'course-banner-img')">
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-3 mb-5">
+                                <input type="text" id="course-title" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-en" placeholder="Course Title (EN)">
+                                <input type="text" id="course-title-th" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-th hidden" placeholder="ชื่อคอร์สเรียน (TH)">
+                                
+                                <input type="text" id="course-creator" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-en" placeholder="Creator (EN)">
+                                <input type="text" id="course-creator-th" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-th hidden" placeholder="ผู้จัดทำ/ผู้สอน (TH)">
+                            </div>
 
-                        <div class="flex gap-3 mb-4">
-                            <button type="button" onclick="addCourseContent('text')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Text</button>
-                            <button type="button" onclick="addCourseContent('image')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Image</button>
-                            <button type="button" onclick="addCourseContent('video')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Video</button>
-                        </div>
-                        
-                        <div id="course-content-container" class="space-y-4"></div>
+                            <div class="flex gap-3 mb-4">
+                                <button type="button" onclick="addCourseContent('text')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Text</button>
+                                <button type="button" onclick="addCourseContent('image')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Image</button>
+                                <button type="button" onclick="addCourseContent('video')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Video</button>
+                            </div>
+                            
+                            <div id="course-content-container" class="space-y-4"></div>
 
-                        <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
-                            <button type="button" onclick="deleteTargetCourse(document.getElementById('edit-course-id').value)" class="text-red-500 font-bold hover:underline">🗑️ ลบข้อมูล</button>
-                            <div class="flex gap-3">
-                                <button type="button" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-full font-bold shadow-sm hover:bg-gray-300 transition" onclick="closeCourseForm()">ยกเลิก</button>
-                                <button type="button" class="bg-[#10a349] text-white px-8 py-2 rounded-full font-bold shadow-md hover:bg-green-700 transition" onclick="saveCourse()">บันทึกคอร์ส (Save)</button>
+                            <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+                                <button type="button" onclick="deleteTargetCourse(document.getElementById('edit-course-id').value)" class="text-red-500 font-bold hover:underline">🗑️ ลบข้อมูล</button>
+                                <div class="flex gap-3">
+                                    <button type="button" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-full font-bold shadow-sm hover:bg-gray-300 transition" onclick="closeCourseForm()">ยกเลิก</button>
+                                    <button type="button" class="bg-[#10a349] text-white px-8 py-2 rounded-full font-bold shadow-md hover:bg-green-700 transition" onclick="saveCourse()">บันทึกคอร์ส (Save)</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div id="course-review-wrapper" class="hidden">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-extrabold text-[#10a349]" id="review-form-title">✨ เพิ่มรีวิวใหม่</h3>
+                            <button type="button" id="btn-back-to-courses" class="text-gray-600 hover:text-gray-900 font-bold bg-gray-100 hover:bg-gray-200 px-5 py-2 rounded-full transition text-sm flex items-center gap-2">⬅ กลับไปหน้าคอร์สเรียน</button>
+                        </div>
+                        
+                        <input type="hidden" id="edit-review-id">
+                        <div class="grid grid-cols-1 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">ชื่อผู้รีวิว (Reviewer Name)</label>
+                                <input type="text" id="review-name" class="w-full border border-gray-300 rounded-xl p-3 outline-none focus:border-[#10a349] font-medium" placeholder="เช่น Wisanupong">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">ข้อความรีวิว (Review Text)</label>
+                                <textarea id="review-text" rows="4" class="w-full border border-gray-300 rounded-xl p-3 outline-none focus:border-[#10a349] font-medium resize-none" placeholder="พิมพ์เนื้อหารีวิว..."></textarea>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-3 mt-4">
+                            <button type="button" onclick="cancelEditReview()" id="cancel-review-btn" class="hidden bg-gray-200 text-gray-800 px-6 py-2.5 rounded-full font-bold hover:bg-gray-300 transition">ยกเลิก</button>
+                            <button type="button" onclick="saveCourseReview()" class="bg-[#10a349] text-white px-8 py-2.5 rounded-full font-bold shadow-md hover:bg-green-700 transition">บันทึกรีวิว</button>
+                        </div>
+                    </div>
+
+                   <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="p-5 bg-gray-50 border-b border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                           <div class="flex items-center gap-3">
+                                <h3 class="font-extrabold text-gray-800">รายการรีวิวทั้งหมด</h3>
+                                <span id="review-count-badge" class="bg-[#10a349] text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">0 รายการ</span>
+                            </div>
+                            
+                            <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                                <div class="relative w-full md:w-64">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    </div>
+                                    <input type="text" id="review-search-input" class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#10a349] transition text-sm font-medium" placeholder="ค้นหาชื่อผู้รีวิว...">
+                                </div>
+                                
+                                <div class="flex gap-2">
+                                    <button id="btn-action-edit-review" disabled class="bg-blue-500 text-white px-5 py-2 rounded-lg font-bold shadow-sm opacity-50 cursor-not-allowed hover:bg-blue-600 transition flex items-center gap-2 text-sm">✏️ แก้ไข</button>
+                                    <button id="btn-action-delete-review" disabled class="bg-red-500 text-white px-5 py-2 rounded-lg font-bold shadow-sm opacity-50 cursor-not-allowed hover:bg-red-600 transition flex items-center gap-2 text-sm">🗑️ ลบ</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse cursor-pointer">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-600 text-sm border-b border-gray-200">
+                                        <th class="p-4 font-bold w-16 text-center">เลือก</th>
+                                        <th class="p-4 font-bold w-64">ชื่อผู้รีวิว</th>
+                                        <th class="p-4 font-bold">เนื้อหา (ย่อ)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="review-table-body">
+                                    <tr><td colspan="3" class="p-4 text-center text-gray-500 font-medium">กำลังโหลดข้อมูล...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 

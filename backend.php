@@ -18,9 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 $host = 'localhost';
-$user = 'root';
-$pass = '';
-$dbname = 'music_admin_db';
+$user = 'uusix5xzcgxym';
+$pass = 'gbw3xhgag1ob';
+$dbname = 'db5ovpgegfc6yz';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $pass);
@@ -57,10 +57,12 @@ switch($action) {
         }
 
         $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-        $stmt = $pdo->prepare("INSERT INTO users (username, password, email, role, status) VALUES (?, ?, ?, 'user', 'pending')");
+        
+        // 🌟 เปลี่ยนสถานะเริ่มต้นจาก 'pending' เป็น 'active'
+        $stmt = $pdo->prepare("INSERT INTO users (username, password, email, role, status) VALUES (?, ?, ?, 'user', 'active')");
         
         if($stmt->execute([$username, $hashed_password, $email])) {
-            echo json_encode(['status' => 'success', 'message' => 'สมัครสมาชิกสำเร็จ โปรดรอผู้ดูแลระบบอนุมัติ']);
+            echo json_encode(['status' => 'success', 'message' => 'สมัครสมาชิกสำเร็จ! สามารถเข้าสู่ระบบได้เลย']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'เกิดข้อผิดพลาดในการสมัครสมาชิก']);
         }
@@ -742,12 +744,98 @@ switch($action) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         break;
+// ==========================================
+    // API สำหรับให้เจ้าของกระทู้แก้ไขข้อความ รูปภาพ และ วิดีโอ
+    // ==========================================
+    case 'edit_forum_topic':
+        if(!isset($_SESSION['user_id'])) {
+            die(json_encode(['status' => 'error', 'message' => 'Please login first']));
+        }
+        $topic_id = $_POST['topic_id'] ?? 0;
+        $title = $_POST['title'] ?? '';
+        $content = $_POST['content'] ?? '';
+        $user_id = $_SESSION['user_id'];
 
+        if(empty($title) || empty($content)) {
+            die(json_encode(['status' => 'error', 'message' => 'ข้อมูลไม่ครบถ้วน']));
+        }
+
+        try {
+            // เช็คว่าเป็นเจ้าของกระทู้จริงๆ หรือไม่ พร้อมดึงไฟล์เดิมมาเผื่อไว้
+            $stmt = $pdo->prepare("SELECT user_id, image_url, video_link FROM forum_topics WHERE id = ?");
+            $stmt->execute([$topic_id]);
+            $topic = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$topic || $topic['user_id'] != $user_id) {
+                die(json_encode(['status' => 'error', 'message' => 'คุณไม่ใช่เจ้าของกระทู้นี้ หรือไม่พบกระทู้']));
+            }
+
+            $upload_dir = 'uploads/forum/';
+            if (!file_exists($upload_dir)) mkdir($upload_dir, 0777, true);
+
+            // 🌟 จัดการอัปเดตรูปภาพใหม่ (ถ้ามี)
+            $image_url = $topic['image_url']; // ใช้รูปเดิมไปก่อน
+            if (isset($_FILES['topic_image']) && $_FILES['topic_image']['error'] === UPLOAD_ERR_OK) {
+                $ext = pathinfo($_FILES['topic_image']['name'], PATHINFO_EXTENSION);
+                $image_url = $upload_dir . 'topic_img_' . time() . '_' . uniqid() . '.' . $ext;
+                move_uploaded_file($_FILES['topic_image']['tmp_name'], $image_url);
+            }
+
+            // 🌟 จัดการอัปเดตวิดีโอใหม่ (ถ้ามี)
+            $video_link = $topic['video_link']; // ใช้วิดีโอเดิมไปก่อน
+            if (isset($_FILES['topic_video']) && $_FILES['topic_video']['error'] === UPLOAD_ERR_OK) {
+                $ext = pathinfo($_FILES['topic_video']['name'], PATHINFO_EXTENSION);
+                $video_link = $upload_dir . 'topic_vid_' . time() . '_' . uniqid() . '.' . $ext;
+                move_uploaded_file($_FILES['topic_video']['tmp_name'], $video_link);
+            }
+
+            // ทำการอัปเดตข้อมูลทั้งหมดลงฐานข้อมูล
+            $stmt = $pdo->prepare("UPDATE forum_topics SET title = ?, content = ?, image_url = ?, video_link = ? WHERE id = ?");
+            $stmt->execute([$title, $content, $image_url, $video_link, $topic_id]);
+            echo json_encode(['status' => 'success', 'message' => 'อัปเดตข้อมูลสำเร็จ']);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+
+    // ==========================================
+    // API สำหรับให้เจ้าของกระทู้ "ลบ" กระทู้ตัวเอง
+    // ==========================================
+    case 'delete_own_forum_topic':
+        if(!isset($_SESSION['user_id'])) {
+            die(json_encode(['status' => 'error', 'message' => 'Please login first']));
+        }
+        $topic_id = $_POST['topic_id'] ?? 0;
+        $user_id = $_SESSION['user_id'];
+
+        try {
+            // เช็คสิทธิ์เจ้าของกระทู้
+            $stmt = $pdo->prepare("SELECT user_id FROM forum_topics WHERE id = ?");
+            $stmt->execute([$topic_id]);
+            $owner_id = $stmt->fetchColumn();
+
+            if ($owner_id != $user_id) {
+                die(json_encode(['status' => 'error', 'message' => 'คุณไม่ใช่เจ้าของกระทู้นี้']));
+            }
+
+            // ลบคอมเมนต์และกระทู้
+            $pdo->prepare("DELETE FROM forum_comments WHERE topic_id = ?")->execute([$topic_id]);
+            $pdo->prepare("DELETE FROM forum_topics WHERE id = ?")->execute([$topic_id]);
+            
+            echo json_encode(['status' => 'success', 'message' => 'ลบกระทู้สำเร็จ']);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+        //api FORUM Q&A end
+    // ==========================================
+    // โหลดกระทู้ทั้งหมด (เพิ่มการดึงยอดคอมเมนต์และยอดวิว)
+    // ==========================================
     case 'get_forum_topics':
         try {
-            // ดึงข้อมูลกระทู้ พร้อมกับชื่อผู้โพสต์จากตาราง users
             $stmt = $pdo->query("
-                SELECT t.id, t.title, t.created_at, u.username 
+                SELECT t.id, t.title, t.views, t.image_url, t.video_link, t.created_at, u.username,
+                (SELECT COUNT(*) FROM forum_comments c WHERE c.topic_id = t.id) as comment_count
                 FROM forum_topics t
                 JOIN users u ON t.user_id = u.id
                 ORDER BY t.id DESC
@@ -775,7 +863,8 @@ switch($action) {
                 // 3. เพิ่มยอดวิว +1
                 $pdo->prepare("UPDATE forum_topics SET views = views + 1 WHERE id = ?")->execute([$topic_id]);
 
-                echo json_encode(['status' => 'success', 'data' => ['topic' => $topic, 'comments' => $comments]]);
+                $current_user_id = $_SESSION['user_id'] ?? 0;
+                echo json_encode(['status' => 'success', 'data' => ['topic' => $topic, 'comments' => $comments, 'current_user_id' => $current_user_id]]);
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Topic not found']);
             }
@@ -806,25 +895,41 @@ switch($action) {
         } catch (Exception $e) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
-        break;
-        // สำหรับแอดมิน: ดึงรายการกระทู้ทั้งหมด พร้อมนับจำนวนคอมเมนต์
-    case 'get_admin_forum_topics':
-        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-            die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
+            break;
+        // ระบบกดไลก์คอมเมนต์
+   // ==========================================
+    // ระบบกดไลก์ / ยกเลิกไลก์ คอมเมนต์
+    // ==========================================
+    case 'like_forum_comment':
+        $comment_id = $_POST['comment_id'] ?? 0;
+        $action_type = $_POST['action_type'] ?? 'like'; // รับค่าว่ากดไลก์ หรือ ยกเลิกไลก์
+
+        if(empty($comment_id)) {
+            echo json_encode(['status' => 'error', 'message' => 'ไม่พบไอดีคอมเมนต์']);
+            break;
         }
         try {
-            $stmt = $pdo->query("
-                SELECT t.id, t.title, t.views, t.created_at, u.username,
-                (SELECT COUNT(*) FROM forum_comments c WHERE c.topic_id = t.id) as comment_count
-                FROM forum_topics t
-                JOIN users u ON t.user_id = u.id
-                ORDER BY t.id DESC
-            ");
-            echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
-        } catch (Exception $e) {
+            if ($action_type === 'unlike') {
+                // ลบไลก์ (ไม่ให้ต่ำกว่า 0)
+                $stmt = $pdo->prepare("UPDATE forum_comments SET likes = GREATEST(likes - 1, 0) WHERE id = ?");
+            } else {
+                // เพิ่มไลก์
+                $stmt = $pdo->prepare("UPDATE forum_comments SET likes = likes + 1 WHERE id = ?");
+            }
+            $stmt->execute([$comment_id]);
+            
+            // ดึงยอดไลก์ล่าสุดส่งกลับไป
+            $stmt_get = $pdo->prepare("SELECT likes FROM forum_comments WHERE id = ?");
+            $stmt_get->execute([$comment_id]);
+            $new_likes = $stmt_get->fetchColumn();
+            
+            echo json_encode(['status' => 'success', 'likes' => $new_likes]);
+       } catch (Exception $e) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         break;
+        
+      
         // สำหรับแอดมิน: ดึงรายการกระทู้ทั้งหมด พร้อมนับจำนวนคอมเมนต์
     case 'get_admin_forum_topics':
         if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -871,6 +976,58 @@ switch($action) {
             $stmt_topics->execute($topic_ids);
             
             echo json_encode(['status' => 'success', 'message' => 'ลบกระทู้และคอมเมนต์สำเร็จเรียบร้อย']);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+
+        // ==========================================
+    // ระบบ FEEDBACK & REVIEW (หน้าคอร์สเรียน)
+    // ==========================================
+    case 'get_course_reviews':
+        try {
+            $stmt = $pdo->query("SELECT * FROM course_reviews ORDER BY id DESC");
+            echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+
+    case 'save_course_review':
+        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
+        }
+        $review_id = $_POST['review_id'] ?? '';
+        $reviewer_name = $_POST['reviewer_name'] ?? '';
+        $review_text = $_POST['review_text'] ?? '';
+        
+        if(empty($reviewer_name) || empty($review_text)) {
+            die(json_encode(['status' => 'error', 'message' => 'กรุณากรอกข้อมูลให้ครบ']));
+        }
+
+        try {
+            if(!empty($review_id)) {
+                $stmt = $pdo->prepare("UPDATE course_reviews SET reviewer_name = ?, review_text = ? WHERE id = ?");
+                $stmt->execute([$reviewer_name, $review_text, $review_id]);
+                echo json_encode(['status' => 'success', 'message' => 'อัปเดตรีวิวสำเร็จ!']);
+            } else {
+                $stmt = $pdo->prepare("INSERT INTO course_reviews (reviewer_name, review_text) VALUES (?, ?)");
+                $stmt->execute([$reviewer_name, $review_text]);
+                echo json_encode(['status' => 'success', 'message' => 'เพิ่มรีวิวสำเร็จ!']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+
+    case 'delete_course_review':
+        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
+        }
+        $review_id = $_POST['review_id'] ?? '';
+        try {
+            $pdo->prepare("DELETE FROM course_reviews WHERE id = ?")->execute([$review_id]);
+            echo json_encode(['status' => 'success', 'message' => 'ลบรีวิวสำเร็จ']);
         } catch (Exception $e) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
