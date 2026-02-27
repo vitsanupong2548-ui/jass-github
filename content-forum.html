@@ -1,35 +1,62 @@
-<div class="clone-content">
-     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div class="md:col-span-1">
-           <svg class="w-32 h-32 mb-6" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40 0L80 40L40 80L0 40L40 0Z" fill="white" fill-opacity="1"/><path d="M20 20L60 20L40 40L20 20Z" fill="white" fill-opacity="1"/><path d="M20 60L60 60L40 40L20 60Z" fill="white" fill-opacity="1"/></svg>
-            <h2 id="dyn-forum_main_title" class="text-6xl mb-4 leading-[10]" >Forum<br>Q&A</h2>
-            <p id="dyn-forum_main_desc" class="text-lg">Join the conversation in our online community. This is a space for artists, students, and music lovers to ask questions, share knowledge, and build connections.</p>
+<div class="clone-content h-full overflow-y-auto hide-scrollbar bg-[#e2574c] relative">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 relative max-w-6xl mx-auto pb-24 pt-8 md:pt-12 px-6 lg:px-0">
+        
+        <div class="lg:col-span-4 flex flex-col justify-start lg:sticky lg:top-12 h-fit text-white">
+            <img src="icon/5.webp" class="w-20 h-20 md:w-28 md:h-28 mb-6 object-contain" alt="Festival Icon">
+            <h2 id="dyn-forum_main_title" class="text-5xl lg:text-[4rem] font-header font-bold leading-[1.1] mb-5 tracking-tight">Forum<br>Q&A</h2>
+            <p id="dyn-forum_main_desc" class="text-sm lg:text-base font-body leading-[1.6] font-medium pr-4">Join the conversation in our online community. This is a space for artists, students, and music lovers to ask questions, share knowledge, and build connections.</p>
         </div>
-        <div class="md:col-span-3 clone-main-content">
-            <h3 id="dyn-forum_sub_title" class="text-3xl font-bold">Community Forum</h3>
-            <p id="dyn-forum_sub_desc" class="mb-4">Ask questions, share knowledge, and connect with the Lanna-Jazz community.</p>
-            <textarea placeholder="Write your Question here...." class="w-full bg-white/10 rounded-lg p-4 mb-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"></textarea>
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <button class="bg-black/50 px-4 py-2 rounded-lg mr-2">+ Photo</button>
-                    <button class="bg-black/50 px-4 py-2 rounded-lg">+ Video</button>
+
+        <div class="lg:col-span-8 flex flex-col w-full text-white mt-4 lg:mt-0 transition-opacity duration-300" id="forum-main-view">
+            
+            <h3 id="dyn-forum_sub_title" class="text-3xl font-header font-bold mb-2">Community Forum</h3>
+            <p id="dyn-forum_sub_desc" class="text-sm mb-8">Ask questions, share knowledge, and connect with the Lanna-Jazz community.</p>
+
+           <div class="bg-white/20 p-4 rounded-xl border border-white/30 mb-10 shadow-sm backdrop-blur-sm">
+                <input type="text" id="forum-title" class="w-full bg-transparent text-white placeholder-white/70 border-b border-white/30 outline-none text-xl font-bold mb-3 pb-2" placeholder="Topic Title (หัวข้อคำถาม)...">
+                <textarea id="forum-content" class="w-full bg-transparent text-white placeholder-white/50 resize-none outline-none text-base h-20 font-body" placeholder="Write your details here (รายละเอียด)...."></textarea>
+                
+                <input type="file" id="forum-image-input" class="hidden" accept="image/*">
+                <input type="file" id="forum-video-input" class="hidden" accept="video/mp4,video/x-m4v,video/*">
+                
+                <div id="forum-media-preview" class="text-xs text-green-300 font-bold mt-2 hidden flex-col gap-1">
+                    <span id="forum-img-preview" class="hidden">📸 รูปภาพ: <span id="forum-img-name" class="font-normal text-white"></span></span>
+                    <span id="forum-vid-preview" class="hidden">🎥 วิดีโอ: <span id="forum-vid-name" class="font-normal text-white"></span></span>
                 </div>
-                <button class="bg-white text-orange-500 font-bold px-8 py-2 rounded-lg">Post</button>
+
+                <div class="flex justify-between items-center mt-3 border-t border-white/20 pt-3">
+                    <div class="flex gap-3">
+                        <button type="button" id="btn-add-photo" class="bg-[#5a2e2a] hover:bg-black/60 px-5 py-2 rounded-lg text-sm font-bold transition shadow">+ Photo</button>
+                        <button type="button" id="btn-add-video" class="bg-[#5a2e2a] hover:bg-black/60 px-5 py-2 rounded-lg text-sm font-bold transition shadow">+ Video</button>
+                    </div>
+                    <button type="button" id="forum-post-btn" class="bg-white text-[#e2574c] px-10 py-2 rounded-lg font-bold hover:bg-gray-100 transition shadow-lg">Post</button>
+                </div>
             </div>
-            <div class="space-y-4">
-                <div class="border-b border-white/20 pb-2">
-                    <h4 id="dyn-forum_post1_title" class="text-xl font-semibold">How do you apply jazz chords on a Seung?</h4>
-                    <p id="dyn-forum_post1_meta" class="text-sm opacity-70">by Piyapol - posted on September 20, 2025</p>
-                </div>
-                <div class="border-b border-white/20 pb-2">
-                    <h4 id="dyn-forum_post2_title" class="text-xl font-semibold">Best way to practice jazz scales on the Salow?</h4>
-                    <p id="dyn-forum_post2_meta" class="text-sm opacity-70">by Piyapol - posted on September 20, 2025</p>
-                </div>
-                 <div class="border-b border-white/20 pb-2">
-                    <h4 id="dyn-forum_post3_title" class="text-xl font-semibold">Best place for a total beginner to listen to live jazz in Chiang Mai?</h4>
-                    <p id="dyn-forum_post3_meta" class="text-sm opacity-70">by Piyapol - posted on September 20, 2025</p>
-                </div>
-            </div>
+
+            <div class="flex flex-col gap-6" id="forum-questions-list"></div>
         </div>
+
+        <div class="lg:col-span-8 flex flex-col w-full text-white mt-4 lg:mt-0 hidden transition-opacity duration-300" id="forum-detail-view">
+            
+            <button id="forum-back-btn" class="w-fit flex items-center gap-2 text-white hover:text-white/70 font-bold mb-6 transition bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                Back to Topics
+            </button>
+
+            <div class="bg-white/10 p-6 rounded-2xl border border-white/20 mb-8" id="forum-topic-content"></div>
+
+            <h4 class="text-2xl font-bold mb-4 border-b border-white/30 pb-2">Comments</h4>
+            
+            <div class="flex flex-col gap-4 mb-8" id="forum-comments-list"></div>
+
+            <div class="bg-white/20 p-4 rounded-xl border border-white/30 shadow-sm backdrop-blur-sm">
+                <textarea id="forum-comment-input" class="w-full bg-transparent text-white placeholder-white/70 resize-none outline-none text-base h-16 font-body" placeholder="Write a comment..."></textarea>
+                <div class="flex justify-end mt-2">
+                    <button type="button" id="forum-reply-btn" class="bg-[#5a2e2a] hover:bg-black/60 text-white px-8 py-2 rounded-lg font-bold transition shadow">Reply</button>
+                </div>
+            </div>
+            
+        </div>
+
     </div>
 </div>

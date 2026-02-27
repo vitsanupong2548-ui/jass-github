@@ -1,0 +1,12 @@
+User uusix5xzcgxym is created with password gbw3xhgag1ob
+
+
+
+-- ลบตารางคอมเมนต์ (ลบตัวลูกก่อน)
+DROP TABLE IF EXISTS `forum_comments`;
+
+-- ลบตารางกระทู้
+DROP TABLE IF EXISTS `forum_topics`;
+
+-- ลบตารางหมวดหมู่ (ลบตัวแม่ทีหลังสุด)
+DROP TABLE IF EXISTS `forum_categories`;

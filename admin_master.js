@@ -126,6 +126,7 @@ navLinks.forEach(link => {
         if(target === 'section-musician') fetchMusicians();
         if(target === 'section-courses') fetchCourses();
         if(target === 'section-cmbigband') loadCmbData();
+        if(target === 'section-forum') fetchAdminForumTopics();
     }); 
 });
 
@@ -693,3 +694,121 @@ window.saveCMBigband = async () => {
         if (result.status === 'success') { showToast('บันทึกข้อมูลสำเร็จ!'); window.croppedImagesData = {}; } else showToast('ข้อผิดพลาด: ' + result.message);
     } catch(e) {}
 };
+// =====================================================================
+// --- 8. Forum Q&A Management (Bulk Delete) ---
+// =====================================================================
+let selectedForumTopics = [];
+
+async function fetchAdminForumTopics() {
+    try {
+        const res = await fetch(getApiUrl('get_admin_forum_topics'));
+        const result = await res.json();
+        const tbody = document.getElementById('admin-forum-table-body');
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        selectedForumTopics = []; // รีเซ็ตการเลือกทุกครั้งที่โหลดตารางใหม่
+        updateForumActionButtons();
+        
+        if(result.status === 'success') {
+            if(result.data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500 font-medium">ยังไม่มีกระทู้ในระบบ</td></tr>';
+                return;
+            }
+            result.data.forEach(topic => {
+                const d = new Date(topic.created_at);
+                const dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                
+                const tr = document.createElement('tr');
+                tr.className = 'border-b hover:bg-orange-50 transition-colors select-none';
+                tr.setAttribute('data-id', topic.id);
+                
+                tr.innerHTML = `
+                    <td class="p-4 text-center font-bold">
+                        <div class="flex items-center justify-center gap-2">
+                            <input type="checkbox" class="w-4 h-4 text-orange-600 border-gray-300 rounded pointer-events-none" data-id="${topic.id}">
+                            <span class="text-gray-500">${topic.id}</span>
+                        </div>
+                    </td>
+                    <td class="p-4 font-bold text-gray-800 break-words max-w-xs">${topic.title}</td>
+                    <td class="p-4 text-sm text-gray-600 font-semibold">${topic.username}</td>
+                    <td class="p-4 text-sm text-gray-600">${dateStr}</td>
+                    <td class="p-4 text-center text-sm font-medium">
+                        <span class="bg-gray-200 px-2 py-1 rounded text-gray-700 shadow-sm">👁️ ${topic.views}</span> 
+                        <span class="bg-blue-100 px-2 py-1 rounded text-blue-700 ml-1 shadow-sm">💬 ${topic.comment_count}</span>
+                    </td>
+                `;
+                
+                // ดักจับการคลิกที่แถวเพื่อเลือก
+                tr.addEventListener('click', () => toggleForumRow(tr, topic.id));
+                tbody.appendChild(tr);
+            });
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function toggleForumRow(row, id) {
+    const checkbox = row.querySelector('input[type="checkbox"]');
+    const index = selectedForumTopics.indexOf(id);
+    
+    // ถ้าเลือกอยู่แล้ว ให้เอาออก
+    if (index > -1) {
+        selectedForumTopics.splice(index, 1);
+        row.classList.remove('bg-orange-100', 'border-l-4', 'border-orange-500');
+        checkbox.checked = false;
+    } else {
+        // ถ้ายังไม่ได้เลือก ให้เพิ่มเข้าไป
+        selectedForumTopics.push(id);
+        row.classList.add('bg-orange-100', 'border-l-4', 'border-orange-500');
+        checkbox.checked = true;
+    }
+    updateForumActionButtons();
+}
+
+function updateForumActionButtons() {
+    const btnDel = document.getElementById('btn-delete-forum');
+    const statusEl = document.getElementById('forum-selection-status');
+    
+    if (btnDel && statusEl) {
+        if (selectedForumTopics.length > 0) {
+            // ปลดล็อคปุ่มลบ
+            btnDel.disabled = false;
+            btnDel.classList.remove('opacity-50', 'cursor-not-allowed');
+            statusEl.innerHTML = `เลือกกระทู้แล้ว: <span class="text-red-600 font-bold">${selectedForumTopics.length}</span> รายการ`;
+        } else {
+            // ล็อคปุ่มลบ
+            btnDel.disabled = true;
+            btnDel.classList.add('opacity-50', 'cursor-not-allowed');
+            statusEl.innerHTML = 'ยังไม่ได้เลือกกระทู้';
+        }
+    }
+}
+
+// สั่งการปุ่ม "ลบที่เลือก" ด้านบน
+document.getElementById('btn-delete-forum')?.addEventListener('click', async () => {
+    if(selectedForumTopics.length === 0) return;
+    
+    if(!confirm(`🚨 คุณแน่ใจหรือไม่ที่จะลบกระทู้ที่เลือกจำนวน ${selectedForumTopics.length} รายการ? \n(คอมเมนต์ทั้งหมดในกระทู้จะถูกลบถาวร!)`)) return;
+    
+    try {
+        const fd = new FormData();
+        // ส่งข้อมูลเป็น String ของ JSON
+        fd.append('topic_ids', JSON.stringify(selectedForumTopics)); 
+        
+        showToast('กำลังลบข้อมูล...');
+        const res = await fetch(getApiUrl('delete_forum_topic'), fetchOptions('POST', fd));
+        const result = await res.json();
+        
+        if(result.status === 'success') {
+            showToast(result.message);
+            fetchAdminForumTopics(); // โหลดตารางใหม่
+        } else {
+            showToast('เกิดข้อผิดพลาด: ' + result.message);
+        }
+    } catch(e) {
+        showToast('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+    }
+});
+// --- 8. Forum Q&A Management (END) ---

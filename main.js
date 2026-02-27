@@ -974,5 +974,262 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 300);
             }
         });
+
     }
 });
+// ==========================================
+// 8. ระบบ Forum Q&A (เต็มรูปแบบ: โพสต์ + รูป + วิดีโอ + คอมเมนต์)
+// ==========================================
+
+window.loadForumTopics = async function() {
+    const listContainers = document.querySelectorAll('#forum-questions-list');
+    if(listContainers.length === 0) return;
+
+    try {
+        const res = await fetch('backend.php?action=get_forum_topics');
+        const result = await res.json();
+        
+        if(result.status === 'success') {
+            let html = '';
+            if(result.data.length === 0) {
+                html = '<p class="text-white/80 mt-4 text-center">ยังไม่มีคำถาม เป็นคนแรกที่ตั้งคำถามสิ!</p>';
+            } else {
+                result.data.forEach(topic => {
+                    const d = new Date(topic.created_at);
+                    const dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                    
+                    const hasMedia = (topic.image_url || topic.video_link) ? '<span class="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded text-white font-bold inline-flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"></path></svg>Media</span>' : '';
+
+                    html += `
+                    <div class="border-b border-white/30 pb-5 group mt-2 forum-topic-item cursor-pointer w-full overflow-hidden" data-topic-id="${topic.id}">
+                        <h4 class="text-xl sm:text-2xl font-bold mb-1 group-hover:underline text-white break-words break-all line-clamp-2">${topic.title} ${hasMedia}</h4>
+                        <p class="text-sm text-white/80">by <span class="font-bold text-white">${topic.username}</span> - posted on ${dateStr} <span class="ml-2 text-xs opacity-70">👁️ ${topic.views || 0} Views</span></p>
+                    </div>
+                    `;
+                });
+            }
+            listContainers.forEach(c => c.innerHTML = html);
+        }
+    } catch(e) { console.error("Error loading forum topics:", e); }
+}
+
+window.loadForumTopicDetail = async function(topicId) {
+    try {
+        const res = await fetch(`backend.php?action=get_forum_topic_detail&topic_id=${topicId}`);
+        const result = await res.json();
+
+        if(result.status === 'success') {
+            const topic = result.data.topic;
+            const comments = result.data.comments;
+
+            const d = new Date(topic.created_at);
+            const dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            // 🌟 สร้าง HTML สำหรับรูปภาพและวิดีโอแบบอัปโหลดเข้าเซิร์ฟเวอร์
+            let mediaHtml = '';
+            if (topic.image_url) {
+                mediaHtml += `<img src="${topic.image_url}" class="w-full max-w-3xl rounded-xl mt-6 border border-white/20 shadow-md">`;
+            }
+            if (topic.video_link) {
+                // ใช้แท็ก <video> ของ HTML5 เพื่อเล่นวิดีโอที่อัปโหลดไว้
+                mediaHtml += `
+                <div class="w-full max-w-3xl aspect-video mt-6 rounded-xl overflow-hidden border border-white/20 shadow-md bg-black">
+                    <video controls preload="metadata" class="w-full h-full object-contain">
+                        <source src="${topic.video_link}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>`;
+            }
+
+            document.getElementById('forum-topic-content').innerHTML = `
+                <div class="w-full overflow-hidden">
+                    <h2 class="text-3xl sm:text-4xl font-bold mb-2 break-words break-all">${topic.title}</h2>
+                    <p class="text-sm text-white/70 mb-6">Posted by <span class="font-bold text-white">${topic.username}</span> on ${dateStr} • 👁️ ${topic.views} Views</p>
+                    <div class="text-lg leading-relaxed font-medium whitespace-pre-line break-words break-all">${topic.content}</div>
+                    ${mediaHtml} </div>
+            `;
+
+            const commentsList = document.getElementById('forum-comments-list');
+            let commentsHtml = '';
+            if(comments.length === 0) { commentsHtml = '<p class="text-white/60 italic text-center py-4">ยังไม่มีความคิดเห็น มาเป็นคนแรกที่ตอบกระทู้นี้กันเถอะ!</p>'; } 
+            else {
+                comments.forEach(c => {
+                    const cd = new Date(c.created_at);
+                    const cDateStr = cd.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    commentsHtml += `
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10 shadow-sm w-full overflow-hidden">
+                            <p class="text-sm text-white/60 mb-2"><span class="font-bold text-[#e2574c] bg-white px-2 py-0.5 rounded text-xs mr-2">${c.username}</span> ${cDateStr}</p>
+                            <p class="text-base font-medium whitespace-pre-line break-words break-all">${c.comment_text}</p>
+                        </div>
+                    `;
+                });
+            }
+            commentsList.innerHTML = commentsHtml;
+
+            document.getElementById('forum-reply-btn').setAttribute('data-topic-id', topic.id);
+            document.getElementById('forum-main-view').classList.add('hidden');
+            document.getElementById('forum-detail-view').classList.remove('hidden');
+            document.querySelector('.clone-content')?.scrollTo({ top: 0, behavior: 'smooth' });
+        } else { alert('ไม่พบกระทู้นี้ หรืออาจจะถูกลบไปแล้ว'); }
+    } catch(e) { console.error("Error loading topic detail:", e); }
+}
+
+if (!window.forumClickListenerActive) {
+    document.addEventListener('click', async (e) => {
+        
+        // ดักจับปุ่ม + Photo
+        if (e.target && e.target.id === 'btn-add-photo') {
+            e.preventDefault();
+            const container = e.target.closest('.bg-white\\/20');
+            container.querySelector('#forum-image-input').click();
+        }
+
+        // ดักจับปุ่ม + Video (เปลี่ยนเป็นเลือกไฟล์)
+        if (e.target && e.target.id === 'btn-add-video') {
+            e.preventDefault();
+            const container = e.target.closest('.bg-white\\/20');
+            container.querySelector('#forum-video-input').click();
+        }
+
+        // กดปุ่ม "Post"
+        const postBtn = e.target.closest('#forum-post-btn');
+        if (postBtn) {
+            e.preventDefault();
+            if (window.isPostingTopic) return; 
+
+            if (!window.isUserLoggedIn) {
+                alert('กรุณาเข้าสู่ระบบก่อนตั้งคำถามครับ!');
+                return;
+            }
+
+            const container = postBtn.closest('.bg-white\\/20');
+            const titleInput = container.querySelector('#forum-title');
+            const contentInput = container.querySelector('#forum-content');
+            const imgInput = container.querySelector('#forum-image-input');
+            const vidInput = container.querySelector('#forum-video-input'); // วิดีโอตอนนี้เป็นไฟล์แล้ว
+
+            if (!titleInput.value.trim() || !contentInput.value.trim()) {
+                alert('กรุณากรอกหัวข้อและรายละเอียดให้ครบถ้วนครับ');
+                return;
+            }
+
+            window.isPostingTopic = true;
+            const originalText = postBtn.textContent;
+            postBtn.textContent = 'Uploading & Posting...';
+            postBtn.disabled = true;
+
+            const fd = new FormData();
+            fd.append('title', titleInput.value);
+            fd.append('content', contentInput.value);
+            
+            // 🌟 แนบไฟล์รูปและวิดีโอ
+            if (imgInput.files.length > 0) fd.append('topic_image', imgInput.files[0]);
+            if (vidInput.files.length > 0) fd.append('topic_video', vidInput.files[0]);
+
+            try {
+                const res = await fetch('backend.php?action=save_forum_topic', { method: 'POST', body: fd });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    // รีเซ็ตฟอร์ม
+                    titleInput.value = '';
+                    contentInput.value = '';
+                    imgInput.value = '';
+                    vidInput.value = '';
+                    document.getElementById('forum-media-preview').classList.add('hidden');
+                    document.getElementById('forum-img-preview').classList.add('hidden');
+                    document.getElementById('forum-vid-preview').classList.add('hidden');
+                    
+                    loadForumTopics(); 
+                } else { alert('เกิดข้อผิดพลาด: ' + result.message); }
+            } catch(err) { alert('อัปโหลดล้มเหลว (อาจไฟล์ใหญ่เกินไป หรือขาดการเชื่อมต่อ)'); } 
+            finally {
+                postBtn.textContent = originalText;
+                postBtn.disabled = false;
+                window.isPostingTopic = false;
+            }
+        }
+
+        const topicItem = e.target.closest('.forum-topic-item');
+        if (topicItem && !e.target.closest('#forum-post-btn')) {
+            const topicId = topicItem.getAttribute('data-topic-id');
+            loadForumTopicDetail(topicId);
+        }
+
+        const backBtn = e.target.closest('#forum-back-btn');
+        if (backBtn) {
+            document.getElementById('forum-detail-view').classList.add('hidden');
+            document.getElementById('forum-main-view').classList.remove('hidden');
+            loadForumTopics(); 
+        }
+
+        const replyBtn = e.target.closest('#forum-reply-btn');
+        if (replyBtn) {
+            e.preventDefault();
+            if (window.isPostingReply) return; 
+            if (!window.isUserLoggedIn) { alert('กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็นครับ!'); return; }
+            const commentInput = document.getElementById('forum-comment-input');
+            const commentText = commentInput.value.trim();
+            const topicId = replyBtn.getAttribute('data-topic-id');
+
+            if (!commentText) return;
+
+            window.isPostingReply = true;
+            const originalText = replyBtn.textContent;
+            replyBtn.textContent = 'Sending...';
+            replyBtn.disabled = true;
+
+            const fd = new FormData();
+            fd.append('topic_id', topicId);
+            fd.append('comment_text', commentText);
+
+            try {
+                const res = await fetch('backend.php?action=save_forum_comment', { method: 'POST', body: fd });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    commentInput.value = '';
+                    loadForumTopicDetail(topicId);
+                }
+            } catch(err) {} 
+            finally {
+                replyBtn.textContent = originalText;
+                replyBtn.disabled = false;
+                window.isPostingReply = false; 
+            }
+        }
+    });
+
+    // 🌟 ดักจับการเลือกไฟล์ (โชว์ชื่อไฟล์ให้ User รู้ว่าเลือกแล้ว)
+    document.addEventListener('change', (e) => {
+        const previewContainer = document.getElementById('forum-media-preview');
+        
+        // ถ้ารูปเปลี่ยน
+        if (e.target && e.target.id === 'forum-image-input') {
+            const imgPreview = document.getElementById('forum-img-preview');
+            const imgName = document.getElementById('forum-img-name');
+            if (e.target.files.length > 0) {
+                imgName.textContent = e.target.files[0].name;
+                imgPreview.classList.remove('hidden');
+                previewContainer.classList.remove('hidden');
+                previewContainer.classList.add('flex');
+            } else {
+                imgPreview.classList.add('hidden');
+            }
+        }
+        
+        // ถ้าวิดีโอเปลี่ยน
+        if (e.target && e.target.id === 'forum-video-input') {
+            const vidPreview = document.getElementById('forum-vid-preview');
+            const vidName = document.getElementById('forum-vid-name');
+            if (e.target.files.length > 0) {
+                vidName.textContent = e.target.files[0].name;
+                vidPreview.classList.remove('hidden');
+                previewContainer.classList.remove('hidden');
+                previewContainer.classList.add('flex');
+            } else {
+                vidPreview.classList.add('hidden');
+            }
+        }
+    });
+
+    window.forumClickListenerActive = true; 
+}

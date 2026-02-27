@@ -569,9 +569,31 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             </div>
         </section>
 
-        <section id="section-forum" class="content-section hidden p-8 max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold mb-6 text-gray-800">Forum Q&A</h2>
-            <div class="bg-white border rounded-xl shadow-sm p-16 text-center text-gray-500"><p class="text-xl font-semibold mb-2">ระบบจัดการ Forum Q&A</p><p>อยู่ระหว่างการพัฒนา...</p></div>
+    <section id="section-forum" class="content-section hidden p-8 max-w-6xl mx-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-800">จัดการ Forum Q&A</h2>
+                <button id="btn-delete-forum" disabled class="bg-red-500 text-white px-6 py-2 rounded-lg font-bold shadow-sm opacity-50 cursor-not-allowed hover:bg-red-600 transition flex items-center gap-2">
+                    🗑️ ลบที่เลือก
+                </button>
+            </div>
+            
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+                <table class="w-full text-left border-collapse cursor-pointer">
+                    <thead>
+                        <tr class="bg-orange-100 border-b border-orange-200 text-sm">
+                            <th class="p-4 font-bold text-gray-800 w-24 text-center">เลือก</th>
+                            <th class="p-4 font-bold text-gray-800">หัวข้อคำถาม (Topic Title)</th>
+                            <th class="p-4 font-bold text-gray-800">ผู้ตั้งคำถาม</th>
+                            <th class="p-4 font-bold text-gray-800">วันที่ตั้งกระทู้</th>
+                            <th class="p-4 font-bold text-gray-800 text-center">สถิติ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-forum-table-body">
+                        <tr><td colspan="5" class="p-8 text-center text-gray-500 font-medium">กำลังโหลดข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p id="forum-selection-status" class="text-sm font-medium text-gray-500 mt-4 text-right">ยังไม่ได้เลือกกระทู้</p>
         </section>
 
         <section id="section-store" class="content-section hidden p-8 max-w-6xl mx-auto">

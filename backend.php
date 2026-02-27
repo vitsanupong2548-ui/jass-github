@@ -696,6 +696,185 @@ switch($action) {
         }
         break;
 
+    // ==========================================
+    // 6. ระบบ FORUM Q&A
+    // ==========================================
+  case 'save_forum_topic':
+        if(!isset($_SESSION['user_id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Please login first']);
+            break;
+        }
+
+        $title = $_POST['title'] ?? '';
+        $content = $_POST['content'] ?? '';
+        $user_id = $_SESSION['user_id'];
+        $category_id = 1; 
+
+        if(empty($title) || empty($content)) {
+            echo json_encode(['status' => 'error', 'message' => 'Please fill all fields']);
+            break;
+        }
+
+        $upload_dir = 'uploads/forum/';
+        if (!file_exists($upload_dir)) mkdir($upload_dir, 0777, true);
+
+        // 🌟 1. จัดการอัปโหลดไฟล์รูปภาพ
+        $image_url = null;
+        if (isset($_FILES['topic_image']) && $_FILES['topic_image']['error'] === UPLOAD_ERR_OK) {
+            $ext = pathinfo($_FILES['topic_image']['name'], PATHINFO_EXTENSION);
+            $image_url = $upload_dir . 'topic_img_' . time() . '_' . uniqid() . '.' . $ext;
+            move_uploaded_file($_FILES['topic_image']['tmp_name'], $image_url);
+        }
+
+        // 🌟 2. จัดการอัปโหลดไฟล์วิดีโอ
+        $video_link = null; // เราจะเก็บเป็น "ที่อยู่ไฟล์วิดีโอ" แทนการเก็บเป็นลิงก์ Youtube แล้ว
+        if (isset($_FILES['topic_video']) && $_FILES['topic_video']['error'] === UPLOAD_ERR_OK) {
+            $ext = pathinfo($_FILES['topic_video']['name'], PATHINFO_EXTENSION);
+            $video_link = $upload_dir . 'topic_vid_' . time() . '_' . uniqid() . '.' . $ext;
+            move_uploaded_file($_FILES['topic_video']['tmp_name'], $video_link);
+        }
+
+        try {
+            $stmt = $pdo->prepare("INSERT INTO forum_topics (category_id, user_id, title, content, image_url, video_link) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$category_id, $user_id, $title, $content, $image_url, $video_link]);
+            echo json_encode(['status' => 'success', 'message' => 'Topic posted!']);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+
+    case 'get_forum_topics':
+        try {
+            // ดึงข้อมูลกระทู้ พร้อมกับชื่อผู้โพสต์จากตาราง users
+            $stmt = $pdo->query("
+                SELECT t.id, t.title, t.created_at, u.username 
+                FROM forum_topics t
+                JOIN users u ON t.user_id = u.id
+                ORDER BY t.id DESC
+            ");
+            $topics = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode(['status' => 'success', 'data' => $topics]);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+        case 'get_forum_topic_detail':
+        $topic_id = $_GET['topic_id'] ?? 0;
+        try {
+            // 1. ดึงรายละเอียดกระทู้หลัก
+            $stmt = $pdo->prepare("SELECT t.*, u.username FROM forum_topics t JOIN users u ON t.user_id = u.id WHERE t.id = ?");
+            $stmt->execute([$topic_id]);
+            $topic = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($topic) {
+                // 2. ดึงคอมเมนต์ทั้งหมดของกระทู้นี้
+                $stmt_comments = $pdo->prepare("SELECT c.*, u.username FROM forum_comments c JOIN users u ON c.user_id = u.id WHERE c.topic_id = ? ORDER BY c.created_at ASC");
+                $stmt_comments->execute([$topic_id]);
+                $comments = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
+
+                // 3. เพิ่มยอดวิว +1
+                $pdo->prepare("UPDATE forum_topics SET views = views + 1 WHERE id = ?")->execute([$topic_id]);
+
+                echo json_encode(['status' => 'success', 'data' => ['topic' => $topic, 'comments' => $comments]]);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Topic not found']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+//api ของ  case 'get_forum_topics':
+    case 'save_forum_comment':
+        if(!isset($_SESSION['user_id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Please login to comment']);
+            break;
+        }
+
+        $topic_id = $_POST['topic_id'] ?? 0;
+        $comment_text = $_POST['comment_text'] ?? '';
+        $user_id = $_SESSION['user_id'];
+
+        if(empty($comment_text) || empty($topic_id)) {
+            echo json_encode(['status' => 'error', 'message' => 'Please write a comment']);
+            break;
+        }
+
+        try {
+            $stmt = $pdo->prepare("INSERT INTO forum_comments (topic_id, user_id, comment_text) VALUES (?, ?, ?)");
+            $stmt->execute([$topic_id, $user_id, $comment_text]);
+            echo json_encode(['status' => 'success', 'message' => 'Comment posted!']);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+        // สำหรับแอดมิน: ดึงรายการกระทู้ทั้งหมด พร้อมนับจำนวนคอมเมนต์
+    case 'get_admin_forum_topics':
+        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
+        }
+        try {
+            $stmt = $pdo->query("
+                SELECT t.id, t.title, t.views, t.created_at, u.username,
+                (SELECT COUNT(*) FROM forum_comments c WHERE c.topic_id = t.id) as comment_count
+                FROM forum_topics t
+                JOIN users u ON t.user_id = u.id
+                ORDER BY t.id DESC
+            ");
+            echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+        // สำหรับแอดมิน: ดึงรายการกระทู้ทั้งหมด พร้อมนับจำนวนคอมเมนต์
+    case 'get_admin_forum_topics':
+        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
+        }
+        try {
+            $stmt = $pdo->query("
+                SELECT t.id, t.title, t.views, t.created_at, u.username,
+                (SELECT COUNT(*) FROM forum_comments c WHERE c.topic_id = t.id) as comment_count
+                FROM forum_topics t
+                JOIN users u ON t.user_id = u.id
+                ORDER BY t.id DESC
+            ");
+            echo json_encode(['status' => 'success', 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
+
+   // สำหรับแอดมิน: ลบกระทู้ทีละหลายอัน (Bulk Delete)
+    case 'delete_forum_topic':
+        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
+        }
+        
+        // รับค่าเป็น Array ของ ID
+        $topic_ids = json_decode($_POST['topic_ids'] ?? '[]');
+        
+        if(empty($topic_ids) || !is_array($topic_ids)) {
+            echo json_encode(['status' => 'error', 'message' => 'ไม่มีกระทู้ที่ถูกเลือก']);
+            break;
+        }
+
+        try {
+            // สร้างเครื่องหมาย ? ตามจำนวน ID เช่น (?,?,?)
+            $inQuery = implode(',', array_fill(0, count($topic_ids), '?'));
+            
+            // ลบคอมเมนต์ลูกก่อน
+            $stmt_comments = $pdo->prepare("DELETE FROM forum_comments WHERE topic_id IN ($inQuery)");
+            $stmt_comments->execute($topic_ids);
+            
+            // ลบกระทู้แม่
+            $stmt_topics = $pdo->prepare("DELETE FROM forum_topics WHERE id IN ($inQuery)");
+            $stmt_topics->execute($topic_ids);
+            
+            echo json_encode(['status' => 'success', 'message' => 'ลบกระทู้และคอมเมนต์สำเร็จเรียบร้อย']);
+        } catch (Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
 }
