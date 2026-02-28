@@ -923,6 +923,16 @@ window.applyDataToDOM = async function(container) {
             window.loadForumTopics();
         }
     }
+
+    // --------------------------------------------------
+    // E. 🌟 ส่วนของ Store & Merch
+    // --------------------------------------------------
+    const isStore = container.querySelector('#dynamic-store-grid');
+    if (isStore) {
+        if(typeof window.loadFrontendStoreProducts === 'function') {
+            window.loadFrontendStoreProducts();
+        }
+    }
 };
 
 // ==========================================
@@ -1568,4 +1578,77 @@ if (!window.forumClickListenerActive) {
     });
 
     window.forumClickListenerActive = true; 
+}
+
+// ==========================================
+// 9. ระบบ Store & Merch (ดึงสินค้าหน้าบ้าน)
+// ==========================================
+window.loadFrontendStoreProducts = async function() {
+    const grid = document.getElementById('dynamic-store-grid');
+    if (!grid) return;
+
+    try {
+        grid.innerHTML = '<div class="col-span-full text-center py-20 font-bold text-black/50">กำลังโหลดสินค้า...</div>';
+        
+        // ดึงข้อมูลจาก backend
+        const response = await fetch('backend.php?action=get_store_stock');
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            const products = result.data;
+            grid.innerHTML = ''; // เคลียร์ข้อความโหลด
+
+            // กรองเฉพาะสินค้าที่ยังเปิดขายและมีสต๊อก
+            const availableProducts = products.filter(p => p.sale_status === 'open' && p.stock_balance > 0);
+
+            if (availableProducts.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-20 font-bold text-black/50">ยังไม่มีสินค้าจำหน่ายในขณะนี้</div>';
+                return;
+            }
+
+            // วนลูปสร้างการ์ดสินค้า
+            availableProducts.forEach(p => {
+                // ดึงรูปแรกออกมาจาก JSON
+                let imageUrl = 'https://placehold.co/300x300/efefef/000?text=No+Image';
+                if (p.image_products) {
+                    try {
+                        const images = JSON.parse(p.image_products);
+                        if (images.length > 0) imageUrl = images[0];
+                    } catch (e) {}
+                }
+
+                // แปลงราคาให้เป็นฟอร์แมต 450.-
+                const formattedPrice = parseFloat(p.price).toLocaleString() + '.-';
+
+                // สร้าง HTML ของการ์ด 1 ใบ
+                const card = document.createElement('div');
+                card.className = 'bg-black text-white rounded-2xl overflow-hidden shadow-lg relative flex flex-col group h-[280px]'; 
+                
+                card.innerHTML = `
+                    <div class="relative bg-white h-2/3 flex items-center justify-center overflow-hidden p-4">
+                        <img src="${imageUrl}" alt="${p.name}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                        <button class="absolute top-3 right-3 text-gray-300 hover:text-red-500 transition z-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        </button>
+                    </div>
+                    <div class="p-4 h-1/3 flex flex-col justify-between relative">
+                        <div class="flex justify-between items-start gap-2">
+                            <h3 class="font-bold text-[15px] leading-tight uppercase line-clamp-1 flex-1">${p.name}</h3>
+                            <span class="font-bold text-[15px] whitespace-nowrap text-[#fa87ce]">${formattedPrice}</span>
+                        </div>
+                        <div class="flex justify-between items-end mt-1">
+                            <p class="text-[10px] text-gray-400 line-clamp-1 w-3/4">${p.description || 'Exclusive merchandise'}</p>
+                            <button class="text-white hover:text-[#fa87ce] transition shrink-0 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching store products:', error);
+        grid.innerHTML = '<div class="col-span-full text-center py-20 font-bold text-red-600">เกิดข้อผิดพลาดในการโหลดข้อมูล กรุณาลองใหม่</div>';
+    }
 }

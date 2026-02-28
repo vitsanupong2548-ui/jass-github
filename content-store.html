@@ -1,33 +1,31 @@
-<div class="clone-content overflow-y-auto hide-scrollbar h-full">
-    <div class="flex justify-end space-x-4 mb-8 clone-main-content">
-        <button class="border border-white px-4 py-2 rounded-lg opacity-50 cursor-not-allowed">Your Cart</button>
-        <button class="border border-white px-4 py-2 rounded-lg opacity-50 cursor-not-allowed">Wish List</button>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12">
-        <div class="md:col-span-1">
-          <img src="icon/6.webp" class="w-32 h-32 mb-6 object-contain" alt="Course Icon">
-            <h2 id="dyn-store_main_title" class="text-6xl mb-4">Store<br>&Merch</h2>
-            <p id="dyn-store_main_desc" class="text-lg">Take a piece of the festival home with you. Browse our exclusive collection of apparel, albums, and unique merchandise.</p>
+<div class="clone-content overflow-y-auto hide-scrollbar h-full bg-[#fa87ce] text-black p-8 md:p-12 md:px-20 relative rounded-2xl flex flex-col md:flex-row gap-8">
+    
+    <div class="md:w-1/3 flex flex-col justify-start sticky top-0 h-full">
+        <div class="mb-6">
+            <img src="icon/6.webp" class="w-24 h-24 mb-6 object-contain filter brightness-0" alt="Logo">
+            <h2 class="text-5xl lg:text-6xl font-header font-bold mb-4 leading-tight text-black uppercase">Store<br>& Merch</h2>
+            <p class="text-sm lg:text-base text-black font-medium leading-relaxed">
+                Join the conversation in our online community. This is a space for artists, students, and music lovers to ask questions, share knowledge, and build connections within the Lanna-Jazz ecosystem.
+            </p>
         </div>
-        
-        <div class="md:col-span-3 clone-main-content relative rounded-3xl overflow-hidden min-h-[400px]">
-            
-            <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="bg-white/10 rounded-lg p-2 relative group"><img id="dyn-store_img1" src="https://placehold.co/300x300/e06f64/fff?text=Cup" alt="Cup" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p id="dyn-store_name1">CUP<br><b id="dyn-store_price1">450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
-                <div class="bg-white/10 rounded-lg p-2 relative group"><img id="dyn-store_img2" src="https://placehold.co/300x300/efefef/000?text=Bottle" alt="Bottle" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p id="dyn-store_name2">THERMO BOTTLE<br><b id="dyn-store_price2">450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
-                <div class="bg-white/10 rounded-lg p-2 relative group"><img id="dyn-store_img3" src="https://placehold.co/300x300/00a86b/fff?text=Poster" alt="Poster" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p id="dyn-store_name3">POSTER<br><b id="dyn-store_price3">450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
-                <div class="bg-white/10 rounded-lg p-2 relative group"><img id="dyn-store_img4" src="https://placehold.co/300x300/8c3d9b/fff?text=Yeti" alt="Yeti Cup" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p id="dyn-store_name4">YETI CUP<br><b id="dyn-store_price4">450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
-                <div class="bg-white/10 rounded-lg p-2 relative group"><img id="dyn-store_img5" src="https://placehold.co/300x300/f72585/fff?text=Bag" alt="Tote Bag" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p id="dyn-store_name5">TOTE BAG<br><b id="dyn-store_price5">450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
-                <div class="bg-white/10 rounded-lg p-2 relative group"><img id="dyn-store_img6" src="https://placehold.co/300x300/ffd166/000?text=Gift" alt="Gift Set" class="rounded-md w-full mb-2"><div class="flex justify-between items-center"><p id="dyn-store_name6">GIFT SET<br><b id="dyn-store_price6">450.-</b></p><button class="w-8 h-8 rounded-full bg-white text-pink-500">+</button></div></div>
+    </div>
+
+    <div class="md:w-2/3 flex flex-col h-full">
+        <div class="flex justify-end gap-3 mb-6 relative z-20 pr-12">
+            <button class="bg-black text-white px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-gray-800 transition shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                Your Cart
+            </button>
+            <button class="bg-black text-white px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-gray-800 transition shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                Wish List
+            </button>
+        </div>
+
+        <div id="dynamic-store-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-12 overflow-y-auto pr-2 hide-scrollbar">
+            <div class="col-span-full text-center py-20 font-bold text-black/40 italic">
+                กำลังโหลดสินค้า...
             </div>
-
-            <div class="absolute inset-0 bg-black/70 backdrop-blur-sm z-10 pointer-events-none"></div>
-
-            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-full text-center px-4">
-                <h3 id="dyn-store_overlay_title" class="text-5xl sm:text-6xl md:text-7xl font-header font-bold text-white uppercase tracking-widest drop-shadow-2xl leading-tight">Coming<br>Soon</h3>
-                <p id="dyn-store_overlay_desc" class="text-white/80 mt-4 text-xl font-body tracking-wider">Our exclusive merchandise is on its way.</p>
-            </div>
-
         </div>
     </div>
 </div>
