@@ -484,13 +484,24 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                                 <input type="text" id="course-creator-th" class="w-full border border-gray-400 rounded-full px-5 py-2.5 outline-none focus:border-[#10a349] placeholder-gray-400 font-semibold text-sm lang-th hidden" placeholder="ผู้จัดทำ/ผู้สอน (TH)">
                             </div>
 
-                         <div class="flex gap-3 mb-4 flex-wrap">
-                            <button type="button" onclick="addCourseContent('text')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Text</button>
-                            <button type="button" onclick="addCourseContent('image')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Image</button>
-                            <button type="button" onclick="addCourseContent('video')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition">Add Video</button>
-                            <button type="button" onclick="addCourseContent('embed')" class="border border-[#10a349] text-[#10a349] rounded-full px-5 py-1.5 text-xs font-bold hover:bg-[#10a349] hover:text-white transition">Add Embed</button>
-                            <button type="button" onclick="addCourseContent('iframe')" class="border border-blue-500 text-blue-500 rounded-full px-5 py-1.5 text-xs font-bold hover:bg-blue-500 hover:text-white transition">Add iFrame</button>
-                         </div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 relative items-start mb-4">
+    
+    <div class="md:col-span-9 lg:col-span-10 bg-gray-50 border-2 border-dashed border-gray-300 p-4 rounded-2xl min-h-[300px]">
+        <h5 class="text-sm font-bold text-gray-400 mb-3 ml-1">👇 กล่องเนื้อหา (ลากสลับตำแหน่งได้)</h5>
+        <div id="course-content-container" class="space-y-4"></div>
+    </div>
+
+    <div class="md:col-span-3 lg:col-span-2 sticky top-24 flex flex-col gap-2 bg-white border border-gray-200 p-3 rounded-2xl shadow-sm">
+        <p class="text-xs font-bold text-gray-500 mb-1 text-center">เพิ่มเนื้อหา</p>
+        <button type="button" onclick="addCourseContent('text')" class="w-full border border-black text-black rounded-xl px-4 py-2.5 text-sm font-bold hover:bg-black hover:text-white transition shadow-sm text-left flex items-center gap-2"> Add Text</button>
+        <button type="button" onclick="addCourseContent('image')" class="w-full border border-black text-black rounded-xl px-4 py-2.5 text-sm font-bold hover:bg-black hover:text-white transition shadow-sm text-left flex items-center gap-2"> Add Image</button>
+        <button type="button" onclick="addCourseContent('video')" class="w-full border border-black text-black rounded-xl px-4 py-2.5 text-sm font-bold hover:bg-black hover:text-white transition shadow-sm text-left flex items-center gap-2"> Add Video</button>
+        <hr class="my-1 border-gray-200">
+        <button type="button" onclick="addCourseContent('embed')" class="w-full border border-[#10a349] text-[#10a349] rounded-xl px-4 py-2.5 text-sm font-bold hover:bg-[#10a349] hover:text-white transition shadow-sm text-left flex items-center gap-2"> Add Embed</button>
+        <button type="button" onclick="addCourseContent('iframe')" class="w-full border border-blue-500 text-blue-500 rounded-xl px-4 py-2.5 text-sm font-bold hover:bg-blue-500 hover:text-white transition shadow-sm text-left flex items-center gap-2"> Add iFrame</button>
+    </div>
+
+</div>
                             
                             <div id="course-content-container" class="space-y-4"></div>
 
@@ -622,18 +633,28 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <div class="flex flex-col sm:flex-row items-center justify-between mb-4 border-b pb-4 gap-4">
-                        <h3 class="text-xl font-bold">รายละเอียด (Page Builder)</h3>
-                        <div class="flex gap-3">
-                            <button type="button" onclick="addCmbContent('text')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition shadow-sm">Add Text</button>
-                            <button type="button" onclick="addCmbContent('image')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition shadow-sm">Add Image</button>
-                            <button type="button" onclick="addCmbContent('video')" class="border border-black text-black rounded-full px-5 py-1.5 text-xs font-bold hover:bg-black hover:text-white transition shadow-sm">Add Video</button>
-                        </div>
-                    </div>
-                    
-                    <div id="cmb-content-container" class="flex flex-wrap -mx-2 items-stretch"></div>
-                </div>
+ <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+    <div class="flex items-center justify-between mb-4 border-b pb-4">
+        <h3 class="text-xl font-bold">รายละเอียด (Page Builder)</h3>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 relative items-start mb-4">
+        <div class="md:col-span-9 lg:col-span-10 bg-gray-50 border-2 border-dashed border-gray-300 p-4 rounded-2xl min-h-[300px]">
+            <h5 class="text-sm font-bold text-gray-400 mb-3 ml-1">👇 กล่องเนื้อหา (ลากสลับตำแหน่งได้)</h5>
+            <div id="cmb-content-container" class="space-y-4"></div>
+        </div>
+
+        <div class="md:col-span-3 lg:col-span-2 sticky top-24 flex flex-col gap-2 bg-white border border-gray-200 p-3 rounded-2xl shadow-sm z-20">
+            <p class="text-xs font-bold text-gray-500 mb-1 text-center">เพิ่มเนื้อหา</p>
+            <button type="button" onclick="addCmbContent('text')" class="w-full border border-black text-black rounded-xl px-4 py-2.5 text-sm font-bold hover:bg-black hover:text-white transition shadow-sm text-left flex items-center gap-2"> Add Text</button>
+            <button type="button" onclick="addCmbContent('image')" class="w-full border border-black text-black rounded-xl px-4 py-2.5 text-sm font-bold hover:bg-black hover:text-white transition shadow-sm text-left flex items-center gap-2"> Add Image</button>
+            <button type="button" onclick="addCmbContent('video')" class="w-full border border-black text-black rounded-xl px-4 py-2.5 text-sm font-bold hover:bg-black hover:text-white transition shadow-sm text-left flex items-center gap-2"> Add Video</button>
+            <hr class="my-1 border-gray-200">
+            <button type="button" onclick="addCmbContent('embed')" class="w-full border border-[#10a349] text-[#10a349] rounded-xl px-4 py-2.5 text-sm font-bold hover:bg-[#10a349] hover:text-white transition shadow-sm text-left flex items-center gap-2"> Add Embed</button>
+            <button type="button" onclick="addCmbContent('iframe')" class="w-full border border-blue-500 text-blue-500 rounded-xl px-4 py-2.5 text-sm font-bold hover:bg-blue-500 hover:text-white transition shadow-sm text-left flex items-center gap-2"> Add iFrame</button>
+        </div>
+    </div>
+</div>
 
                 <div class="pb-10 text-center mt-8">
                     <button type="button" class="bg-green-500 text-white px-12 py-4 rounded-full font-bold text-xl shadow-xl hover:bg-green-600 transition transform hover:-translate-y-1" onclick="saveCMBigband()">บันทึกข้อมูล CMBigband (Save)</button>
@@ -744,8 +765,18 @@ window.changeLayout = (selectEl) => {
             </div>`;
 
         let innerContent = '';
-        if (type === 'text') {
-            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-en" placeholder="Details (EN)...">${valEn}</textarea><textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-text-input-th text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-th hidden" placeholder="รายละเอียด (TH)...">${valTh}</textarea>`;
+       if (['text', 'h2', 'h3', 'h4'].includes(type)) {
+            innerContent = `
+                <div class="flex justify-start gap-3 items-center mb-2 px-1 border-b border-gray-100 pb-2 pr-10">
+                    <span class="text-xs font-bold text-gray-500">รูปแบบข้อความ:</span>
+                    <select class="border border-gray-300 rounded px-2 py-1 text-xs font-bold text-blue-600 outline-none hover:border-blue-500 transition cursor-pointer" onchange="this.closest('.course-item, .cmb-item').setAttribute('data-type', this.value)">
+                        <option value="text" ${type==='text'?'selected':''}>¶ ย่อหน้าปกติ (Paragraph)</option>
+                        <option value="h2" ${type==='h2'?'selected':''}>H2 - หัวข้อหลัก</option>
+                        <option value="h3" ${type==='h3'?'selected':''}>H3 - หัวข้อรอง</option>
+                        <option value="h4" ${type==='h4'?'selected':''}>H4 - หัวข้อย่อย</option>
+                    </select>
+                </div>
+                <textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] ${container.id.includes('course') ? 'course' : 'cmb'}-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-en" placeholder="Details (EN)...">${valEn}</textarea><textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] ${container.id.includes('course') ? 'course' : 'cmb'}-text-input-th text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-th hidden" placeholder="รายละเอียด (TH)...">${valTh}</textarea>`;
         } else if (type === 'image') {
             courseImgCounter++; 
             const previewId = `course-img-preview-${courseImgCounter}`; const inputId = `course-img-input-${courseImgCounter}`; const imgDisplay = valEn ? valEn : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
@@ -765,24 +796,49 @@ window.changeLayout = (selectEl) => {
         
         if (window.currentAdminLang === 'th') { itemDiv.querySelectorAll('.lang-en').forEach(el => el.classList.add('hidden')); itemDiv.querySelectorAll('.lang-th').forEach(el => el.classList.remove('hidden')); }
     };
-    window.addCmbContent = (type, valEn = '', valTh = '', layout = 'col-1') => {
+ window.addCmbContent = (type, valEn = '', valTh = '', layout = 'col-1') => {
         const container = document.getElementById('cmb-content-container');
+        if(container.classList.contains('space-y-4')) {
+            container.classList.remove('space-y-4'); container.className = 'flex flex-wrap -mx-2 items-stretch';
+        } else if(!container.classList.contains('flex')) { container.className = 'flex flex-wrap -mx-2 items-stretch'; }
+
         const itemDiv = document.createElement('div');
         let widthClass = 'w-full';
         if(layout === 'col-2') widthClass = 'w-1/2'; else if(layout === 'col-3') widthClass = 'w-1/3'; else if(layout === 'col-4') widthClass = 'w-1/4';
         itemDiv.className = `cmb-item px-2 mb-4 transition-all duration-300 ${widthClass}`;
         itemDiv.setAttribute('data-type', type);
         
-        const controls = `<div class="absolute -top-3 -right-1 flex flex-col gap-1 z-50 items-center"><button type="button" onclick="this.closest('.cmb-item').remove()" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition text-sm">✕</button><div class="relative"><select class="cmb-layout-select w-8 h-8 rounded-full bg-blue-600 text-white text-center font-bold shadow hover:bg-blue-700 cursor-pointer appearance-none outline-none text-sm text-center" style="text-align-last:center;" onchange="changeLayout(this)"><option value="col-1" ${layout === 'col-1'?'selected':''}>1</option><option value="col-2" ${layout === 'col-2'?'selected':''}>2</option><option value="col-3" ${layout === 'col-3'?'selected':''}>3</option><option value="col-4" ${layout === 'col-4'?'selected':''}>4</option></select></div></div>`;
+        const controls = `
+            <div class="absolute -top-3 -right-1 flex flex-col gap-1 z-50 items-center">
+                <button type="button" onclick="this.closest('.cmb-item').remove()" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition text-sm" title="ลบ">✕</button>
+                <div class="relative"><select class="cmb-layout-select w-8 h-8 rounded-full bg-blue-600 text-white text-center font-bold shadow hover:bg-blue-700 cursor-pointer appearance-none outline-none text-sm text-center" style="text-align-last:center;" onchange="changeLayout(this)" title="ขนาดคอลัมน์"><option value="col-1" ${layout === 'col-1'?'selected':''}>1</option><option value="col-2" ${layout === 'col-2'?'selected':''}>2</option><option value="col-3" ${layout === 'col-3'?'selected':''}>3</option><option value="col-4" ${layout === 'col-4'?'selected':''}>4</option></select></div>
+                <div class="block-drag-handle cursor-grab active:cursor-grabbing w-8 h-8 rounded-full bg-gray-700 text-white flex items-center justify-center shadow hover:bg-gray-900 transition text-sm" title="กดค้างเพื่อลากจัดเรียง">✋</div>
+            </div>`;
 
         let innerContent = '';
-        if (type === 'text') {
-            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-en" placeholder="Details (EN)...">${valEn}</textarea><textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-text-input-th text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-th hidden" placeholder="รายละเอียด (TH)...">${valTh}</textarea>`;
+     if (['text', 'h2', 'h3', 'h4'].includes(type)) {
+            innerContent = `
+                <div class="flex justify-start gap-3 items-center mb-2 px-1 border-b border-gray-100 pb-2 pr-10">
+                    <span class="text-xs font-bold text-gray-500">รูปแบบข้อความ:</span>
+                    <select class="border border-gray-300 rounded px-2 py-1 text-xs font-bold text-blue-600 outline-none hover:border-blue-500 transition cursor-pointer" onchange="this.closest('.course-item, .cmb-item').setAttribute('data-type', this.value)">
+                        <option value="text" ${type==='text'?'selected':''}>¶ ย่อหน้าปกติ (Paragraph)</option>
+                        <option value="h2" ${type==='h2'?'selected':''}>H2 - หัวข้อหลัก</option>
+                        <option value="h3" ${type==='h3'?'selected':''}>H3 - หัวข้อรอง</option>
+                        <option value="h4" ${type==='h4'?'selected':''}>H4 - หัวข้อย่อย</option>
+                    </select>
+                </div>
+                <textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] ${container.id.includes('course') ? 'course' : 'cmb'}-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-en" placeholder="Details (EN)...">${valEn}</textarea><textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] ${container.id.includes('course') ? 'course' : 'cmb'}-text-input-th text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-th hidden" placeholder="รายละเอียด (TH)...">${valTh}</textarea>`;
         } else if (type === 'image') {
             window.cmbImgCounter++; 
             const previewId = `cmb-img-preview-${window.cmbImgCounter}`; const inputId = `cmb-img-input-${window.cmbImgCounter}`; const imgDisplay = valEn ? valEn : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
             innerContent = `<div class="relative rounded-xl overflow-hidden bg-gray-200 h-full min-h-[150px] group flex items-center justify-center"><img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-cover relative z-0"><label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0"><span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 อัปโหลดรูป</span><input type="file" id="${inputId}" class="hidden cmb-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)"><input type="hidden" class="cmb-img-old" value="${valEn}"></label></div>`;
-        } else if (type === 'video') { innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl cmb-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${valEn}">`; }
+        } else if (type === 'video') { 
+            innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl cmb-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${valEn}">`; 
+        } else if (type === 'embed') { 
+            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-embed-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50" placeholder="วางโค้ด Embed (เช่น Facebook, TikTok)">${valEn}</textarea>`;
+        } else if (type === 'iframe') { 
+            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-iframe-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50" placeholder="วางโค้ด <iframe ...> (เช่น แผนที่)">${valEn}</textarea>`;
+        }
 
         itemDiv.innerHTML = `<div class="border-2 border-gray-200 p-2 rounded-2xl bg-white shadow-sm relative h-full flex flex-col hover:border-blue-400 transition-colors">${controls}${innerContent}</div>`;
         container.appendChild(itemDiv);

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 28, 2026 at 08:40 PM
+-- Generation Time: Feb 27, 2026 at 10:22 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -77,7 +77,7 @@ CREATE TABLE `courses` (
 --
 
 INSERT INTO `courses` (`id`, `slot_number`, `title`, `title_th`, `creator`, `creator_th`, `details`, `details_th`, `banner_image`) VALUES
-(1, 4, 'fdgfdg', '', 'dfgdfg', '', '[{\"type\":\"text\",\"value\":\"dfghgfjgl;\",\"layout\":\"col-1\"},{\"type\":\"text\",\"value\":\"hjkhjkjhkhj\",\"layout\":\"col-2\"},{\"type\":\"image\",\"value\":\"uploads\\/courses\\/content_1771958454_699df0b66d33a.jpg\",\"layout\":\"col-2\"},{\"type\":\"embed\",\"value\":\"<iframe src=\\\"https:\\/\\/www.facebook.com\\/plugins\\/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1268408078590123%2F&show_text=false&width=267&t=0\\\" width=\\\"267\\\" height=\\\"476\\\" style=\\\"border:none;overflow:hidden\\\" scrolling=\\\"no\\\" frameborder=\\\"0\\\" allowfullscreen=\\\"true\\\" allow=\\\"autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share\\\" allowFullScreen=\\\"true\\\"><\\/iframe>\",\"layout\":\"col-1\"}]', '[{\"type\":\"text\",\"value\":\"\",\"layout\":\"col-1\"},{\"type\":\"text\",\"value\":\"\",\"layout\":\"col-2\"},{\"type\":\"image\",\"value\":\"uploads\\/courses\\/content_1771958454_699df0b66d33a.jpg\",\"layout\":\"col-2\"},{\"type\":\"embed\",\"value\":\"<iframe src=\\\"https:\\/\\/www.facebook.com\\/plugins\\/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1268408078590123%2F&show_text=false&width=267&t=0\\\" width=\\\"267\\\" height=\\\"476\\\" style=\\\"border:none;overflow:hidden\\\" scrolling=\\\"no\\\" frameborder=\\\"0\\\" allowfullscreen=\\\"true\\\" allow=\\\"autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share\\\" allowFullScreen=\\\"true\\\"><\\/iframe>\",\"layout\":\"col-1\"}]', 'uploads/courses/banner_1771958454_699df0b66c8cc.jpg'),
+(1, 4, 'fdgfdg', NULL, 'dfgdfg', NULL, '[{\"type\":\"text\",\"value\":\"dfghgfjgl;\",\"layout\":\"col-1\"},{\"type\":\"text\",\"value\":\"hjkhjkjhkhj\",\"layout\":\"col-2\"},{\"type\":\"image\",\"value\":\"uploads\\/courses\\/content_1771958454_699df0b66d33a.jpg\",\"layout\":\"col-2\"},{\"type\":\"video\",\"value\":\"https:\\/\\/www.youtube.com\\/watch?v=h1tbhH8RBBU&list=RDh1tbhH8RBBU&start_radio=1\",\"layout\":\"col-1\"}]', NULL, 'uploads/courses/banner_1771958454_699df0b66c8cc.jpg'),
 (2, 2, 'EN', 'ภาษาไทยได้แล้ววันนี้', 'ฟหกด', '', '[{\"type\":\"text\",\"value\":\"ฟหกดหก\",\"layout\":\"col-1\"},{\"type\":\"image\",\"value\":\"uploads\\/courses\\/course_content_1772008106_699eb2aae680b.jpg\",\"layout\":\"col-1\"}]', '[{\"type\":\"text\",\"value\":\"\",\"layout\":\"col-1\"},{\"type\":\"image\",\"value\":\"uploads\\/courses\\/course_content_1772008106_699eb2aae680b.jpg\",\"layout\":\"col-1\"}]', 'uploads/courses/course_banner_1771961875_699dfe139097c.jpg'),
 (3, 3, 'asdf', NULL, 'adsf', NULL, '[{\"type\":\"text\",\"value\":\"asdf\"}]', NULL, 'uploads/courses/course_banner_1771961912_699dfe38e15a4.jpg'),
 (4, 5, 'ฟกหดฟหกด', NULL, 'ฟหกดฟหกด', NULL, '[{\"type\":\"text\",\"value\":\"ฟหกดฟหกด\"}]', NULL, 'uploads/courses/course_banner_1772004380_699ea41c56a30.jpg'),
@@ -347,84 +347,6 @@ INSERT INTO `musicians` (`id`, `slot_number`, `network_type`, `title`, `title_th
 -- --------------------------------------------------------
 
 --
--- Table structure for table `orders`
---
-
-CREATE TABLE `orders` (
-  `order_id` int(11) NOT NULL,
-  `order_code` varchar(50) NOT NULL COMMENT 'รหัสออเดอร์ เช่น #25364',
-  `customer_name` varchar(150) NOT NULL COMMENT 'ชื่อลูกค้า',
-  `address` text NOT NULL COMMENT 'ที่อยู่จัดส่ง',
-  `phone` varchar(20) NOT NULL COMMENT 'เบอร์โทรศัพท์',
-  `email` varchar(100) DEFAULT NULL COMMENT 'อีเมลลูกค้า',
-  `payment_status` enum('pending','success','failed') NOT NULL DEFAULT 'pending' COMMENT 'สถานะการชำระเงิน',
-  `order_status` enum('pending','success','canceled') NOT NULL DEFAULT 'pending' COMMENT 'สถานะคำสั่งซื้อ',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'เวลาที่สั่งซื้อ'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `orders`
---
-
-INSERT INTO `orders` (`order_id`, `order_code`, `customer_name`, `address`, `phone`, `email`, `payment_status`, `order_status`, `created_at`) VALUES
-(1, '#25364', 'Suwaree Kalo', 'Chiangmai', '+66235458', 'hu@lol.com', 'pending', 'pending', '2026-02-28 17:21:14'),
-(2, '#25365', 'John Doe', 'Bangkok', '+66899999', 'john@lol.com', 'success', 'success', '2026-02-28 17:21:14'),
-(3, '#25366', 'Jane Smith', 'Phuket', '+66877777', 'jane@lol.com', 'failed', 'canceled', '2026-02-28 17:21:14');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `order_items`
---
-
-CREATE TABLE `order_items` (
-  `item_id` int(11) NOT NULL,
-  `order_id` int(11) NOT NULL COMMENT 'อ้างอิงรหัสคำสั่งซื้อ',
-  `product_id` int(11) NOT NULL COMMENT 'อ้างอิงรหัสสินค้า',
-  `quantity` int(11) NOT NULL DEFAULT 1 COMMENT 'จำนวนชิ้นที่สั่ง (Amount)',
-  `price_per_unit` decimal(10,2) NOT NULL COMMENT 'ราคาต่อชิ้น ณ ตอนที่สั่งซื้อ'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `order_items`
---
-
-INSERT INTO `order_items` (`item_id`, `order_id`, `product_id`, `quantity`, `price_per_unit`) VALUES
-(1, 1, 1, 5, 350.00),
-(2, 2, 2, 1, 150.00),
-(3, 3, 1, 2, 350.00);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `products`
---
-
-CREATE TABLE `products` (
-  `product_id` int(11) NOT NULL,
-  `product_code` varchar(50) NOT NULL COMMENT 'รหัสสินค้า เช่น HKL001',
-  `name` varchar(255) NOT NULL COMMENT 'ชื่อสินค้า',
-  `price` decimal(10,2) NOT NULL COMMENT 'ราคาสินค้า',
-  `stock_balance` int(11) NOT NULL DEFAULT 0 COMMENT 'จำนวนสินค้าคงเหลือ (Stock)',
-  `description` text DEFAULT NULL COMMENT 'รายละเอียดสินค้า',
-  `image_products` text DEFAULT NULL COMMENT 'พาร์ท/URL ของรูปภาพสินค้าทั้งหมด (เก็บเป็น JSON String)',
-  `image_banner` varchar(255) DEFAULT NULL COMMENT 'พาร์ท/URL ของรูป Banner',
-  `sale_status` enum('open','close') NOT NULL DEFAULT 'open' COMMENT 'สถานะการขาย (เปิด/ปิด)',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'วันที่เพิ่มสินค้า',
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'วันที่แก้ไขล่าสุด'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `products`
---
-
-INSERT INTO `products` (`product_id`, `product_code`, `name`, `price`, `stock_balance`, `description`, `image_products`, `image_banner`, `sale_status`, `created_at`, `updated_at`) VALUES
-(1, 'HKL001', 'เสื้อยืด CMBigband', 350.00, 50, 'เสื้อยืด Cotton 100% สกรีนลาย CMBigband', '[]', NULL, 'open', '2026-02-28 17:21:14', '2026-02-28 17:21:14'),
-(2, 'HKL002', 'แก้วมัค CMBigband', 150.00, 20, 'แก้วเซรามิกเก็บความร้อน', '[]', NULL, 'open', '2026-02-28 17:21:14', '2026-02-28 17:21:14');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `users`
 --
 
@@ -516,28 +438,6 @@ ALTER TABLE `musicians`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `orders`
---
-ALTER TABLE `orders`
-  ADD PRIMARY KEY (`order_id`),
-  ADD UNIQUE KEY `order_code` (`order_code`);
-
---
--- Indexes for table `order_items`
---
-ALTER TABLE `order_items`
-  ADD PRIMARY KEY (`item_id`),
-  ADD KEY `order_id` (`order_id`),
-  ADD KEY `product_id` (`product_id`);
-
---
--- Indexes for table `products`
---
-ALTER TABLE `products`
-  ADD PRIMARY KEY (`product_id`),
-  ADD UNIQUE KEY `product_code` (`product_code`);
-
---
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -608,24 +508,6 @@ ALTER TABLE `musicians`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `orders`
---
-ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `order_items`
---
-ALTER TABLE `order_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `products`
---
-ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
@@ -646,13 +528,6 @@ ALTER TABLE `event_lineups`
 --
 ALTER TABLE `event_tickets`
   ADD CONSTRAINT `event_tickets_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `order_items`
---
-ALTER TABLE `order_items`
-  ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -631,7 +631,7 @@ window.saveCourse = async () => {
         document.querySelectorAll('.course-item').forEach((item, index) => {
             const type = item.getAttribute('data-type'); fd.append('content_types[]', type);
             fd.append('content_layouts[]', item.querySelector('.course-layout-select').value);
-            if (type === 'text') { fd.append('content_values[]', item.querySelector('.course-text-input').value); fd.append('content_values_th[]', item.querySelector('.course-text-input-th').value); } 
+           if (['text', 'h2', 'h3', 'h4'].includes(type)) { fd.append('content_values[]', item.querySelector('.course-text-input').value); fd.append('content_values_th[]', item.querySelector('.course-text-input-th').value); }
             else if (type === 'video') { fd.append('content_values[]', item.querySelector('.course-video-input').value); fd.append('content_values_th[]', item.querySelector('.course-video-input').value); } 
             else if (type === 'embed') { fd.append('content_values[]', item.querySelector('.course-embed-input').value); fd.append('content_values_th[]', item.querySelector('.course-embed-input').value); }
             else if (type === 'iframe') { fd.append('content_values[]', item.querySelector('.course-iframe-input').value); fd.append('content_values_th[]', item.querySelector('.course-iframe-input').value); }
@@ -870,7 +870,7 @@ window.saveCMBigband = async () => {
         document.querySelectorAll('.cmb-item').forEach((item, index) => {
             const type = item.getAttribute('data-type'); fd.append('content_types[]', type);
             fd.append('content_layouts[]', item.querySelector('.cmb-layout-select').value);
-            if (type === 'text') { fd.append('content_values[]', item.querySelector('.cmb-text-input').value); fd.append('content_values_th[]', item.querySelector('.cmb-text-input-th').value); } 
+           if (['text', 'h2', 'h3', 'h4'].includes(type)) { fd.append('content_values[]', item.querySelector('.cmb-text-input').value); fd.append('content_values_th[]', item.querySelector('.cmb-text-input-th').value); }
             else if (type === 'video') { fd.append('content_values[]', item.querySelector('.cmb-video-input').value); fd.append('content_values_th[]', item.querySelector('.cmb-video-input').value); } 
             else if (type === 'image') {
                 const fInput = item.querySelector('.cmb-img-input'); const oldInput = item.querySelector('.cmb-img-old');

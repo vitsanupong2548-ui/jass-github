@@ -514,15 +514,63 @@ window.applyDataToDOM = async function(container) {
 
                                         detailsHtml += `<div class="${widthClass} px-2 mb-6 flex flex-col justify-start">`;
 
-                                        if (item.type === 'text') {
-                                            detailsHtml += `<div class="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-[#050505] font-medium leading-relaxed w-full break-words">${item.value.replace(/\n/g, '<br>')}</div>`;
-                                        } else if (item.type === 'image') {
+                                       if (item.type === 'text') {
+                                            detailsHtml += `<div class="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-[#050505] font-medium leading-relaxed w-full break-words">${item.value ? item.value.replace(/\n/g, '<br>') : ''}</div>`;
+                                        } else if (item.type === 'h2') {
+                                            detailsHtml += `<h2 class="text-3xl sm:text-4xl font-header font-bold text-[#050505] mt-6 mb-4 w-full break-words leading-tight">${item.value}</h2>`;
+                                        } else if (item.type === 'h3') {
+                                            detailsHtml += `<h3 class="text-2xl sm:text-3xl font-header font-bold text-[#050505] mt-5 mb-3 w-full break-words leading-snug">${item.value}</h3>`;
+                                        } else if (item.type === 'h4') {
+                                            detailsHtml += `<h4 class="text-xl sm:text-2xl font-bold text-[#050505] mt-4 mb-2 w-full break-words leading-snug">${item.value}</h4>`;
+                                        }else if (item.type === 'image') {
                                             detailsHtml += `<img src="${item.value}" class="w-full h-auto object-cover rounded-2xl shadow-sm border border-gray-200">`;
-                                        } else if (item.type === 'video') {
+                                    } else if (item.type === 'video') {
                                             let vidSrc = item.value;
-                                            if(vidSrc.includes('youtube.com/watch?v=')) vidSrc = vidSrc.replace('watch?v=', 'embed/');
-                                            else if(vidSrc.includes('youtu.be/')) vidSrc = vidSrc.replace('youtu.be/', 'youtube.com/embed/');
-                                            detailsHtml += `<iframe src="${vidSrc}" class="w-full aspect-video rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe>`;
+                                            let isVertical = false;
+                                            
+                                            // เช็คว่าเป็น YouTube Shorts หรือไม่
+                                            if(vidSrc.includes('youtube.com/shorts/')) {
+                                                vidSrc = vidSrc.replace('youtube.com/shorts/', 'youtube.com/embed/');
+                                                isVertical = true;
+                                            } else if(vidSrc.includes('youtube.com/watch?v=')) {
+                                                vidSrc = vidSrc.replace('watch?v=', 'embed/');
+                                            } else if(vidSrc.includes('youtu.be/')) {
+                                                vidSrc = vidSrc.replace('youtu.be/', 'youtube.com/embed/');
+                                            }
+                                            
+                                            // ถ้าเป็นแนวตั้ง (Shorts)
+                                            if (isVertical) {
+                                                // ปรับให้เป็น iframe แบบไม่ล็อก aspect ratio, จำกัดความกว้าง 400px และความสูง 700px (ขนาดมาตรฐานมือถือ)
+                                                detailsHtml += `<div class="w-full flex justify-center py-4"><iframe src="${vidSrc}" class="w-full max-w-[400px] h-[700px] rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe></div>`;
+                                            } else {
+                                                // ถ้าเป็นแนวนอนปกติ
+                                                detailsHtml += `<iframe src="${vidSrc}" class="w-full aspect-video rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe>`;
+                                            }
+                                        } else if (item.type === 'embed') {
+                                            // Embed ของโซเชียลอื่นๆ
+                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${item.value}</div>`;
+                                        } else if (item.type === 'iframe') {
+                                            // iFrame 
+                                            let rawCode = item.value;
+                                            if(rawCode.includes('<iframe')) {
+                                                rawCode = rawCode.replace(/width="[^"]*"/, 'width="100%"');
+                                                // ให้ความสูงปรับตามอัตโนมัติ (min-height) แทน
+                                                if (!rawCode.includes('height=')) rawCode = rawCode.replace('<iframe', '<iframe style="min-height: 500px;"');
+                                            }
+                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${rawCode}</div>`;
+                                        
+                                        } else if (item.type === 'embed') {
+                                            // Embed ของโซเชียลอื่นๆ
+                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${item.value}</div>`;
+                                        } else if (item.type === 'iframe') {
+                                            // iFrame 
+                                            let rawCode = item.value;
+                                            if(rawCode.includes('<iframe')) {
+                                                rawCode = rawCode.replace(/width="[^"]*"/, 'width="100%"');
+                                                // ให้ความสูงปรับตามอัตโนมัติ (min-height) แทน
+                                                if (!rawCode.includes('height=')) rawCode = rawCode.replace('<iframe', '<iframe style="min-height: 500px;"');
+                                            }
+                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${rawCode}</div>`;
                                         }
                                         else if (item.type === 'embed' || item.type === 'iframe') {
                                             let rawCode = item.value;
@@ -760,17 +808,43 @@ window.applyDataToDOM = async function(container) {
                                         else if (item.layout === 'col-4') widthClass = 'w-1/4';
 
                                         detailsHtml += `<div class="${widthClass} px-2 mb-6 flex flex-col justify-start">`;
-                                        if (item.type === 'text') {
+                                      if (item.type === 'text') {
                                             detailsHtml += `<div class="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-[#050505] font-medium leading-relaxed w-full break-words">${item.value ? item.value.replace(/\n/g, '<br>') : ''}</div>`;
+                                        } else if (item.type === 'h2') {
+                                            detailsHtml += `<h2 class="text-3xl sm:text-4xl font-header font-bold text-[#050505] mt-6 mb-4 w-full break-words leading-tight">${item.value}</h2>`;
+                                        } else if (item.type === 'h3') {
+                                            detailsHtml += `<h3 class="text-2xl sm:text-3xl font-header font-bold text-[#050505] mt-5 mb-3 w-full break-words leading-snug">${item.value}</h3>`;
+                                        } else if (item.type === 'h4') {
+                                            detailsHtml += `<h4 class="text-xl sm:text-2xl font-bold text-[#050505] mt-4 mb-2 w-full break-words leading-snug">${item.value}</h4>`;
                                         } else if (item.type === 'image') {
                                             detailsHtml += `<img src="${item.value}" class="w-full h-auto object-cover rounded-2xl shadow-sm border border-gray-200">`;
-                                        } else if (item.type === 'video') {
+                                       } else if (item.type === 'video') {
                                             let vidSrc = item.value;
-                                            if(vidSrc.includes('youtube.com/watch?v=')) vidSrc = vidSrc.replace('watch?v=', 'embed/');
-                                            else if(vidSrc.includes('youtu.be/')) vidSrc = vidSrc.replace('youtu.be/', 'youtube.com/embed/');
-                                            detailsHtml += `<iframe src="${vidSrc}" class="w-full aspect-video rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe>`;
+                                            let isVertical = false;
+                                            if(vidSrc.includes('youtube.com/shorts/')) {
+                                                vidSrc = vidSrc.replace('youtube.com/shorts/', 'youtube.com/embed/');
+                                                isVertical = true;
+                                            } else if(vidSrc.includes('youtube.com/watch?v=')) {
+                                                vidSrc = vidSrc.replace('watch?v=', 'embed/');
+                                            } else if(vidSrc.includes('youtu.be/')) {
+                                                vidSrc = vidSrc.replace('youtu.be/', 'youtube.com/embed/');
+                                            }
+                                            
+                                            if (isVertical) {
+                                                detailsHtml += `<div class="w-full flex justify-center"><iframe src="${vidSrc}" class="w-full max-w-[350px] aspect-[9/16] rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe></div>`;
+                                            } else {
+                                                detailsHtml += `<iframe src="${vidSrc}" class="w-full aspect-video rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe>`;
+                                            }
+                                        } else if (item.type === 'embed') {
+                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${item.value}</div>`;
+                                        } else if (item.type === 'iframe') {
+                                            let rawCode = item.value;
+                                            if(rawCode.includes('<iframe')) {
+                                                rawCode = rawCode.replace(/width="[^"]*"/, 'width="100%"');
+                                                if (!rawCode.includes('height=')) rawCode = rawCode.replace('<iframe', '<iframe height="450"');
+                                            }
+                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${rawCode}</div>`;
                                         }
-                                        detailsHtml += `</div>`; 
                                     });
                                 } else {
                                      detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">ยังไม่มีรายละเอียด (คุณสามารถเพิ่มได้ที่หน้า Admin -> Page Builder)</div>`;
