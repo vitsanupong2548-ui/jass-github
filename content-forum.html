@@ -1,0 +1,71 @@
+<div class="clone-content h-full overflow-y-auto hide-scrollbar bg-[#EF5F4D] relative content-visible">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 relative max-w-6xl mx-auto pb-24 pt-8 md:pt-12 px-6 lg:px-0">
+        
+        <div class="lg:col-span-4 flex flex-col justify-start lg:sticky lg:top-12 h-fit text-white">
+            <img src="icon/5.webp" class="w-20 h-20 md:w-28 md:h-28 mb-6 object-contain" alt="Forum Icon">
+            <h2 id="dyn-forum_main_title" class="text-5xl lg:text-[4rem] font-header font-bold leading-[1.1] mb-5 tracking-tight">Forum<br>Q&A</h2>
+            <p id="dyn-forum_main_desc" class="text-sm lg:text-base font-body leading-[1.6] font-medium pr-4">Join the conversation in our online community. This is a space for artists, students, and music lovers to ask questions, share knowledge, and build connections.</p>
+        </div>
+
+        <div class="lg:col-span-8 flex flex-col w-full text-white mt-4 lg:mt-0 transition-opacity duration-300" id="forum-main-view">
+            
+            <h3 id="dyn-forum_sub_title" class="text-3xl font-header font-bold mb-2">Community Forum</h3>
+            <p id="dyn-forum_sub_desc" class="text-sm mb-8">Ask questions, share knowledge, and connect with the Lanna-Jazz community.</p>
+
+           <div class="bg-white/20 p-4 rounded-xl border border-white/30 mb-10 shadow-sm backdrop-blur-sm">
+                <input type="text" id="dyn-forum_input_title" class="w-full bg-transparent text-white placeholder-white/70 border-b border-white/30 outline-none text-xl font-bold mb-3 pb-2" placeholder="Topic Title...">
+                <textarea id="dyn-forum_input_content" class="w-full bg-transparent text-white placeholder-white/50 resize-none outline-none text-base h-20 font-body" placeholder="Write your details here...."></textarea>
+                
+                <input type="file" id="forum-image-input" class="hidden" accept="image/*">
+                <input type="file" id="forum-video-input" class="hidden" accept="video/mp4,video/x-m4v,video/*">
+                
+                <div id="forum-media-preview" class="text-xs text-green-300 font-bold mt-2 hidden flex-col gap-1">
+                    <span id="forum-img-preview" class="hidden">📸 <span id="forum-img-name" class="font-normal text-white"></span></span>
+                    <span id="forum-vid-preview" class="hidden">🎥 <span id="forum-vid-name" class="font-normal text-white"></span></span>
+                </div>
+
+                <div class="flex justify-between items-center mt-3 border-t border-white/20 pt-3">
+                    <div class="flex gap-3">
+                        <button type="button" id="dyn-forum_btn_photo" class="bg-[#5a2e2a] hover:bg-black/60 px-5 py-2 rounded-lg text-sm font-bold transition shadow">+ Photo</button>
+                        <button type="button" id="dyn-forum_btn_video" class="bg-[#5a2e2a] hover:bg-black/60 px-5 py-2 rounded-lg text-sm font-bold transition shadow">+ Video</button>
+                    </div>
+                    <button type="button" id="dyn-forum_btn_post" class="bg-white text-[#EF5F4D] px-10 py-2 rounded-lg font-bold hover:bg-gray-100 transition shadow-lg">Post</button>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4 w-full" id="forum-questions-list"></div>
+            <div id="forum-topic-pagination" class="flex justify-center w-full mt-6"></div>
+        </div>
+
+        <div class="lg:col-span-8 flex flex-col w-full text-white mt-4 lg:mt-0 hidden transition-opacity duration-300 relative pb-24" id="forum-detail-view">
+            <div class="bg-white/10 p-6 rounded-2xl border border-white/20 mb-6 relative w-full overflow-hidden break-words" id="forum-topic-content"></div>
+
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 border-b border-white/30 pb-4 gap-4 mt-2">
+                <h4 id="dyn-forum_title_comments" class="text-2xl font-bold">Comments</h4>
+                
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <button id="dyn-forum_btn_back" class="flex items-center gap-2 text-white hover:text-white/70 font-bold transition bg-black/20 px-4 py-2 rounded-xl shadow-sm border border-white/10 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Back to Topics
+                    </button>
+                    
+                    <button type="button" id="dyn-forum_btn_write_comment" class="bg-white text-[#EF5F4D] px-4 py-2 rounded-xl font-bold text-sm shadow-sm hover:bg-gray-100 transition flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                        Write a comment
+                    </button>
+                </div>
+            </div>
+            
+            <div id="forum-comment-box-container" class="hidden bg-white/20 p-4 rounded-xl border border-white/30 shadow-sm backdrop-blur-sm mb-6 transition-all w-full">
+                <textarea id="dyn-forum_input_comment" class="w-full bg-transparent text-white placeholder-white/70 resize-none outline-none text-base h-20 font-body border-b border-white/20 mb-2 pb-2" placeholder="Type your comment here..."></textarea>
+                <div class="flex justify-end mt-2 gap-3">
+                    <button type="button" id="dyn-forum_btn_cancel" class="text-white hover:text-white/70 px-4 py-2 rounded-lg font-bold text-sm transition">Cancel</button>
+                    <button type="button" id="dyn-forum_btn_reply" class="bg-[#5a2e2a] hover:bg-black/60 text-white px-8 py-2 rounded-lg font-bold transition shadow">Post Reply</button>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4 w-full overflow-hidden" id="forum-comments-list"></div>
+            <div id="forum-comment-pagination" class="flex justify-center w-full mt-8 mb-8"></div>
+        </div>
+    </div>
+</div>
