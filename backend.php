@@ -1032,6 +1032,94 @@ switch($action) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         break;
+        // ==========================================
+    // 9. ระบบ STORE & MERCH
+    // ==========================================
+    case 'get_store_stock':
+        try {
+            $stmt = $pdo->query("SELECT * FROM products ORDER BY product_id DESC");
+            echo json_encode(["status" => "success", "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+        } catch (PDOException $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
+        break;
+
+    case 'get_store_orders':
+        try {
+            $stmt = $pdo->query("SELECT o.created_at, o.order_code, p.product_code, o.customer_name, o.address, o.phone, o.email, oi.quantity AS amount, o.payment_status, o.order_status FROM orders o JOIN order_items oi ON o.order_id = oi.order_id JOIN products p ON oi.product_id = p.product_id ORDER BY o.created_at DESC");
+            echo json_encode(["status" => "success", "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+        } catch (PDOException $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
+        break;
+
+    case 'add_store_product':
+        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { die(json_encode(['status' => 'error', 'message' => 'Unauthorized'])); }
+        try {
+            $code = uniqid('HKL'); $name = $_POST['product_name'] ?? ''; $price = floatval($_POST['product_price'] ?? 0);
+            $stock = intval($_POST['product_stock'] ?? 0); $desc = $_POST['product_details'] ?? ''; $status = $_POST['sale_status'] ?? 'open';
+            $dir = 'uploads/store/'; if(!is_dir($dir)) mkdir($dir, 0777, true);
+            
+            $imgPaths = []; $bannerPath = null;
+            if(isset($_FILES['product_images']) && !empty($_FILES['product_images']['name'][0])){
+                for($i=0; $i<count($_FILES['product_images']['name']) && $i<5; $i++){
+                    if($_FILES['product_images']['tmp_name'][$i]){
+                        $path = $dir . uniqid() . '_' . basename($_FILES['product_images']['name'][$i]);
+                        if(move_uploaded_file($_FILES['product_images']['tmp_name'][$i], $path)) $imgPaths[] = $path;
+                    }
+                }
+            }
+            if(isset($_FILES['image_banner']) && $_FILES['image_banner']['error'] === UPLOAD_ERR_OK){
+                $bannerPath = $dir . 'banner_' . $code . '_' . uniqid() . '.' . pathinfo($_FILES['image_banner']['name'], PATHINFO_EXTENSION);
+                move_uploaded_file($_FILES['image_banner']['tmp_name'], $bannerPath);
+            }
+            $stmt = $pdo->prepare("INSERT INTO products (product_code, name, price, stock_balance, description, sale_status, image_products, image_banner) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$code, $name, $price, $stock, $desc, $status, json_encode($imgPaths, JSON_UNESCAPED_UNICODE), $bannerPath]);
+            echo json_encode(["status" => "success", "message" => "เพิ่มสินค้าเรียบร้อย"]);
+        } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
+        break;
+
+    case 'update_store_product':
+        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { die(json_encode(['status' => 'error', 'message' => 'Unauthorized'])); }
+        try {
+            $id = intval($_POST['product_id']); $name = $_POST['product_name']; $price = floatval($_POST['product_price']);
+            $stock = intval($_POST['product_stock']); $desc = $_POST['product_details']; $status = $_POST['sale_status'];
+            $dir = 'uploads/store/'; if(!is_dir($dir)) mkdir($dir, 0777, true);
+            
+            $stmt = $pdo->prepare("SELECT product_code, image_banner FROM products WHERE product_id = ?");
+            $stmt->execute([$id]); $old = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            $finalImages = isset($_POST['existing_images']) && is_array($_POST['existing_images']) ? $_POST['existing_images'] : [];
+            if(isset($_FILES['product_images']) && !empty($_FILES['product_images']['name'][0])){
+                for($i=0; $i<count($_FILES['product_images']['name']); $i++){
+                    if(count($finalImages) >= 5) break;
+                    if($_FILES['product_images']['tmp_name'][$i]){
+                        $path = $dir . uniqid() . '_' . basename($_FILES['product_images']['name'][$i]);
+                        if(move_uploaded_file($_FILES['product_images']['tmp_name'][$i], $path)) $finalImages[] = $path;
+                    }
+                }
+            }
+            $bannerPath = $old['image_banner'];
+            if(isset($_FILES['image_banner']) && $_FILES['image_banner']['error'] === UPLOAD_ERR_OK){
+                $bannerPath = $dir . 'banner_' . $old['product_code'] . '_' . uniqid() . '.' . pathinfo($_FILES['image_banner']['name'], PATHINFO_EXTENSION);
+                move_uploaded_file($_FILES['image_banner']['tmp_name'], $bannerPath);
+            }
+            $stmt = $pdo->prepare("UPDATE products SET name=?, price=?, stock_balance=?, description=?, sale_status=?, image_products=?, image_banner=? WHERE product_id=?");
+            $stmt->execute([$name, $price, $stock, $desc, $status, json_encode($finalImages, JSON_UNESCAPED_UNICODE), $bannerPath, $id]);
+            echo json_encode(["status" => "success", "message" => "อัปเดตข้อมูลสำเร็จ"]);
+        } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
+        break;
+
+    case 'delete_store_product':
+        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { die(json_encode(['status' => 'error', 'message' => 'Unauthorized'])); }
+        try {
+            $id = intval($_POST['product_id']);
+            $stmt = $pdo->prepare("SELECT image_products, image_banner FROM products WHERE product_id = ?");
+            $stmt->execute([$id]); $prod = $stmt->fetch(PDO::FETCH_ASSOC);
+            if($prod){
+                if(!empty($prod['image_products'])){ $imgs = json_decode($prod['image_products'], true); if(is_array($imgs)){ foreach($imgs as $i){ if(file_exists($i)) unlink($i); } } }
+                if(!empty($prod['image_banner']) && file_exists($prod['image_banner'])) unlink($prod['image_banner']);
+            }
+            $pdo->prepare("DELETE FROM products WHERE product_id = ?")->execute([$id]);
+            echo json_encode(["status" => "success", "message" => "ลบสินค้าเรียบร้อย"]);
+        } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
+        break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
 }

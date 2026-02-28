@@ -1003,3 +1003,167 @@ document.getElementById('btn-delete-forum')?.addEventListener('click', async () 
     }
 });
 // --- 8. Forum Q&A Management (END) ---
+// =====================================================================
+// --- 9. Store & Merch Management ---
+// =====================================================================
+let currentStockData = [];
+let storeSelectedBanner = null; let storeSelectedImages = [];
+let editStoreExistingImages = []; let editStoreSelectedImages = [];
+
+window.switchStoreTab = function(tab) {
+    document.querySelectorAll('.store-tab-content').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('#btn-store-product, #btn-store-stock, #btn-store-order').forEach(btn => {
+        btn.classList.remove('bg-pink-500', 'text-white'); btn.classList.add('bg-gray-100', 'text-gray-600');
+    });
+    document.getElementById('tab-store-' + tab).classList.remove('hidden');
+    document.getElementById('btn-store-' + tab).classList.remove('bg-gray-100', 'text-gray-600');
+    document.getElementById('btn-store-' + tab).classList.add('bg-pink-500', 'text-white');
+
+    const tEl = document.getElementById('store-page-title');
+    if(tab === 'product') tEl.textContent = 'เพิ่มสินค้า (Add Product)';
+    else if(tab === 'stock') { tEl.textContent = 'จัดการสต๊อก (Stock)'; loadStoreStock(); }
+    else if(tab === 'order') { tEl.textContent = 'รายการสั่งซื้อ (Order)'; loadStoreOrders(); }
+};
+
+// Add Form Images
+window.previewStoreBanner = function(input) {
+    if (input.files && input.files[0]) {
+        storeSelectedBanner = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) { document.getElementById('store-banner-preview').src = e.target.result; document.getElementById('store-banner-preview').classList.remove('hidden'); document.getElementById('store-banner-text').classList.add('hidden'); }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+window.handleStoreImages = function(input) {
+    const files = Array.from(input.files); const remaining = 5 - storeSelectedImages.length;
+    if (files.length > remaining) showToast(`เพิ่มได้อีกแค่ ${remaining} รูป`);
+    files.slice(0, remaining).forEach(file => storeSelectedImages.push(file));
+    renderStoreImagePreviews(); input.value = '';
+}
+function renderStoreImagePreviews() {
+    const container = document.getElementById('store-images-container'); const addBtn = container.firstElementChild;
+    container.innerHTML = ''; container.appendChild(addBtn);
+    storeSelectedImages.forEach((file, index) => {
+        const div = document.createElement('div'); div.className = 'relative w-32 h-32 flex-shrink-0 border border-gray-300 group rounded-lg overflow-hidden';
+        div.innerHTML = `<img class="w-full h-full object-cover"><button type="button" onclick="event.stopPropagation(); storeSelectedImages.splice(${index}, 1); renderStoreImagePreviews();" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">✕</button>`;
+        container.appendChild(div);
+        const reader = new FileReader(); reader.onload = e => div.querySelector('img').src = e.target.result; reader.readAsDataURL(file);
+    });
+}
+
+// Edit Form Images
+window.previewEditStoreBanner = function(input) {
+    if (input.files && input.files[0]) {
+        storeSelectedBanner = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) { document.getElementById('edit-store-banner-preview').src = e.target.result; document.getElementById('edit-store-banner-preview').classList.remove('hidden'); document.getElementById('edit-store-banner-text').classList.add('hidden'); }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+window.handleEditStoreImages = function(input) {
+    const files = Array.from(input.files); const remaining = 5 - (editStoreExistingImages.length + editStoreSelectedImages.length);
+    if (files.length > remaining) showToast(`เพิ่มรูปได้อีกแค่ ${remaining} รูป`);
+    files.slice(0, remaining).forEach(file => editStoreSelectedImages.push(file));
+    renderEditStoreImagePreviews(); input.value = '';
+}
+function renderEditStoreImagePreviews() {
+    const container = document.getElementById('edit-store-images-container'); const addBtn = container.firstElementChild;
+    container.innerHTML = ''; container.appendChild(addBtn);
+    editStoreExistingImages.forEach((url, index) => {
+        const div = document.createElement('div'); div.className = 'relative w-20 h-20 flex-shrink-0 border border-gray-300 group rounded-lg overflow-hidden';
+        div.innerHTML = `<img src="${url}" class="w-full h-full object-cover"><button type="button" onclick="event.stopPropagation(); editStoreExistingImages.splice(${index}, 1); renderEditStoreImagePreviews();" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">✕</button>`;
+        container.appendChild(div);
+    });
+    editStoreSelectedImages.forEach((file, index) => {
+        const div = document.createElement('div'); div.className = 'relative w-20 h-20 flex-shrink-0 border border-gray-300 group rounded-lg overflow-hidden';
+        div.innerHTML = `<img class="w-full h-full object-cover"><button type="button" onclick="event.stopPropagation(); editStoreSelectedImages.splice(${index}, 1); renderEditStoreImagePreviews();" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">✕</button>`;
+        container.appendChild(div);
+        const reader = new FileReader(); reader.onload = e => div.querySelector('img').src = e.target.result; reader.readAsDataURL(file);
+    });
+}
+
+// API Calls
+window.saveNewProduct = async function() {
+    const name = document.getElementById('store_p_name').value; const price = document.getElementById('store_p_price').value;
+    const stock = document.getElementById('store_p_stock').value; const details = document.getElementById('store_p_details').value;
+    if(!name || !price || !stock) return showToast('กรุณากรอกชื่อ ราคา และสต๊อก');
+    const fd = new FormData(); fd.append('product_name', name); fd.append('product_price', price); fd.append('product_stock', stock); fd.append('product_details', details); fd.append('sale_status', document.querySelector('input[name="store_sale_status"]:checked').value);
+    if(storeSelectedBanner) fd.append('image_banner', storeSelectedBanner);
+    storeSelectedImages.forEach(f => fd.append('product_images[]', f));
+    try {
+        const res = await fetch(getApiUrl('add_store_product'), fetchOptions('POST', fd)); const r = await res.json(); showToast(r.message);
+        if(r.status === 'success') { document.getElementById('store_p_name').value=''; document.getElementById('store_p_price').value=''; document.getElementById('store_p_stock').value=''; document.getElementById('store_p_details').value=''; storeSelectedBanner=null; document.getElementById('store-banner-preview').classList.add('hidden'); document.getElementById('store-banner-text').classList.remove('hidden'); storeSelectedImages=[]; renderStoreImagePreviews(); }
+    } catch(e) { showToast('Connection Error'); }
+}
+
+window.loadStoreStock = async function() {
+    const tbody = document.getElementById('store-stock-tbody'); tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-500">กำลังโหลด...</td></tr>';
+    try {
+        const res = await fetch(getApiUrl('get_store_stock')); const r = await res.json();
+        if(r.status === 'success') {
+            tbody.innerHTML = ''; currentStockData = r.data;
+            if(r.data.length === 0) return tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-500">ไม่มีข้อมูล</td></tr>';
+            r.data.forEach((p, i) => {
+                const stockClass = p.stock_balance <= 5 ? 'text-red-500 font-bold' : 'text-gray-700 font-bold';
+                const statusBadge = p.sale_status === 'open' ? '<span class="ml-2 text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Open</span>' : '<span class="ml-2 text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full">Close</span>';
+                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50 transition"><td class="p-4 text-center font-medium">${i+1}</td><td class="p-4"><p class="font-bold text-lg text-pink-600">${p.name}${statusBadge}</p><p class="text-xs text-gray-500 mt-1">รหัส: ${p.product_code} | ราคา: ${p.price}฿</p></td><td class="p-4 text-center text-lg ${stockClass}">${p.stock_balance}</td><td class="p-4 text-center"><button onclick="openEditStoreModal(${p.product_id})" class="bg-gray-200 hover:bg-pink-500 hover:text-white px-4 py-1.5 rounded-full text-xs font-bold transition mr-2">แก้ไข</button><button onclick="deleteStoreProduct(${p.product_id})" class="bg-red-500 text-white hover:bg-red-600 px-4 py-1.5 rounded-full text-xs font-bold transition shadow-sm">ลบ</button></td></tr>`;
+            });
+        }
+    } catch(e) {}
+}
+
+window.loadStoreOrders = async function() {
+    const tbody = document.getElementById('store-order-tbody'); tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-500">กำลังโหลด...</td></tr>';
+    try {
+        const res = await fetch(getApiUrl('get_store_orders')); const r = await res.json();
+        if(r.status === 'success') {
+            tbody.innerHTML = '';
+            if(r.data.length === 0) return tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-500">ไม่มีรายการคำสั่งซื้อ</td></tr>';
+            r.data.forEach(o => {
+                const d = new Date(o.created_at); const dStr = d.toLocaleDateString('th-TH') + ' ' + d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+                const pBadge = o.payment_status === 'success' ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded font-bold">Success</span>' : (o.payment_status === 'failed' ? '<span class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold">Failed</span>' : '<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded font-bold">Pending</span>');
+                const oBadge = o.order_status === 'success' ? '<span class="bg-green-500 text-white px-2 py-1 rounded font-bold">Success</span>' : (o.order_status === 'canceled' ? '<span class="bg-red-500 text-white px-2 py-1 rounded font-bold">Canceled</span>' : '<span class="bg-yellow-500 text-white px-2 py-1 rounded font-bold">Pending</span>');
+                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50"><td class="p-4 text-xs text-gray-500 whitespace-nowrap">${dStr}</td><td class="p-4 font-bold text-gray-700">${o.order_code}<br><span class="text-[10px] text-pink-500 font-normal">รหัสสค้า: ${o.product_code}</span></td><td class="p-4"><p class="font-bold">${o.customer_name}</p><p class="text-xs text-gray-500">${o.phone}</p></td><td class="p-4 text-center font-bold text-lg">${o.amount}</td><td class="p-4 text-center">${pBadge}</td><td class="p-4 text-center">${oBadge}</td></tr>`;
+            });
+        }
+    } catch(e) {}
+}
+
+window.openEditStoreModal = function(id) {
+    const p = currentStockData.find(x => x.product_id == id); if(!p) return;
+    document.getElementById('edit_store_p_id').value = p.product_id; document.getElementById('edit_store_p_name').value = p.name;
+    document.getElementById('edit_store_p_price').value = p.price; document.getElementById('edit_store_p_stock').value = p.stock_balance;
+    document.getElementById('edit_store_p_details').value = p.description || '';
+    document.querySelector(`input[name="edit_store_sale_status"][value="${p.sale_status}"]`).checked = true;
+
+    editStoreExistingImages = [];
+    if(p.image_products) { try { const parsed = JSON.parse(p.image_products); if(Array.isArray(parsed)) editStoreExistingImages = parsed; } catch(e){} }
+    storeSelectedBanner = null; const bPreview = document.getElementById('edit-store-banner-preview'); const bText = document.getElementById('edit-store-banner-text');
+    if(p.image_banner) { bPreview.src = p.image_banner; bPreview.classList.remove('hidden'); bText.classList.add('hidden'); } else { bPreview.src=''; bPreview.classList.add('hidden'); bText.classList.remove('hidden'); }
+    
+    editStoreSelectedImages = []; renderEditStoreImagePreviews();
+    document.getElementById('store-edit-modal').classList.remove('hidden');
+}
+
+window.saveEditedStoreProduct = async function() {
+    const id = document.getElementById('edit_store_p_id').value; const name = document.getElementById('edit_store_p_name').value;
+    const price = document.getElementById('edit_store_p_price').value; const stock = document.getElementById('edit_store_p_stock').value;
+    if(!name || !price || !stock) return showToast('กรุณากรอกข้อมูลให้ครบถ้วน');
+    const fd = new FormData(); fd.append('product_id', id); fd.append('product_name', name); fd.append('product_price', price); fd.append('product_stock', stock); fd.append('product_details', document.getElementById('edit_store_p_details').value); fd.append('sale_status', document.querySelector('input[name="edit_store_sale_status"]:checked').value);
+    editStoreExistingImages.forEach(url => fd.append('existing_images[]', url));
+    if(storeSelectedBanner) fd.append('image_banner', storeSelectedBanner);
+    editStoreSelectedImages.forEach(f => fd.append('product_images[]', f));
+    try {
+        const res = await fetch(getApiUrl('update_store_product'), fetchOptions('POST', fd)); const r = await res.json(); showToast(r.message);
+        if(r.status === 'success') { document.getElementById('store-edit-modal').classList.add('hidden'); loadStoreStock(); }
+    } catch(e) {}
+}
+
+window.deleteStoreProduct = async function(id) {
+    if(!confirm('ลบสินค้านี้ถาวร?')) return;
+    const fd = new FormData(); fd.append('product_id', id);
+    try {
+        const res = await fetch(getApiUrl('delete_store_product'), fetchOptions('POST', fd)); const r = await res.json(); showToast(r.message);
+        if(r.status === 'success') loadStoreStock();
+    } catch(e) {}
+}

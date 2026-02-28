@@ -689,10 +689,112 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             <p id="forum-selection-status" class="text-sm font-medium text-gray-500 mt-4 text-right">ยังไม่ได้เลือกกระทู้</p>
         </section>
 
-        <section id="section-store" class="content-section hidden p-8 max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold mb-6 text-gray-800">Store & Merch</h2>
-            <div class="bg-white border rounded-xl shadow-sm p-16 text-center text-gray-500"><p class="text-xl font-semibold mb-2">ระบบจัดการ Store & Merch</p><p>อยู่ระหว่างการพัฒนา...</p></div>
+       <section id="section-store" class="content-section hidden p-8 max-w-6xl mx-auto">
+            <div class="bg-pink-500 text-white p-6 flex justify-between items-center rounded-2xl shadow-sm mb-6">
+                <h2 id="store-page-title" class="text-3xl font-bold">เพิ่มสินค้า (Add Product)</h2>
+            </div>
+
+            <div class="flex w-full rounded-xl overflow-hidden border border-gray-300 mb-6 shadow-sm">
+                <button id="btn-store-product" onclick="switchStoreTab('product')" class="flex-1 py-3 bg-pink-500 text-white font-bold transition">เพิ่มสินค้า</button>
+                <button id="btn-store-stock" onclick="switchStoreTab('stock')" class="flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200">จัดการสต๊อก (Stock)</button>
+                <button id="btn-store-order" onclick="switchStoreTab('order')" class="flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200">รายการสั่งซื้อ (Order)</button>
+            </div>
+
+            <div id="tab-store-product" class="store-tab-content bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                <input type="file" id="store-upload-banner" accept="image/*" class="hidden" onchange="previewStoreBanner(this)">
+                <input type="file" id="store-upload-images" accept="image/*" multiple class="hidden" onchange="handleStoreImages(this)">
+
+                <div id="store-banner-container" class="w-full h-40 bg-gray-200 rounded-xl flex items-center justify-center font-bold text-gray-500 mb-6 cursor-pointer hover:bg-gray-300 transition relative overflow-hidden" onclick="document.getElementById('store-upload-banner').click()">
+                    <span id="store-banner-text">📷 + Add Banner Image</span>
+                    <img id="store-banner-preview" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                </div>
+
+                <div class="flex flex-wrap gap-4 mb-6" id="store-images-container">
+                    <div class="w-32 h-32 border-2 border-dashed border-gray-400 rounded-xl flex flex-col items-center justify-center text-center text-sm font-bold text-gray-500 cursor-pointer hover:bg-gray-50 transition p-2 flex-shrink-0" onclick="document.getElementById('store-upload-images').click()">
+                        <span>+ Add</span><span>Images</span><span class="text-xs font-normal">(Max 5)</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4 mb-6">
+                    <input type="text" id="store_p_name" placeholder="ชื่อสินค้า (Product Name)" class="w-full border border-gray-300 rounded-full px-5 py-3 outline-none focus:border-pink-500">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="store_p_price" placeholder="ราคา (Price)" class="border border-gray-300 rounded-full px-5 py-3 outline-none focus:border-pink-500">
+                        <input type="number" id="store_p_stock" placeholder="จำนวนสต๊อก (Stock)" class="border border-gray-300 rounded-full px-5 py-3 outline-none focus:border-pink-500">
+                    </div>
+                    <textarea id="store_p_details" placeholder="รายละเอียดสินค้า...." rows="4" class="w-full border border-gray-300 rounded-2xl px-5 py-4 outline-none focus:border-pink-500 resize-none"></textarea>
+                </div>
+
+                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                    <div class="flex gap-6">
+                        <label class="flex items-center gap-2 cursor-pointer font-bold text-green-600"><input type="radio" name="store_sale_status" value="open" checked> Sale Open</label>
+                        <label class="flex items-center gap-2 cursor-pointer font-bold text-red-600"><input type="radio" name="store_sale_status" value="close"> Sale Close</label>
+                    </div>
+                    <button onclick="saveNewProduct()" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-md transition">บันทึกสินค้าใหม่</button>
+                </div>
+            </div>
+
+            <div id="tab-store-stock" class="store-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-100 border-b border-gray-200">
+                        <tr><th class="p-4 w-16 text-center">No.</th><th class="p-4">สินค้า (Product)</th><th class="p-4 text-center">คงเหลือ (Balance)</th><th class="p-4 text-center">จัดการ</th></tr>
+                    </thead>
+                    <tbody id="store-stock-tbody"></tbody>
+                </table>
+            </div>
+
+            <div id="tab-store-order" class="store-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead class="bg-gray-100 border-b border-gray-200">
+                        <tr><th class="p-4">วันที่ / เวลา</th><th class="p-4">รหัส Order</th><th class="p-4">ลูกค้า</th><th class="p-4 text-center">จำนวน</th><th class="p-4 text-center">Payment</th><th class="p-4 text-center">Status</th></tr>
+                    </thead>
+                    <tbody id="store-order-tbody"></tbody>
+                </table>
+            </div>
         </section>
+
+        <div id="store-edit-modal" class="fixed inset-0 bg-black/60 items-center justify-center z-50 hidden backdrop-blur-sm flex">
+            <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">แก้ไขข้อมูลสินค้า</h3>
+                <input type="hidden" id="edit_store_p_id">
+
+                <div class="mb-6 border-b pb-6">
+                    <input type="file" id="edit-store-upload-banner" accept="image/*" class="hidden" onchange="previewEditStoreBanner(this)">
+                    <input type="file" id="edit-store-upload-images" accept="image/*" multiple class="hidden" onchange="handleEditStoreImages(this)">
+
+                    <div id="edit-store-banner-container" class="w-full h-24 bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center font-bold text-gray-400 text-sm mb-4 cursor-pointer hover:bg-gray-200 transition relative overflow-hidden rounded-xl" onclick="document.getElementById('edit-store-upload-banner').click()">
+                        <span id="edit-store-banner-text">📷 + Change Banner Image</span>
+                        <img id="edit-store-banner-preview" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                    </div>
+
+                    <div class="flex flex-wrap gap-2" id="edit-store-images-container">
+                        <div class="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-center text-xs font-bold text-gray-400 cursor-pointer hover:bg-gray-100 transition p-1 flex-shrink-0" onclick="document.getElementById('edit-store-upload-images').click()">
+                            <span>+ Change</span><span>(Max 5)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3 mb-6">
+                    <label class="text-sm font-bold text-gray-600 -mb-1">ชื่อสินค้า</label>
+                    <input type="text" id="edit_store_p_name" class="w-full border border-gray-300 rounded-full px-4 py-2 outline-none focus:border-pink-500">
+                    <div class="flex gap-4">
+                        <div class="flex-1"><label class="text-sm font-bold text-gray-600">ราคา</label><input type="number" id="edit_store_p_price" class="w-full border border-gray-300 rounded-full px-4 py-2 outline-none focus:border-pink-500"></div>
+                        <div class="w-1/3"><label class="text-sm font-bold text-gray-600">สต๊อก</label><input type="number" id="edit_store_p_stock" class="w-full border border-gray-300 rounded-full px-4 py-2 outline-none focus:border-pink-500"></div>
+                    </div>
+                    <label class="text-sm font-bold text-gray-600 -mb-1 mt-2">รายละเอียด</label>
+                    <textarea id="edit_store_p_details" rows="3" class="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none focus:border-pink-500 resize-none"></textarea>
+                    
+                    <div class="flex gap-6 mt-2">
+                        <label class="flex items-center gap-2 cursor-pointer font-bold text-green-600"><input type="radio" name="edit_store_sale_status" value="open"> Sale Open</label>
+                        <label class="flex items-center gap-2 cursor-pointer font-bold text-red-600"><input type="radio" name="edit_store_sale_status" value="close"> Sale Close</label>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6">
+                    <button onclick="document.getElementById('store-edit-modal').classList.add('hidden')" class="px-6 py-2.5 bg-gray-200 font-bold rounded-full hover:bg-gray-300 transition">ยกเลิก</button>
+                    <button onclick="saveEditedStoreProduct()" class="px-6 py-2.5 bg-pink-500 text-white font-bold rounded-full hover:bg-pink-600 transition">บันทึกข้อมูล</button>
+                </div>
+            </div>
+        </div>
     </main>
 
     <div id="confirm-modal" class="fixed inset-0 bg-black/50 items-center justify-center z-50 hidden backdrop-blur-sm flex">
