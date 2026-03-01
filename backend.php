@@ -446,71 +446,6 @@ switch($action) {
         } catch (Exception $e) { echo json_encode(['status' => 'error', 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()]); }
         break;
 
-// ==========================================
-    // 🌟 ระบบ STORE & MERCH (นำมาวางต่อจาก break; ของระบบอื่นได้เลย)
-    // ==========================================
-    case 'get_store_products':
-        try {
-            $stmt = $pdo->query("SELECT * FROM products ORDER BY product_id DESC");
-            echo json_encode(["status" => "success", "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
-        } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
-        break;
-
-    case 'get_store_stock':
-        try {
-            $stmt = $pdo->query("SELECT * FROM products WHERE sale_status = 'open' AND stock_balance > 0 ORDER BY product_id DESC");
-            echo json_encode(["status" => "success", "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
-        } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
-        break;
-
-    case 'add_store_product':
-        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { die(json_encode(['status' => 'error', 'message' => 'Unauthorized'])); }
-        try {
-            $name = $_POST['product_name'] ?? '';
-            $price = $_POST['product_price'] ?? 0;
-            $stock = $_POST['product_stock'] ?? 0;
-            $desc = $_POST['product_details'] ?? '';
-            $status = $_POST['sale_status'] ?? 'close';
-
-            $imagePaths = [];
-            if (!empty($_FILES['product_images']['name'][0])) {
-                $uploadDir = 'uploads/store/';
-                if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
-                foreach ($_FILES['product_images']['tmp_name'] as $key => $tmpName) {
-                    if ($key >= 5) break; 
-                    $ext = pathinfo($_FILES['product_images']['name'][$key], PATHINFO_EXTENSION);
-                    $newFileName = $uploadDir . uniqid('prod_') . '_' . $key . '.' . $ext;
-                    if (move_uploaded_file($tmpName, $newFileName)) { $imagePaths[] = $newFileName; }
-                }
-            }
-
-            $bannerPath = '';
-            if (!empty($_FILES['image_banner']['name'])) {
-                $ext = pathinfo($_FILES['image_banner']['name'], PATHINFO_EXTENSION);
-                $bannerPath = 'uploads/store/' . uniqid('banner_') . '.' . $ext;
-                move_uploaded_file($_FILES['image_banner']['tmp_name'], $bannerPath);
-            }
-
-            $stmt = $pdo->prepare("INSERT INTO products (name, price, stock_balance, description, sale_status, image_products, image_banner) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$name, $price, $stock, $desc, $status, json_encode($imagePaths, JSON_UNESCAPED_UNICODE), $bannerPath]);
-            echo json_encode(["status" => "success", "message" => "เพิ่มสินค้าเรียบร้อยแล้ว"]);
-        } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
-        break;
-
-    case 'delete_store_product':
-        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { die(json_encode(['status' => 'error', 'message' => 'Unauthorized'])); }
-        try {
-            $id = intval($_POST['product_id']);
-            $stmt = $pdo->prepare("SELECT image_products, image_banner FROM products WHERE product_id = ?");
-            $stmt->execute([$id]); $prod = $stmt->fetch(PDO::FETCH_ASSOC);
-            if($prod){
-                if(!empty($prod['image_products'])){ $imgs = json_decode($prod['image_products'], true); if(is_array($imgs)){ foreach($imgs as $i){ if(file_exists($i)) unlink($i); } } }
-                if(!empty($prod['image_banner']) && file_exists($prod['image_banner'])) unlink($prod['image_banner']);
-            }
-            $pdo->prepare("DELETE FROM products WHERE product_id = ?")->execute([$id]);
-            echo json_encode(["status" => "success", "message" => "ลบสินค้าเรียบร้อย"]);
-        } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
-        break;
     // ==========================================
     // 4. ระบบ CMBIGBAND
     // ==========================================
@@ -1096,10 +1031,12 @@ switch($action) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         break;
-       // ==========================================
-    // 9. ระบบ STORE & TICKET (Merge จาก storebackend.php)
+// ==========================================
+    // 9. ระบบ STORE & TICKET
     // ==========================================
-    case 'get_store_stock':
+    
+    // API 1: สำหรับหน้าแอดมิน (ดึงสินค้าทั้งหมดมาแสดงในแท็บสต๊อก)
+    case 'get_store_products':
         if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
         try {
             $stmt = $pdo->query("SELECT * FROM products ORDER BY product_id DESC");
@@ -1107,10 +1044,20 @@ switch($action) {
         } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
         break;
 
+    // API 2: สำหรับหน้าเว็บลูกค้า (ดึงเฉพาะที่เปิดขายและมีสต๊อก)
+    case 'get_store_stock':
+        try {
+            $stmt = $pdo->query("SELECT * FROM products WHERE sale_status = 'open' AND stock_balance > 0 ORDER BY product_id DESC");
+            echo json_encode(["status" => "success", "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+        } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
+        break;
+
+    // API 3: สำหรับหน้าแอดมิน (ดึงรายการออเดอร์)
     case 'get_orders':
         if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
         try {
-            $sql = "SELECT o.order_id, o.created_at, o.order_code, p.product_code, o.customer_name, o.address, o.phone, o.email, oi.quantity AS amount, o.payment_status, o.order_status
+            // ใช้ p.name แสดงชื่อสินค้าแทน product_code ป้องกัน Database Error
+            $sql = "SELECT o.order_id, o.created_at, o.order_code, p.name AS product_code, o.customer_name, o.address, o.phone, o.email, oi.quantity AS amount, o.payment_status, o.order_status
                     FROM orders o
                     JOIN order_items oi ON o.order_id = oi.order_id
                     JOIN products p ON oi.product_id = p.product_id
@@ -1118,6 +1065,55 @@ switch($action) {
             $stmt = $pdo->query($sql);
             echo json_encode(["status" => "success", "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
+        break;
+
+    // ==========================================
+    // API สำหรับสร้างคำสั่งซื้อจากหน้าบ้าน (Frontend)
+    // ==========================================
+    case 'create_store_order':
+        try {
+            $customer_name = $_POST['customer_name'] ?? '';
+            $phone = $_POST['phone'] ?? '';
+            $address = $_POST['address'] ?? '';
+            $email = $_POST['email'] ?? '';
+            $cart_data = isset($_POST['cart_data']) ? json_decode($_POST['cart_data'], true) : [];
+
+            if (empty($customer_name) || empty($phone) || empty($cart_data)) {
+                echo json_encode(['status' => 'error', 'message' => 'ข้อมูลไม่ครบถ้วน']);
+                break;
+            }
+
+            // สร้างรหัสออเดอร์ เช่น ST-20260301-XXXX
+            $order_code = 'ST-' . date('Ymd') . '-' . rand(1000, 9999);
+
+            $pdo->beginTransaction();
+
+            // 1. บันทึกข้อมูลลงตาราง orders
+            $stmt = $pdo->prepare("INSERT INTO orders (order_code, customer_name, address, phone, email, order_status, payment_status) VALUES (?, ?, ?, ?, ?, 'pending', '')");
+            $stmt->execute([$order_code, $customer_name, $address, $phone, $email]);
+            $order_id = $pdo->lastInsertId();
+
+            // 2. บันทึกข้อมูลสินค้าลงตาราง order_items และตัดสต๊อก (🌟 แก้ไข: ลบ price ออกจากการ Insert)
+            $stmtItem = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)");
+            $stmtStock = $pdo->prepare("UPDATE products SET stock_balance = stock_balance - ? WHERE product_id = ?");
+
+            foreach ($cart_data as $item) {
+                $p_id = $item['product_id'];
+                $qty = $item['qty'];
+
+                // บันทึกรายการ (ใส่แค่ออเดอร์, สินค้า, จำนวน)
+                $stmtItem->execute([$order_id, $p_id, $qty]);
+                
+                // ตัดสต๊อก
+                $stmtStock->execute([$qty, $p_id]);
+            }
+
+            $pdo->commit();
+            echo json_encode(["status" => "success", "message" => "สั่งซื้อสำเร็จ"]);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            echo json_encode(["status" => "error", "message" => "เกิดข้อผิดพลาด: " . $e->getMessage()]);
+        }
         break;
 
     case 'get_ticket_events':
@@ -1236,7 +1232,9 @@ switch($action) {
             echo json_encode(["status" => "success", "message" => "ลบสินค้าเรียบร้อย"]);
         } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
         break;
+
     default:
         echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
 }
+
 ?>

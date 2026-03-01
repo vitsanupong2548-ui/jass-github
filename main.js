@@ -1991,8 +1991,7 @@ document.addEventListener('click', function(e) {
         activeContainer.querySelector('#store-checkout-view')?.classList.add('hidden');
         activeContainer.querySelector('#store-cart-view')?.classList.remove('hidden');
     }
-
-    // -------------------------
+// -------------------------
     // 🌟 ปุ่ม ยืนยันการสั่งซื้อ (Confirm & Pay)
     // -------------------------
     if (e.target.closest('.btn-confirm-order')) {
@@ -2005,22 +2004,68 @@ document.addEventListener('click', function(e) {
         const fname = checkoutForm.querySelector('#chk-fname').value.trim();
         const lname = checkoutForm.querySelector('#chk-lname').value.trim();
         const phone = checkoutForm.querySelector('#chk-phone').value.trim();
+        const email = checkoutForm.querySelector('#chk-email') ? checkoutForm.querySelector('#chk-email').value.trim() : ''; // ดึงค่า email
         const address = checkoutForm.querySelector('#chk-address').value.trim();
+        const province = checkoutForm.querySelector('#chk-province').value.trim();
+        const zip = checkoutForm.querySelector('#chk-zip').value.trim();
         
-        if (!fname || !lname || !phone || !address) {
+        if (!fname || !lname || !phone || !address || !province || !zip) {
             window.showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกข้อมูลจัดส่งให้ครบถ้วนด้วยครับ' : 'Please fill in all required shipping details.');
             return;
         }
 
-        // จำลองว่าส่งข้อมูลสำเร็จแล้วเคลียร์ตะกร้า
-        localStorage.removeItem('jazz_store_cart');
-        checkoutForm.reset();
+        // ดึงข้อมูลสินค้าจากตะกร้าใน LocalStorage
+        let cart = localStorage.getItem('jazz_store_cart');
+        if (!cart || JSON.parse(cart).length === 0) {
+            window.showCustomAlert(window.currentLang === 'th' ? 'ไม่พบสินค้าในตะกร้า' : 'No items in cart.');
+            return;
+        }
 
-        window.showCustomAlert(window.currentLang === 'th' ? '🎉 ขอบคุณสำหรับการสั่งซื้อ!\nระบบได้รับข้อมูลแล้ว ทีมงานจะติดต่อกลับไปเร็วๆ นี้ครับ' : '🎉 Thank you for your order!\nWe have received your details and will contact you shortly.', () => {
-            // พอกด OK ใน Alert ให้ปิดหน้า Checkout กลับไปหน้าหลัก
-            activeContainer.querySelector('#store-checkout-view')?.classList.add('hidden');
-            activeContainer.querySelector('#store-main-view')?.classList.remove('hidden');
-            activeContainer.querySelectorAll('.nav-btn, .close-btn').forEach(btn => btn.style.display = '');
+        const btn = e.target.closest('.btn-confirm-order');
+        const originalText = btn.innerText;
+        btn.innerText = window.currentLang === 'th' ? 'กำลังดำเนินการ...' : 'Processing...';
+        btn.disabled = true;
+
+        // รวมชื่อและที่อยู่
+        const fullAddress = `${address} จ.${province} รหัสไปรษณีย์ ${zip}`;
+        const fullName = `${fname} ${lname}`;
+
+        // เตรียมข้อมูลส่งไป Backend
+        const fd = new FormData();
+        fd.append('customer_name', fullName);
+        fd.append('phone', phone);
+        fd.append('email', email); // ส่ง email ไปด้วย
+        fd.append('address', fullAddress);
+        fd.append('cart_data', cart);
+
+        // ยิง API บันทึกข้อมูล
+        fetch('backend.php?action=create_store_order', {
+            method: 'POST',
+            body: fd
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.status === 'success') {
+                // ส่งสำเร็จ -> เคลียร์ตะกร้า
+                localStorage.removeItem('jazz_store_cart');
+                checkoutForm.reset();
+
+                // แสดงข้อความขอบคุณ และปิดหน้า Checkout กลับไปหน้า Store หลัก
+                window.showCustomAlert(window.currentLang === 'th' ? '🎉 ขอบคุณสำหรับการสั่งซื้อ!\nระบบได้รับข้อมูลแล้ว ทีมงานจะติดต่อกลับไปเร็วๆ นี้ครับ' : '🎉 Thank you for your order!\nWe have received your details and will contact you shortly.', () => {
+                    activeContainer.querySelector('#store-checkout-view')?.classList.add('hidden');
+                    activeContainer.querySelector('#store-main-view')?.classList.remove('hidden');
+                    activeContainer.querySelectorAll('.nav-btn, .close-btn').forEach(b => b.style.display = '');
+                });
+            } else {
+                window.showCustomAlert('Error: ' + result.message);
+            }
+        })
+        .catch(err => {
+            window.showCustomAlert(window.currentLang === 'th' ? 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์' : 'Connection error.');
+        })
+        .finally(() => {
+            btn.innerText = originalText;
+            btn.disabled = false;
         });
     }
 
@@ -2291,4 +2336,5 @@ document.addEventListener('click', function(e) {
             if (closeBtn) closeBtn.click();
         }, 1500);
     }
+    
 });
