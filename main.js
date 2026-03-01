@@ -320,17 +320,60 @@ window.applyDataToDOM = async function(container) {
                         const dateFormatted = `${String(startD.getDate()).padStart(2, '0')} ${monthNames[startD.getMonth()]} ${startD.getFullYear()}`;
                        detailDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h1 class="text-3xl sm:text-4xl lg:text-5xl font-header font-bold mb-2 tracking-tight break-words">${title}</h1><h3 class="text-lg md:text-xl font-bold mb-4 text-gray-500 break-words">${event.location || 'Chiangmai Jazz City'}</h3><p class="text-sm sm:text-base font-medium mb-6 text-black">${dateFormatted}</p><hr class="border-gray-300 border-t-2 mb-6"><div class="prose prose-sm sm:prose-base max-w-none text-black font-medium leading-relaxed text-sm whitespace-pre-line break-words">${detailsText ? detailsText.replace(/\n/g, '<br>') : 'ไม่มีรายละเอียด...'}</div></div></div>`;
 
-                        let bookDiv = document.getElementById('book-now-content-' + event.id);
+                      let bookDiv = document.getElementById('book-now-content-' + event.id);
                         if(!bookDiv) { bookDiv = document.createElement('div'); bookDiv.id = 'book-now-content-' + event.id; bookDiv.className = 'hidden'; hiddenContainer.appendChild(bookDiv); }
-                        let ticketsHTML = '';
+                        
+                        // 1. ส่วนเลือกตั๋ว (ครอบด้วยคลาส ticket-selection-section)
+                        let ticketsHTML = '<div class="ticket-selection-section flex flex-col gap-4 w-full transition-opacity duration-300">';
                         if(event.tickets && event.tickets.length > 0) {
                             event.tickets.forEach(t => {
-                                ticketsHTML += `<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-300 pb-4 pt-2"><div class="mb-4 sm:mb-0 max-w-sm pr-4"><h3 class="text-xl font-bold text-black mb-1 break-words">${t.title}</h3><p class="text-xs text-gray-600 font-medium leading-snug break-words whitespace-pre-line">${t.details || ''}</p></div><div class="flex items-center justify-between w-full sm:w-auto gap-6 shrink-0"><span class="text-xl font-bold text-black">${Number(t.price).toLocaleString('en-US')} THB</span><div class="flex items-center border border-black rounded bg-white"><button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">-</button><span class="w-10 text-center font-bold">0</span><button class="w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">+</button></div></div></div>`;
+                                ticketsHTML += `<div class="ticket-row flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-300 pb-4 pt-2"><div class="mb-4 sm:mb-0 max-w-sm pr-4"><h3 class="text-xl font-bold text-black mb-1 break-words">${t.title}</h3><p class="text-xs text-gray-600 font-medium leading-snug break-words whitespace-pre-line">${t.details || ''}</p></div><div class="flex items-center justify-between w-full sm:w-auto gap-6 shrink-0"><span class="text-xl font-bold text-black" data-price="${t.price}">${Number(t.price).toLocaleString('en-US')} THB</span><div class="flex items-center border border-black rounded bg-white"><button class="btn-ticket-minus w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">-</button><span class="ticket-qty-val w-10 text-center font-bold">1</span><button class="btn-ticket-plus w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">+</button></div></div></div>`;
                             });
-                            ticketsHTML += `<div class="mt-6 flex flex-col gap-6"><label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="mt-1 w-4 h-4 rounded border-gray-300 text-black focus:ring-black"><span class="text-[10px] sm:text-xs text-black font-medium leading-relaxed">By checking this box, I hereby agree that my information will be shared to our Event Organizers</span></label><button class="w-full bg-black text-white font-header font-bold text-xl py-4 rounded-full tracking-wider hover:bg-gray-800 transition-colors uppercase shadow-lg">BUY TICKET</button></div>`;
-                        } else { ticketsHTML = '<p class="text-gray-500 font-medium mt-4">ไม่มีข้อมูลบัตรเข้าชมสำหรับงานนี้</p>'; }
-                        bookDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8 flex flex-col gap-4">${ticketsHTML}</div></div>`;
+                            ticketsHTML += `<div class="mt-6 flex flex-col gap-6"><label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="chk-ticket-agree mt-1 w-4 h-4 rounded border-gray-300 text-black focus:ring-black"><span class="text-[10px] sm:text-xs text-black font-medium leading-relaxed">By checking this box, I hereby agree that my information will be shared to our Event Organizers</span></label><button class="btn-buy-ticket w-full bg-black text-white font-header font-bold text-xl py-4 rounded-full tracking-wider hover:bg-gray-800 transition-colors uppercase shadow-lg" data-event-id="${event.id}">BUY TICKET</button></div>`;
+                        } else { 
+                            ticketsHTML += '<p class="text-gray-500 font-medium mt-4">ไม่มีข้อมูลบัตรเข้าชมสำหรับงานนี้</p>'; 
+                        }
+                        ticketsHTML += '</div>';
 
+                        // 2. ส่วนชำระเงิน QR Code (ซ่อนไว้ก่อนด้วยคลาส hidden)
+                        let qrPaymentHTML = `
+                        <div class="ticket-payment-section hidden flex flex-col items-center justify-center bg-[#f8f9fa] p-6 md:p-10 rounded-2xl shadow-sm border border-gray-200 w-full text-center transition-opacity duration-300">
+                            <h3 class="text-2xl md:text-3xl font-header font-bold text-black mb-2">Scan to Pay</h3>
+                            <p class="text-gray-500 mb-6 text-sm font-medium">Please scan the QR code to complete your payment.</p>
+                            
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 mb-6">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" alt="QR Code" class="w-48 h-48 md:w-56 md:h-56 object-contain">
+                            </div>
+                            
+                            <div class="bg-black text-white px-8 py-3 rounded-full mb-8 shadow-md">
+                                <span class="font-medium mr-2">Total Amount:</span>
+                                <span class="font-bold text-xl text-[#10a349]"><span class="final-total-price">0</span> THB</span>
+                            </div>
+                            
+                            <form class="w-full max-w-sm text-left space-y-4 mb-8">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Full Name</label>
+                                    <input type="text" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-black focus:outline-none focus:border-black transition" placeholder="Your Name" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Phone Number</label>
+                                    <input type="tel" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-black focus:outline-none focus:border-black transition" placeholder="08x-xxx-xxxx" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Upload Slip</label>
+                                    <input type="file" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-black focus:outline-none focus:border-black transition text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-gray-100 file:text-black hover:file:bg-gray-200" accept="image/*" required>
+                                </div>
+                            </form>
+
+                            <div class="flex gap-4 w-full max-w-sm">
+                                <button type="button" class="btn-cancel-payment flex-1 bg-gray-300 text-black font-bold py-3.5 rounded-full hover:bg-gray-400 transition shadow-sm">Cancel</button>
+                                <button type="button" class="btn-confirm-payment flex-1 bg-[#10a349] text-white font-bold py-3.5 rounded-full hover:bg-green-700 transition shadow-lg">Confirm</button>
+                            </div>
+                        </div>
+                        `;
+
+                        // นำทั้ง 2 ส่วนมาต่อกัน
+                        bookDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8 flex flex-col relative">${ticketsHTML}${qrPaymentHTML}</div></div>`;
                         let lineDiv = document.getElementById('line-up-content-' + event.id);
                         if(!lineDiv) { lineDiv = document.createElement('div'); lineDiv.id = 'line-up-content-' + event.id; lineDiv.className = 'hidden'; hiddenContainer.appendChild(lineDiv); }
                         let lineupHTML = '';
@@ -2127,4 +2170,125 @@ window.renderCheckoutSummary = function() {
     subtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
     grandtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
 };
+});
+// ==========================================
+// 10. ระบบจัดการตั๋ว Event (Tickets)
+// ==========================================
+document.addEventListener('click', function(e) {
+    
+    // 1. ปุ่มลดจำนวนตั๋ว (-)
+    if (e.target.closest('.btn-ticket-minus')) {
+        e.preventDefault();
+        const wrapper = e.target.closest('.flex.items-center.border.border-black');
+        if(wrapper) {
+            const qtySpan = wrapper.querySelector('.ticket-qty-val');
+            let qty = parseInt(qtySpan.innerText) || 1;
+            if (qty > 1) { // ล็อคไม่ให้จำนวนน้อยกว่า 1
+                qtySpan.innerText = qty - 1;
+            }
+        }
+    }
+
+    // 2. ปุ่มเพิ่มจำนวนตั๋ว (+)
+    if (e.target.closest('.btn-ticket-plus')) {
+        e.preventDefault();
+        const wrapper = e.target.closest('.flex.items-center.border.border-black');
+        if(wrapper) {
+            const qtySpan = wrapper.querySelector('.ticket-qty-val');
+            let qty = parseInt(qtySpan.innerText) || 1;
+            qtySpan.innerText = qty + 1;
+        }
+    }
+
+   // ==========================================
+    // 3. ระบบคลิก BUY TICKET (สลับเป็นหน้า QR)
+    // ==========================================
+    if (e.target.closest('.btn-buy-ticket')) {
+        e.preventDefault();
+        const btn = e.target.closest('.btn-buy-ticket');
+        const selectionSection = btn.closest('.ticket-selection-section');
+        const mainWrapper = selectionSection.parentElement; // กล่องใหญ่สุดที่คลุมทั้งคู่
+        
+        if (selectionSection && mainWrapper) {
+            // 1. เช็คติ๊กถูก
+            const checkbox = selectionSection.querySelector('.chk-ticket-agree');
+            if (checkbox && !checkbox.checked) {
+                alert(window.currentLang === 'th' ? 'กรุณาติ๊กยอมรับเงื่อนไข ก่อนทำการจองบัตรครับ' : 'Please check the agreement box before proceeding.');
+                return;
+            }
+
+            // 2. คำนวณราคารวม (เอาจำนวน x ราคา ของทุกใบที่เลือก)
+            let totalPrice = 0;
+            const ticketRows = selectionSection.querySelectorAll('.ticket-row');
+            ticketRows.forEach(row => {
+                const qtySpan = row.querySelector('.ticket-qty-val');
+                const priceSpan = row.querySelector('span[data-price]');
+                if (qtySpan && priceSpan) {
+                    let qty = parseInt(qtySpan.innerText) || 0;
+                    let price = parseFloat(priceSpan.getAttribute('data-price')) || 0;
+                    totalPrice += (qty * price);
+                }
+            });
+
+            // 3. สลับหน้าจอ ซ่อนส่วนเลือกตั๋ว -> แสดงหน้า QR Code
+            const paymentSection = mainWrapper.querySelector('.ticket-payment-section');
+            if (paymentSection) {
+                // อัปเดตราคาให้ตรงกัน
+                const totalDisplay = paymentSection.querySelector('.final-total-price');
+                if (totalDisplay) totalDisplay.innerText = totalPrice.toLocaleString();
+
+                selectionSection.classList.add('hidden');
+                paymentSection.classList.remove('hidden');
+                
+                // เลื่อนหน้าจอขึ้นมาให้เห็น QR กลางจอ
+                paymentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }
+
+    // ==========================================
+    // 4. ปุ่ม Cancel ในหน้า QR (ย้อนกลับไปเลือกตั๋ว)
+    // ==========================================
+    if (e.target.closest('.btn-cancel-payment')) {
+        e.preventDefault();
+        const paymentSection = e.target.closest('.ticket-payment-section');
+        const mainWrapper = paymentSection.parentElement;
+        const selectionSection = mainWrapper.querySelector('.ticket-selection-section');
+        
+        if (paymentSection && selectionSection) {
+            paymentSection.classList.add('hidden');
+            selectionSection.classList.remove('hidden');
+        }
+    }
+
+    // ==========================================
+    // 5. ปุ่ม Confirm Payment (ยืนยันชำระเงิน)
+    // ==========================================
+    if (e.target.closest('.btn-confirm-payment')) {
+        e.preventDefault();
+        const btn = e.target.closest('.btn-confirm-payment');
+        const paymentSection = btn.closest('.ticket-payment-section');
+        
+        // เช็คก่อนว่าอัปโหลดสลิปหรือยัง
+        const fileInput = paymentSection.querySelector('input[type="file"]');
+        if (fileInput && fileInput.files.length === 0) {
+            alert(window.currentLang === 'th' ? 'กรุณาอัปโหลดสลิปหลักฐานการโอนเงินด้วยครับ' : 'Please upload your payment slip.');
+            return;
+        }
+
+        const originalText = btn.innerText;
+        btn.innerText = window.currentLang === 'th' ? 'กำลังตรวจสอบ...' : 'Processing...';
+        btn.disabled = true;
+
+        // จำลองการโหลดส่งข้อมูล
+        setTimeout(() => {
+            alert(window.currentLang === 'th' ? '✅ ชำระเงินและส่งหลักฐานสำเร็จ! ขอบคุณสำหรับการสั่งซื้อครับ' : '✅ Payment and slip submitted successfully!');
+            btn.innerText = originalText;
+            btn.disabled = false;
+            
+            // สั่งปิดหน้าต่างกลับไปหน้าแรก
+            const closeBtn = document.querySelector('.close-btn');
+            if (closeBtn) closeBtn.click();
+        }, 1500);
+    }
 });
