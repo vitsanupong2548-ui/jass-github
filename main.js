@@ -1977,6 +1977,24 @@ document.addEventListener('click', function(e) {
             return;
         }
 
+        // โหลดข้อมูลที่อยู่ที่เคยเซฟไว้มาใส่ฟอร์ม (ถ้าระบบเคยจำไว้)
+        const savedInfoStr = localStorage.getItem('storeShippingInfo');
+        if (savedInfoStr) {
+            try {
+                const savedInfo = JSON.parse(savedInfoStr);
+                const form = activeContainer.querySelector('#checkout-form');
+                if (form) {
+                    if (savedInfo.fname) form.querySelector('#chk-fname').value = savedInfo.fname;
+                    if (savedInfo.lname) form.querySelector('#chk-lname').value = savedInfo.lname;
+                    if (savedInfo.phone) form.querySelector('#chk-phone').value = savedInfo.phone;
+                    if (savedInfo.email) form.querySelector('#chk-email').value = savedInfo.email;
+                    if (savedInfo.address) form.querySelector('#chk-address').value = savedInfo.address;
+                    if (savedInfo.province) form.querySelector('#chk-province').value = savedInfo.province;
+                    if (savedInfo.zip) form.querySelector('#chk-zip').value = savedInfo.zip;
+                }
+            } catch(err) {}
+        }
+
         // วาดข้อมูลสรุปยอดและสลับหน้าต่าง
         window.renderCheckoutSummary();
         activeContainer.querySelector('#store-cart-view')?.classList.add('hidden');
@@ -1991,42 +2009,64 @@ document.addEventListener('click', function(e) {
         activeContainer.querySelector('#store-checkout-view')?.classList.add('hidden');
         activeContainer.querySelector('#store-cart-view')?.classList.remove('hidden');
     }
-// -------------------------
+
+    // -------------------------
     // 🌟 ปุ่ม ยืนยันการสั่งซื้อ (Confirm & Pay)
     // -------------------------
     if (e.target.closest('.btn-confirm-order')) {
         e.preventDefault();
         
         const checkoutForm = activeContainer.querySelector('#checkout-form');
-        if (!checkoutForm) return;
+        const checkoutView = activeContainer.querySelector('#store-checkout-view');
+        if (!checkoutForm || !checkoutView) return;
 
-        // ตรวจสอบว่ากรอกข้อมูลครบไหม
+        // 1. ดึงข้อมูลจากฟอร์ม
         const fname = checkoutForm.querySelector('#chk-fname').value.trim();
         const lname = checkoutForm.querySelector('#chk-lname').value.trim();
         const phone = checkoutForm.querySelector('#chk-phone').value.trim();
-        const email = checkoutForm.querySelector('#chk-email') ? checkoutForm.querySelector('#chk-email').value.trim() : ''; // ดึงค่า email
+        const email = checkoutForm.querySelector('#chk-email') ? checkoutForm.querySelector('#chk-email').value.trim() : ''; 
         const address = checkoutForm.querySelector('#chk-address').value.trim();
         const province = checkoutForm.querySelector('#chk-province').value.trim();
         const zip = checkoutForm.querySelector('#chk-zip').value.trim();
         
+        const saveInfoChecked = checkoutForm.querySelector('#chk-save-info')?.checked;
+
+        // 2. ตรวจสอบว่ากรอกข้อมูลครบไหม
         if (!fname || !lname || !phone || !address || !province || !zip) {
-            window.showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกข้อมูลจัดส่งให้ครบถ้วนด้วยครับ' : 'Please fill in all required shipping details.');
+            window.showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกข้อมูลจัดส่งที่มีเครื่องหมาย * ให้ครบถ้วนด้วยครับ' : 'Please fill in all required shipping details.');
             return;
         }
 
-        // ดึงข้อมูลสินค้าจากตะกร้าใน LocalStorage
+        // 3. ตรวจสอบสลิปโอนเงิน (สลิปอยู่นอกแท็ก form จึงต้อง query จาก checkoutView)
+        const slipInput = checkoutView.querySelector('#chk-slip');
+        if (!slipInput || slipInput.files.length === 0) {
+            window.showCustomAlert(window.currentLang === 'th' ? 'กรุณาแนบไฟล์สลิปหลักฐานการโอนเงินด้วยครับ' : 'Please upload your payment slip.');
+            return;
+        }
+
+        // 4. ดึงข้อมูลตะกร้า
         let cart = localStorage.getItem('jazz_store_cart');
         if (!cart || JSON.parse(cart).length === 0) {
             window.showCustomAlert(window.currentLang === 'th' ? 'ไม่พบสินค้าในตะกร้า' : 'No items in cart.');
             return;
         }
 
+        // วิธีชำระเงินที่เลือก (promptpay หรือ bank)
+        const paymentMethod = checkoutView.querySelector('input[name="payment_method"]:checked')?.value || 'promptpay';
+
+        // บันทึกข้อมูลที่อยู่ (ถ้าลูกค้าติ๊ก)
+        if (saveInfoChecked) {
+            const infoToSave = { fname, lname, phone, email, address, province, zip };
+            localStorage.setItem('storeShippingInfo', JSON.stringify(infoToSave));
+        } else {
+            localStorage.removeItem('storeShippingInfo');
+        }
+
         const btn = e.target.closest('.btn-confirm-order');
-        const originalText = btn.innerText;
+        const originalHTML = btn.innerHTML; // เก็บ HTML เดิมไว้ (รวมรูป SVG)
         btn.innerText = window.currentLang === 'th' ? 'กำลังดำเนินการ...' : 'Processing...';
         btn.disabled = true;
 
-        // รวมชื่อและที่อยู่
         const fullAddress = `${address} จ.${province} รหัสไปรษณีย์ ${zip}`;
         const fullName = `${fname} ${lname}`;
 
@@ -2034,9 +2074,11 @@ document.addEventListener('click', function(e) {
         const fd = new FormData();
         fd.append('customer_name', fullName);
         fd.append('phone', phone);
-        fd.append('email', email); // ส่ง email ไปด้วย
+        fd.append('email', email);
         fd.append('address', fullAddress);
         fd.append('cart_data', cart);
+        fd.append('payment_method', paymentMethod); // ส่งวิธีชำระเงิน
+        fd.append('slip', slipInput.files[0]); // ส่งไฟล์สลิปรูปภาพ 🌟
 
         // ยิง API บันทึกข้อมูล
         fetch('backend.php?action=create_store_order', {
@@ -2049,9 +2091,10 @@ document.addEventListener('click', function(e) {
                 // ส่งสำเร็จ -> เคลียร์ตะกร้า
                 localStorage.removeItem('jazz_store_cart');
                 checkoutForm.reset();
+                if(slipInput) slipInput.value = '';
 
                 // แสดงข้อความขอบคุณ และปิดหน้า Checkout กลับไปหน้า Store หลัก
-                window.showCustomAlert(window.currentLang === 'th' ? '🎉 ขอบคุณสำหรับการสั่งซื้อ!\nระบบได้รับข้อมูลแล้ว ทีมงานจะติดต่อกลับไปเร็วๆ นี้ครับ' : '🎉 Thank you for your order!\nWe have received your details and will contact you shortly.', () => {
+                window.showCustomAlert(window.currentLang === 'th' ? '🎉 ขอบคุณสำหรับการสั่งซื้อ!\nระบบได้รับข้อมูลแล้ว ทีมงานจะตรวจสอบและติดต่อกลับไปเร็วๆ นี้ครับ' : '🎉 Thank you for your order!\nWe have received your details and will process it shortly.', () => {
                     activeContainer.querySelector('#store-checkout-view')?.classList.add('hidden');
                     activeContainer.querySelector('#store-main-view')?.classList.remove('hidden');
                     activeContainer.querySelectorAll('.nav-btn, .close-btn').forEach(b => b.style.display = '');
@@ -2064,11 +2107,10 @@ document.addEventListener('click', function(e) {
             window.showCustomAlert(window.currentLang === 'th' ? 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์' : 'Connection error.');
         })
         .finally(() => {
-            btn.innerText = originalText;
+            btn.innerHTML = originalHTML; // คืนค่าหน้าตาปุ่มเดิม
             btn.disabled = false;
         });
     }
-
     // -------------------------
     // ระบบ เปิด-ปิด Modal (Cart / Wishlist)
     // -------------------------
@@ -2337,4 +2379,41 @@ document.addEventListener('click', function(e) {
         }, 1500);
     }
     
+  // ==========================================
+// 🌟 ฟังก์ชันเสริมสำหรับหน้า Checkout
+// ==========================================
+
+// สลับหน้าต่างชำระเงิน (PromptPay / Bank Transfer)
+window.togglePaymentView = function() {
+    const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
+    const promptpayView = document.getElementById('pay-view-promptpay');
+    const bankView = document.getElementById('pay-view-bank');
+    
+    if (selectedMethod === 'promptpay') {
+        if(promptpayView) { promptpayView.classList.remove('hidden'); promptpayView.classList.add('flex'); }
+        if(bankView) { bankView.classList.add('hidden'); bankView.classList.remove('flex'); }
+    } else {
+        if(promptpayView) { promptpayView.classList.add('hidden'); promptpayView.classList.remove('flex'); }
+        if(bankView) { bankView.classList.remove('hidden'); bankView.classList.add('flex'); }
+    }
+};
+
+// ฟังก์ชันคัดลอกเลขบัญชี
+window.copyBankAccount = function(text, btnElement) {
+    if(navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalHTML = btnElement.innerHTML;
+            btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+            btnElement.classList.replace('bg-gray-100', 'bg-green-100');
+            btnElement.classList.replace('hover:bg-gray-200', 'hover:bg-green-200');
+            setTimeout(() => {
+                btnElement.innerHTML = originalHTML;
+                btnElement.classList.replace('bg-green-100', 'bg-gray-100');
+                btnElement.classList.replace('hover:bg-green-200', 'hover:bg-gray-200');
+            }, 2000);
+        }).catch(err => {
+            window.showCustomAlert('ไม่สามารถคัดลอกได้ กรุณาลองใหม่อีกครั้ง');
+        });
+    }
+};
 });
