@@ -1920,11 +1920,12 @@ document.addEventListener('click', function(e) {
     }
 
     // -------------------------
-    // 🌟 ปุ่ม Checkout (บังคับ Login)
+    // 🌟 ปุ่ม Checkout (จากหน้า Cart ไปหน้า Checkout)
     // -------------------------
     if (e.target.closest('.btn-checkout')) {
         e.preventDefault();
         
+        // เช็ค Login ก่อน Checkout
         if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนดำเนินการชำระเงินครับ!' : 'Please login before proceeding to checkout!')) return; 
 
         let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
@@ -1933,7 +1934,51 @@ document.addEventListener('click', function(e) {
             return;
         }
 
-        window.showCustomAlert(window.currentLang === 'th' ? 'กำลังพาท่านไปสู่หน้าจอชำระเงินและกรอกที่อยู่จัดส่ง...\n(ระบบจะพัฒนาในเฟสถัดไป 🚀)' : 'Redirecting to payment and shipping details...\n(To be developed in the next phase 🚀)');
+        // วาดข้อมูลสรุปยอดและสลับหน้าต่าง
+        window.renderCheckoutSummary();
+        activeContainer.querySelector('#store-cart-view')?.classList.add('hidden');
+        activeContainer.querySelector('#store-checkout-view')?.classList.remove('hidden');
+    }
+
+    // -------------------------
+    // 🌟 ปุ่ม ย้อนกลับไปตะกร้า (จากหน้า Checkout)
+    // -------------------------
+    if (e.target.closest('.btn-back-to-cart')) {
+        e.preventDefault();
+        activeContainer.querySelector('#store-checkout-view')?.classList.add('hidden');
+        activeContainer.querySelector('#store-cart-view')?.classList.remove('hidden');
+    }
+
+    // -------------------------
+    // 🌟 ปุ่ม ยืนยันการสั่งซื้อ (Confirm & Pay)
+    // -------------------------
+    if (e.target.closest('.btn-confirm-order')) {
+        e.preventDefault();
+        
+        const checkoutForm = activeContainer.querySelector('#checkout-form');
+        if (!checkoutForm) return;
+
+        // ตรวจสอบว่ากรอกข้อมูลครบไหม
+        const fname = checkoutForm.querySelector('#chk-fname').value.trim();
+        const lname = checkoutForm.querySelector('#chk-lname').value.trim();
+        const phone = checkoutForm.querySelector('#chk-phone').value.trim();
+        const address = checkoutForm.querySelector('#chk-address').value.trim();
+        
+        if (!fname || !lname || !phone || !address) {
+            window.showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกข้อมูลจัดส่งให้ครบถ้วนด้วยครับ' : 'Please fill in all required shipping details.');
+            return;
+        }
+
+        // จำลองว่าส่งข้อมูลสำเร็จแล้วเคลียร์ตะกร้า
+        localStorage.removeItem('jazz_store_cart');
+        checkoutForm.reset();
+
+        window.showCustomAlert(window.currentLang === 'th' ? '🎉 ขอบคุณสำหรับการสั่งซื้อ!\nระบบได้รับข้อมูลแล้ว ทีมงานจะติดต่อกลับไปเร็วๆ นี้ครับ' : '🎉 Thank you for your order!\nWe have received your details and will contact you shortly.', () => {
+            // พอกด OK ใน Alert ให้ปิดหน้า Checkout กลับไปหน้าหลัก
+            activeContainer.querySelector('#store-checkout-view')?.classList.add('hidden');
+            activeContainer.querySelector('#store-main-view')?.classList.remove('hidden');
+            activeContainer.querySelectorAll('.nav-btn, .close-btn').forEach(btn => btn.style.display = '');
+        });
     }
 
     // -------------------------
@@ -2047,4 +2092,39 @@ document.addEventListener('click', function(e) {
         localStorage.setItem('jazz_store_cart', JSON.stringify(cart));
         window.renderCartItems(); 
     }
+    // ==========================================
+// 🌟 ระบบวาดข้อมูลสรุปออเดอร์หน้า Checkout
+// ==========================================
+window.renderCheckoutSummary = function() {
+    const activeContainer = window.activeClone || document;
+    const summaryContainer = activeContainer.querySelector('#checkout-summary-items');
+    const subtotalEl = activeContainer.querySelector('#checkout-subtotal');
+    const grandtotalEl = activeContainer.querySelector('#checkout-grandtotal');
+    
+    if(!summaryContainer || !subtotalEl || !grandtotalEl) return;
+
+    let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
+    summaryContainer.innerHTML = '';
+    let totalPrice = 0;
+
+    cart.forEach(item => {
+        const itemTotal = parseFloat(item.price) * parseInt(item.qty);
+        totalPrice += itemTotal;
+        const img = item.image || 'https://placehold.co/100x100/efefef/000?text=No+Img';
+        
+        summaryContainer.innerHTML += `
+            <div class="flex items-center gap-4">
+                <img src="${img}" class="w-16 h-16 object-cover rounded-lg bg-white border border-gray-200">
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-bold text-sm text-black truncate uppercase">${item.name}</h4>
+                    <p class="text-xs text-gray-500 font-medium">Qty: ${item.qty}</p>
+                </div>
+                <div class="font-bold text-sm text-black whitespace-nowrap">${itemTotal.toLocaleString()}.-</div>
+            </div>
+        `;
+    });
+
+    subtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
+    grandtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
+};
 });
