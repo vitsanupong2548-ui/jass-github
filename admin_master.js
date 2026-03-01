@@ -1004,166 +1004,333 @@ document.getElementById('btn-delete-forum')?.addEventListener('click', async () 
 });
 // --- 8. Forum Q&A Management (END) ---
 // =====================================================================
-// --- 9. Store & Merch Management ---
+// --- 9. Store & Merch & Ticket Management ---
 // =====================================================================
-let currentStockData = [];
-let storeSelectedBanner = null; let storeSelectedImages = [];
-let editStoreExistingImages = []; let editStoreSelectedImages = [];
 
-window.switchStoreTab = function(tab) {
-    document.querySelectorAll('.store-tab-content').forEach(el => el.classList.add('hidden'));
-    document.querySelectorAll('#btn-store-product, #btn-store-stock, #btn-store-order').forEach(btn => {
+// สลับ Tab ย่อยภายในหน้า Store และ Ticket
+window.switchInnerTab = function(tabName) {
+    // ปิดทั้งหมดก่อน
+    document.querySelectorAll('.inner-tab-content').forEach(el => el.classList.add('hidden'));
+    
+    // รีเซ็ตปุ่ม Store
+    document.querySelectorAll('#btn-inner-product, #btn-inner-stock, #btn-inner-order').forEach(btn => {
         btn.classList.remove('bg-pink-500', 'text-white'); btn.classList.add('bg-gray-100', 'text-gray-600');
     });
-    document.getElementById('tab-store-' + tab).classList.remove('hidden');
-    document.getElementById('btn-store-' + tab).classList.remove('bg-gray-100', 'text-gray-600');
-    document.getElementById('btn-store-' + tab).classList.add('bg-pink-500', 'text-white');
+    // รีเซ็ตปุ่ม Ticket
+    document.querySelectorAll('#btn-inner-ticket-dashboard, #btn-inner-ticket-order').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white'); btn.classList.add('bg-gray-100', 'text-gray-600');
+    });
 
-    const tEl = document.getElementById('store-page-title');
-    if(tab === 'product') tEl.textContent = 'เพิ่มสินค้า (Add Product)';
-    else if(tab === 'stock') { tEl.textContent = 'จัดการสต๊อก (Stock)'; loadStoreStock(); }
-    else if(tab === 'order') { tEl.textContent = 'รายการสั่งซื้อ (Order)'; loadStoreOrders(); }
+    const targetTab = document.getElementById('tab-inner-' + tabName);
+    const targetBtn = document.getElementById('btn-inner-' + tabName);
+    if(targetTab) targetTab.classList.remove('hidden');
+    
+    if(tabName.includes('ticket')) {
+        if(targetBtn) { targetBtn.classList.remove('bg-gray-100', 'text-gray-600'); targetBtn.classList.add('bg-blue-600', 'text-white'); }
+        if(tabName === 'ticket-dashboard') loadTicketEventsData();
+        if(tabName === 'ticket-order') loadTicketOrderData();
+    } else {
+        if(targetBtn) { targetBtn.classList.remove('bg-gray-100', 'text-gray-600'); targetBtn.classList.add('bg-pink-500', 'text-white'); }
+        if(tabName === 'stock') loadStockData();
+        if(tabName === 'order') loadOrderData();
+    }
 };
 
-// Add Form Images
-window.previewStoreBanner = function(input) {
-    if (input.files && input.files[0]) {
-        storeSelectedBanner = input.files[0];
-        const reader = new FileReader();
-        reader.onload = function(e) { document.getElementById('store-banner-preview').src = e.target.result; document.getElementById('store-banner-preview').classList.remove('hidden'); document.getElementById('store-banner-text').classList.add('hidden'); }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-window.handleStoreImages = function(input) {
-    const files = Array.from(input.files); const remaining = 5 - storeSelectedImages.length;
-    if (files.length > remaining) showToast(`เพิ่มได้อีกแค่ ${remaining} รูป`);
-    files.slice(0, remaining).forEach(file => storeSelectedImages.push(file));
-    renderStoreImagePreviews(); input.value = '';
-}
-function renderStoreImagePreviews() {
-    const container = document.getElementById('store-images-container'); const addBtn = container.firstElementChild;
-    container.innerHTML = ''; container.appendChild(addBtn);
-    storeSelectedImages.forEach((file, index) => {
-        const div = document.createElement('div'); div.className = 'relative w-32 h-32 flex-shrink-0 border border-gray-300 group rounded-lg overflow-hidden';
-        div.innerHTML = `<img class="w-full h-full object-cover"><button type="button" onclick="event.stopPropagation(); storeSelectedImages.splice(${index}, 1); renderStoreImagePreviews();" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">✕</button>`;
-        container.appendChild(div);
-        const reader = new FileReader(); reader.onload = e => div.querySelector('img').src = e.target.result; reader.readAsDataURL(file);
+// ดักจับเวลาคลิกเมนูหลักซ้ายมือ เพื่อให้โหลดข้อมูลออโต้
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+        const target = link.getAttribute('data-target');
+        if(target === 'section-store') switchInnerTab('product');
+        if(target === 'section-ticket') switchInnerTab('ticket-dashboard');
     });
-}
+});
 
-// Edit Form Images
-window.previewEditStoreBanner = function(input) {
-    if (input.files && input.files[0]) {
-        storeSelectedBanner = input.files[0];
-        const reader = new FileReader();
-        reader.onload = function(e) { document.getElementById('edit-store-banner-preview').src = e.target.result; document.getElementById('edit-store-banner-preview').classList.remove('hidden'); document.getElementById('edit-store-banner-text').classList.add('hidden'); }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-window.handleEditStoreImages = function(input) {
-    const files = Array.from(input.files); const remaining = 5 - (editStoreExistingImages.length + editStoreSelectedImages.length);
-    if (files.length > remaining) showToast(`เพิ่มรูปได้อีกแค่ ${remaining} รูป`);
-    files.slice(0, remaining).forEach(file => editStoreSelectedImages.push(file));
-    renderEditStoreImagePreviews(); input.value = '';
-}
-function renderEditStoreImagePreviews() {
-    const container = document.getElementById('edit-store-images-container'); const addBtn = container.firstElementChild;
-    container.innerHTML = ''; container.appendChild(addBtn);
-    editStoreExistingImages.forEach((url, index) => {
-        const div = document.createElement('div'); div.className = 'relative w-20 h-20 flex-shrink-0 border border-gray-300 group rounded-lg overflow-hidden';
-        div.innerHTML = `<img src="${url}" class="w-full h-full object-cover"><button type="button" onclick="event.stopPropagation(); editStoreExistingImages.splice(${index}, 1); renderEditStoreImagePreviews();" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">✕</button>`;
-        container.appendChild(div);
-    });
-    editStoreSelectedImages.forEach((file, index) => {
-        const div = document.createElement('div'); div.className = 'relative w-20 h-20 flex-shrink-0 border border-gray-300 group rounded-lg overflow-hidden';
-        div.innerHTML = `<img class="w-full h-full object-cover"><button type="button" onclick="event.stopPropagation(); editStoreSelectedImages.splice(${index}, 1); renderEditStoreImagePreviews();" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition">✕</button>`;
-        container.appendChild(div);
-        const reader = new FileReader(); reader.onload = e => div.querySelector('img').src = e.target.result; reader.readAsDataURL(file);
-    });
-}
+// ====== ระบบจัดการ Slip โอนเงิน ======
+let uploadSlipOrderId = null; let uploadSlipOrderType = null;
 
-// API Calls
-window.saveNewProduct = async function() {
-    const name = document.getElementById('store_p_name').value; const price = document.getElementById('store_p_price').value;
-    const stock = document.getElementById('store_p_stock').value; const details = document.getElementById('store_p_details').value;
-    if(!name || !price || !stock) return showToast('กรุณากรอกชื่อ ราคา และสต๊อก');
-    const fd = new FormData(); fd.append('product_name', name); fd.append('product_price', price); fd.append('product_stock', stock); fd.append('product_details', details); fd.append('sale_status', document.querySelector('input[name="store_sale_status"]:checked').value);
-    if(storeSelectedBanner) fd.append('image_banner', storeSelectedBanner);
-    storeSelectedImages.forEach(f => fd.append('product_images[]', f));
+window.viewSlip = (url) => {
+    document.getElementById('slip-full-image').src = url;
+    document.getElementById('slip-modal').classList.remove('hidden');
+};
+window.closeSlipModal = () => document.getElementById('slip-modal').classList.add('hidden');
+
+window.triggerSlipUpload = (orderId, type) => {
+    uploadSlipOrderId = orderId; uploadSlipOrderType = type;
+    document.getElementById('global-slip-upload').click();
+};
+
+window.uploadSlipFile = async (input) => {
+    if (!input.files || input.files.length === 0) return;
+    const fd = new FormData();
+    fd.append('order_id', uploadSlipOrderId); fd.append('order_type', uploadSlipOrderType); fd.append('payment_slip_file', input.files[0]);
     try {
-        const res = await fetch(getApiUrl('add_store_product'), fetchOptions('POST', fd)); const r = await res.json(); showToast(r.message);
-        if(r.status === 'success') { document.getElementById('store_p_name').value=''; document.getElementById('store_p_price').value=''; document.getElementById('store_p_stock').value=''; document.getElementById('store_p_details').value=''; storeSelectedBanner=null; document.getElementById('store-banner-preview').classList.add('hidden'); document.getElementById('store-banner-text').classList.remove('hidden'); storeSelectedImages=[]; renderStoreImagePreviews(); }
-    } catch(e) { showToast('Connection Error'); }
-}
+        showToast('กำลังอัปโหลดสลิป...');
+        const res = await fetch(getApiUrl('upload_payment_slip'), fetchOptions('POST', fd)); const result = await res.json();
+        if(result.status === 'success') {
+            showToast('อัปโหลดสำเร็จ');
+            if(uploadSlipOrderType === 'store') loadOrderData(); else loadTicketOrderData();
+        } else { showToast('Error: ' + result.message); }
+    } catch(e) { showToast('Connection Error'); } finally { input.value = ''; }
+};
 
-window.loadStoreStock = async function() {
-    const tbody = document.getElementById('store-stock-tbody'); tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-500">กำลังโหลด...</td></tr>';
+window.updateOrderStatus = async (orderId, orderType, field, newValue, selectElement) => {
+    const fd = new FormData(); fd.append('order_id', orderId); fd.append('order_type', orderType); fd.append('field', field); fd.append('value', newValue);
     try {
-        const res = await fetch(getApiUrl('get_store_stock')); const r = await res.json();
-        if(r.status === 'success') {
-            tbody.innerHTML = ''; currentStockData = r.data;
-            if(r.data.length === 0) return tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-500">ไม่มีข้อมูล</td></tr>';
-            r.data.forEach((p, i) => {
-                const stockClass = p.stock_balance <= 5 ? 'text-red-500 font-bold' : 'text-gray-700 font-bold';
-                const statusBadge = p.sale_status === 'open' ? '<span class="ml-2 text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Open</span>' : '<span class="ml-2 text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full">Close</span>';
-                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50 transition"><td class="p-4 text-center font-medium">${i+1}</td><td class="p-4"><p class="font-bold text-lg text-pink-600">${p.name}${statusBadge}</p><p class="text-xs text-gray-500 mt-1">รหัส: ${p.product_code} | ราคา: ${p.price}฿</p></td><td class="p-4 text-center text-lg ${stockClass}">${p.stock_balance}</td><td class="p-4 text-center"><button onclick="openEditStoreModal(${p.product_id})" class="bg-gray-200 hover:bg-pink-500 hover:text-white px-4 py-1.5 rounded-full text-xs font-bold transition mr-2">แก้ไข</button><button onclick="deleteStoreProduct(${p.product_id})" class="bg-red-500 text-white hover:bg-red-600 px-4 py-1.5 rounded-full text-xs font-bold transition shadow-sm">ลบ</button></td></tr>`;
-            });
-        }
+        const res = await fetch(getApiUrl('update_order_status'), fetchOptions('POST', fd)); const result = await res.json();
+        if(result.status === 'success') {
+            const colorClass = newValue === 'success' ? 'bg-green-500 text-white' : (newValue === 'canceled' ? 'bg-red-500 text-white' : 'bg-yellow-400 text-black');
+            selectElement.className = `p-1 rounded text-xs font-bold outline-none cursor-pointer ${colorClass}`;
+            showToast('อัปเดตสถานะสำเร็จ');
+        } else showToast('Error: ' + result.message);
     } catch(e) {}
-}
+};
 
-window.loadStoreOrders = async function() {
-    const tbody = document.getElementById('store-order-tbody'); tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-500">กำลังโหลด...</td></tr>';
+// ====== ฟังก์ชัน Load ข้อมูล ตาราง Order (Store & Ticket) ======
+window.loadOrderData = async () => {
+    const tbody = document.getElementById('store-order-tbody'); tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-gray-500">กำลังโหลดข้อมูล...</td></tr>';
     try {
-        const res = await fetch(getApiUrl('get_store_orders')); const r = await res.json();
+        const res = await fetch(getApiUrl('get_orders')); const r = await res.json();
         if(r.status === 'success') {
             tbody.innerHTML = '';
-            if(r.data.length === 0) return tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-500">ไม่มีรายการคำสั่งซื้อ</td></tr>';
+            if(r.data.length === 0) return tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-gray-500">ไม่มีข้อมูลคำสั่งซื้อ</td></tr>';
             r.data.forEach(o => {
-                const d = new Date(o.created_at); const dStr = d.toLocaleDateString('th-TH') + ' ' + d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
-                const pBadge = o.payment_status === 'success' ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded font-bold">Success</span>' : (o.payment_status === 'failed' ? '<span class="bg-red-100 text-red-700 px-2 py-1 rounded font-bold">Failed</span>' : '<span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded font-bold">Pending</span>');
-                const oBadge = o.order_status === 'success' ? '<span class="bg-green-500 text-white px-2 py-1 rounded font-bold">Success</span>' : (o.order_status === 'canceled' ? '<span class="bg-red-500 text-white px-2 py-1 rounded font-bold">Canceled</span>' : '<span class="bg-yellow-500 text-white px-2 py-1 rounded font-bold">Pending</span>');
-                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50"><td class="p-4 text-xs text-gray-500 whitespace-nowrap">${dStr}</td><td class="p-4 font-bold text-gray-700">${o.order_code}<br><span class="text-[10px] text-pink-500 font-normal">รหัสสค้า: ${o.product_code}</span></td><td class="p-4"><p class="font-bold">${o.customer_name}</p><p class="text-xs text-gray-500">${o.phone}</p></td><td class="p-4 text-center font-bold text-lg">${o.amount}</td><td class="p-4 text-center">${pBadge}</td><td class="p-4 text-center">${oBadge}</td></tr>`;
+                const dStr = new Date(o.created_at).toLocaleString('th-TH', {dateStyle:'short', timeStyle:'short'});
+                let slipHtml = (o.payment_status && o.payment_status.includes('/')) ? `<img src="${o.payment_status}" onclick="viewSlip('${o.payment_status}')" class="w-12 h-16 object-cover mx-auto rounded border cursor-zoom-in hover:opacity-80 mb-1">` : `<div class="text-[10px] text-gray-400 mb-1">ไม่มีสลิป</div>`;
+                const statColor = o.order_status === 'success' ? 'bg-green-500 text-white' : (o.order_status === 'canceled' ? 'bg-red-500 text-white' : 'bg-yellow-400 text-black');
+                
+                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50">
+                    <td class="p-2">${dStr}</td><td class="p-2 font-bold">${o.order_code}</td><td class="p-2">${o.product_code}</td>
+                    <td class="p-2">${o.customer_name}</td><td class="p-2 max-w-[100px] truncate" title="${o.address}">${o.address}</td>
+                    <td class="p-2">${o.phone}</td><td class="p-2 text-center font-bold text-pink-600">${o.amount}</td>
+                    <td class="p-2 text-center">${slipHtml}<button onclick="triggerSlipUpload(${o.order_id}, 'store')" class="text-[10px] bg-gray-200 px-2 py-1 rounded w-full">+ สลิป</button></td>
+                    <td class="p-2 text-center"><select onchange="updateOrderStatus(${o.order_id}, 'store', 'order_status', this.value, this)" class="p-1 rounded text-xs font-bold w-full outline-none cursor-pointer ${statColor}"><option value="pending" ${o.order_status==='pending'?'selected':''} class="bg-white text-black">Pending</option><option value="success" ${o.order_status==='success'?'selected':''} class="bg-white text-black">Success</option><option value="canceled" ${o.order_status==='canceled'?'selected':''} class="bg-white text-black">Cancel</option></select></td>
+                </tr>`;
             });
         }
     } catch(e) {}
-}
+};
 
-window.openEditStoreModal = function(id) {
-    const p = currentStockData.find(x => x.product_id == id); if(!p) return;
-    document.getElementById('edit_store_p_id').value = p.product_id; document.getElementById('edit_store_p_name').value = p.name;
-    document.getElementById('edit_store_p_price').value = p.price; document.getElementById('edit_store_p_stock').value = p.stock_balance;
-    document.getElementById('edit_store_p_details').value = p.description || '';
-    document.querySelector(`input[name="edit_store_sale_status"][value="${p.sale_status}"]`).checked = true;
-
-    editStoreExistingImages = [];
-    if(p.image_products) { try { const parsed = JSON.parse(p.image_products); if(Array.isArray(parsed)) editStoreExistingImages = parsed; } catch(e){} }
-    storeSelectedBanner = null; const bPreview = document.getElementById('edit-store-banner-preview'); const bText = document.getElementById('edit-store-banner-text');
-    if(p.image_banner) { bPreview.src = p.image_banner; bPreview.classList.remove('hidden'); bText.classList.add('hidden'); } else { bPreview.src=''; bPreview.classList.add('hidden'); bText.classList.remove('hidden'); }
-    
-    editStoreSelectedImages = []; renderEditStoreImagePreviews();
-    document.getElementById('store-edit-modal').classList.remove('hidden');
-}
-
-window.saveEditedStoreProduct = async function() {
-    const id = document.getElementById('edit_store_p_id').value; const name = document.getElementById('edit_store_p_name').value;
-    const price = document.getElementById('edit_store_p_price').value; const stock = document.getElementById('edit_store_p_stock').value;
-    if(!name || !price || !stock) return showToast('กรุณากรอกข้อมูลให้ครบถ้วน');
-    const fd = new FormData(); fd.append('product_id', id); fd.append('product_name', name); fd.append('product_price', price); fd.append('product_stock', stock); fd.append('product_details', document.getElementById('edit_store_p_details').value); fd.append('sale_status', document.querySelector('input[name="edit_store_sale_status"]:checked').value);
-    editStoreExistingImages.forEach(url => fd.append('existing_images[]', url));
-    if(storeSelectedBanner) fd.append('image_banner', storeSelectedBanner);
-    editStoreSelectedImages.forEach(f => fd.append('product_images[]', f));
+window.loadTicketOrderData = async () => {
+    const tbody = document.getElementById('ticket-order-tbody'); tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-gray-500">กำลังโหลดข้อมูล...</td></tr>';
     try {
-        const res = await fetch(getApiUrl('update_store_product'), fetchOptions('POST', fd)); const r = await res.json(); showToast(r.message);
-        if(r.status === 'success') { document.getElementById('store-edit-modal').classList.add('hidden'); loadStoreStock(); }
+        const res = await fetch(getApiUrl('get_ticket_orders')); const r = await res.json();
+        if(r.status === 'success') {
+            tbody.innerHTML = '';
+            if(r.data.length === 0) return tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-gray-500">ไม่มีข้อมูลการจองตั๋ว</td></tr>';
+            r.data.forEach(o => {
+                const dStr = new Date(o.created_at).toLocaleString('th-TH', {dateStyle:'short', timeStyle:'short'});
+                let slipHtml = (o.payment_status && o.payment_status.includes('/')) ? `<img src="${o.payment_status}" onclick="viewSlip('${o.payment_status}')" class="w-12 h-16 object-cover mx-auto rounded border cursor-zoom-in hover:opacity-80 mb-1">` : `<div class="text-[10px] text-gray-400 mb-1">ไม่มีสลิป</div>`;
+                const statColor = o.order_status === 'success' ? 'bg-green-500 text-white' : (o.order_status === 'canceled' ? 'bg-red-500 text-white' : 'bg-yellow-400 text-black');
+                
+                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50">
+                    <td class="p-2">${dStr}</td><td class="p-2 font-bold">${o.order_code}</td>
+                    <td class="p-2 text-left leading-tight"><div class="font-bold text-blue-600">${o.event_name||'-'}</div><div class="text-[10px] text-gray-500">${o.ticket_name}</div></td>
+                    <td class="p-2">${o.customer_name}</td><td class="p-2 max-w-[100px] truncate" title="${o.address}">${o.address}</td>
+                    <td class="p-2">${o.phone}</td><td class="p-2 text-center font-bold text-blue-600">${o.amount}</td>
+                    <td class="p-2 text-center">${slipHtml}<button onclick="triggerSlipUpload(${o.order_id}, 'ticket')" class="text-[10px] bg-gray-200 px-2 py-1 rounded w-full">+ สลิป</button></td>
+                    <td class="p-2 text-center"><select onchange="updateOrderStatus(${o.order_id}, 'ticket', 'order_status', this.value, this)" class="p-1 rounded text-xs font-bold w-full outline-none cursor-pointer ${statColor}"><option value="pending" ${o.order_status==='pending'?'selected':''} class="bg-white text-black">Pending</option><option value="success" ${o.order_status==='success'?'selected':''} class="bg-white text-black">Success</option><option value="canceled" ${o.order_status==='canceled'?'selected':''} class="bg-white text-black">Cancel</option></select></td>
+                </tr>`;
+            });
+        }
     } catch(e) {}
-}
+};
 
+window.loadTicketEventsData = async () => {
+    const list = document.getElementById('ticket-events-list'); list.innerHTML = '<div class="text-center py-8 text-gray-500">กำลังโหลด...</div>';
+    try {
+        const res = await fetch(getApiUrl('get_ticket_events')); const r = await res.json();
+        if(r.status === 'success') {
+            list.innerHTML = '';
+            if(r.data.length === 0) return list.innerHTML = '<div class="text-center py-8 text-gray-500">ไม่มี Event ในระบบ</div>';
+            r.data.forEach((item, idx) => {
+                const statStr = parseInt(item.is_open) === 1 ? '<span class="text-green-600 font-bold">Sale Open</span>' : '<span class="text-red-500 font-bold">Closed</span>';
+                list.innerHTML += `
+                    <div class="border border-gray-200 rounded-xl p-4 flex justify-between items-center bg-gray-50 shadow-sm">
+                        <div class="font-medium text-gray-800"><span class="font-bold mr-2 text-blue-600">${idx+1}.</span> ${item.event_title||'-'} : ${item.ticket_title}</div>
+                        <div class="flex items-center gap-6">
+                            <span id="ticket-order-count-${item.ticket_id}" onclick="fetchTicketCount(${item.ticket_id})" class="cursor-pointer hover:underline text-sm font-bold text-gray-500 hover:text-blue-600">กดดูยอดขาย</span>
+                            <span class="text-sm">${statStr}</span>
+                        </div>
+                    </div>`;
+            });
+        }
+    } catch(e) {}
+};
+
+window.fetchTicketCount = async (ticketId) => {
+    const el = document.getElementById(`ticket-order-count-${ticketId}`);
+    try {
+        const res = await fetch(getApiUrl(`get_ticket_order_count&ticket_id=${ticketId}`)); const r = await res.json();
+        if(r.status === 'success') { el.innerHTML = `ยอดขาย: <span class="text-blue-600">${r.count}</span> ใบ`; el.onclick = null; el.classList.remove('cursor-pointer', 'hover:underline'); }
+    } catch(e) {}
+};
+
+// ==========================================
+// 🌟 ระบบจัดการ Store & Merch (Admin Panel)
+// ==========================================
+
+let storeProductImages = [];
+let storeBannerImage = null;
+
+// สลับแท็บ เพิ่มสินค้า / สต๊อก / ออเดอร์
+window.switchStoreTab = function(tabName) {
+    document.querySelectorAll('.store-tab-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById(`tab-store-${tabName}`).classList.remove('hidden');
+
+    document.getElementById('btn-store-product').className = 'flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200';
+    document.getElementById('btn-store-stock').className = 'flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200';
+    document.getElementById('btn-store-order').className = 'flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200';
+    
+    const activeBtn = document.getElementById(`btn-store-${tabName}`);
+    if(activeBtn) activeBtn.className = 'flex-1 py-3 bg-pink-500 text-white font-bold transition shadow-inner';
+
+    if(tabName === 'stock') loadStockData();
+};
+
+// Preview รูป Banner
+window.previewStoreBanner = function(input) {
+    if (input.files && input.files[0]) {
+        storeBannerImage = input.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById('store-banner-preview').src = e.target.result;
+            document.getElementById('store-banner-preview').classList.remove('hidden');
+            document.getElementById('store-banner-text').classList.add('hidden');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+};
+
+// จัดการรูปภาพสินค้าย่อย (สูงสุด 5 รูป)
+window.handleStoreImages = function(input) {
+    if (input.files) {
+        const remainingSlots = 5 - storeProductImages.length;
+        const filesToAdd = Array.from(input.files).slice(0, remainingSlots);
+        filesToAdd.forEach(file => {
+            storeProductImages.push(file);
+            renderStoreImagePreviews();
+        });
+    }
+    input.value = ''; 
+};
+
+window.renderStoreImagePreviews = function() {
+    const container = document.getElementById('store-images-container');
+    container.innerHTML = `<div class="w-32 h-32 border-2 border-dashed border-gray-400 rounded-xl flex flex-col items-center justify-center text-center text-sm font-bold text-gray-500 cursor-pointer hover:bg-gray-50 transition p-2 flex-shrink-0" onclick="document.getElementById('store-upload-images').click()"><span>+ Add</span><span>Images</span><span class="text-xs font-normal">(Max 5)</span></div>`;
+    
+    storeProductImages.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            container.innerHTML += `
+                <div class="relative w-32 h-32 rounded-xl overflow-hidden border border-gray-200 shadow-sm flex-shrink-0 group">
+                    <img src="${e.target.result}" class="w-full h-full object-cover">
+                    <button onclick="removeStoreImage(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow">✕</button>
+                </div>`;
+        };
+        reader.readAsDataURL(file);
+    });
+};
+
+window.removeStoreImage = function(index) {
+    storeProductImages.splice(index, 1);
+    renderStoreImagePreviews();
+};
+
+// ดึงข้อมูลสินค้ามาแสดงในตาราง Stock
+window.loadStockData = async function() {
+    const tbody = document.getElementById('store-stock-tbody');
+    if(!tbody) return;
+    try {
+        const res = await fetch('backend.php?action=get_store_products'); 
+        const result = await res.json();
+        if(result.status === 'success') {
+            tbody.innerHTML = '';
+            if(result.data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-500 font-bold">ยังไม่มีสินค้าในระบบ</td></tr>`;
+                return;
+            }
+            result.data.forEach((p, idx) => {
+                let imgUrl = 'https://placehold.co/100x100/efefef/000?text=No+Img';
+                if(p.image_products) { try { imgUrl = JSON.parse(p.image_products)[0] || imgUrl; }catch(e){} }
+                const badge = p.sale_status === 'open' ? `<span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">OPEN</span>` : `<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">CLOSE</span>`;
+                
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="p-4 text-center font-bold text-gray-500">${idx+1}</td>
+                        <td class="p-4 flex items-center gap-4">
+                            <img src="${imgUrl}" class="w-16 h-16 object-cover rounded-xl border border-gray-200 bg-white shadow-sm">
+                            <div><h4 class="font-bold text-gray-800 text-base">${p.name}</h4><p class="text-sm text-gray-500 font-medium">${parseFloat(p.price).toLocaleString()} ฿</p></div>
+                        </td>
+                        <td class="p-4 text-center"><span class="font-bold text-xl ${p.stock_balance > 0 ? 'text-gray-800' : 'text-red-500'}">${p.stock_balance}</span></td>
+                        <td class="p-4 text-center space-x-2">
+                            ${badge}
+                            <button onclick="deleteStoreProduct(${p.product_id})" class="ml-2 bg-red-100 text-red-600 hover:bg-red-500 hover:text-white px-4 py-2 rounded-lg font-bold text-sm transition">ลบ</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+    } catch(e) {}
+};
+
+// บันทึกสินค้าใหม่
+window.saveNewProduct = async function() {
+    const name = document.getElementById('store_p_name').value;
+    const price = document.getElementById('store_p_price').value;
+    const stock = document.getElementById('store_p_stock').value;
+    const details = document.getElementById('store_p_details').value;
+    const status = document.querySelector('input[name="store_sale_status"]:checked').value;
+
+    if(!name || !price || !stock) return alert("กรุณากรอกชื่อสินค้า ราคา และสต๊อกให้ครบถ้วน");
+
+    const btn = document.querySelector('button[onclick="saveNewProduct()"]');
+    if(btn) { btn.innerText = 'กำลังบันทึก...'; btn.disabled = true; }
+
+    const fd = new FormData();
+    fd.append('product_name', name);
+    fd.append('product_price', price);
+    fd.append('product_stock', stock);
+    fd.append('product_details', details);
+    fd.append('sale_status', status);
+    
+    if(storeBannerImage) fd.append('image_banner', storeBannerImage);
+    storeProductImages.forEach(file => fd.append('product_images[]', file));
+
+    try {
+        const res = await fetch('backend.php?action=add_store_product', { method: 'POST', body: fd });
+        const result = await res.json();
+        if(result.status === 'success') {
+            alert('บันทึกสินค้าใหม่สำเร็จ! 🎉');
+            // เคลียร์ค่าฟอร์ม
+            document.getElementById('store_p_name').value = '';
+            document.getElementById('store_p_price').value = '';
+            document.getElementById('store_p_stock').value = '';
+            document.getElementById('store_p_details').value = '';
+            storeProductImages = []; storeBannerImage = null;
+            document.getElementById('store-banner-preview').classList.add('hidden');
+            document.getElementById('store-banner-text').classList.remove('hidden');
+            renderStoreImagePreviews();
+            // ย้ายไปหน้าสต๊อก
+            switchStoreTab('stock');
+        } else alert("Error: " + result.message);
+    } catch(e) { alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์"); }
+    finally { if(btn) { btn.innerText = 'บันทึกสินค้าใหม่'; btn.disabled = false; } }
+};
+
+// ลบสินค้า
 window.deleteStoreProduct = async function(id) {
-    if(!confirm('ลบสินค้านี้ถาวร?')) return;
+    if(!confirm("ยืนยันการลบสินค้านี้?")) return;
     const fd = new FormData(); fd.append('product_id', id);
     try {
-        const res = await fetch(getApiUrl('delete_store_product'), fetchOptions('POST', fd)); const r = await res.json(); showToast(r.message);
-        if(r.status === 'success') loadStoreStock();
+        const res = await fetch('backend.php?action=delete_store_product', { method: 'POST', body: fd });
+        const result = await res.json();
+        if(result.status === 'success') loadStockData();
     } catch(e) {}
-}
+};
+
+// สั่งให้โหลดข้อมูลอัตโนมัติ เมื่อกดเมนู Store & Merch ทางซ้ายมือ
+document.addEventListener('click', function(e) {
+    const navLink = e.target.closest('.nav-link');
+    if (navLink && navLink.getAttribute('data-target') === 'section-store') {
+        loadStockData();
+    }
+});

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 28, 2026 at 08:40 PM
+-- Generation Time: Mar 01, 2026 at 11:07 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -142,11 +142,45 @@ CREATE TABLE `events` (
 
 INSERT INTO `events` (`id`, `title`, `title_th`, `short_description`, `short_description_th`, `start_date`, `end_date`, `location`, `details`, `details_th`, `banner_image`, `poster_image`, `venue_image`, `venue_title`, `venue_title_th`, `venue_details`, `venue_details_th`, `venue_map`, `gallery_images`, `created_at`) VALUES
 (13, 'EN', 'คนไทย', 'Experience the collision of two worlds: France’s Legendary Virtuoso Meets Thailand’s Finest 18-Piece Ensemble. A cultural exchange that redefines the Southeast Asian Jazz Scene.', '', '2026-02-24 02:28:00', '2026-02-24 02:31:00', 'Experience the collision of two worlds: France’s Legendary Virtuoso Meets Thailand’s Finest 18-Piece Ensemble. A cultural exchange that redefines the Southeast Asian Jazz Scene.', 'Chiang Mai Street Jazz and Melia Chiang Mai proud to present\r\n???????? A Jazz Legend Meets Chiang Mai’s Finest ???????? An Exclusive Evening with Jean-Loup Longnon & Chiang Mai BigBand\r\nPrepare for a landmark musical event. Jean-Loup Longnon, one of the most acclaimed figures in European jazz, is coming to Chiang Mai for a one-night-only performance.\r\nThe Legend  \"Jean-Loup Longnon\" is a titan of the jazz world. A celebrated trumpet virtuoso and composer, he holds the prestigious Prix Django-Reinhardt and is a two-time winner of the Django d\'Or. His resume reads like a history of modern jazz, featuring collaborations with true icons: Dizzy Gillespie, Stan Getz, Clark Terry, and Michel Petrucciani.\r\nFor this exclusive performance, Jean-Loup chose not to bring a band from Europe. Instead, he personally selected the Chiang Mai BigBand (CMBB) to interpret his intricate arrangements. This is a massive vote of confidence. It validates the world-class potential of our local musicians and proves that Chiang Mai is ready to engage with international masters at the highest level.\r\nAll profits support the CMBB National Tour\r\n???? Date: Sunday, February 8th, 2026  \r\n???? Venue: Melia Chiang Mai Hotel — Yi Peng Grand Ballroom \r\n???? Ticket: 850 THB (Includes 1 Welcome Drink) \r\n???? Privilege: Ticket holders get 15% discount at Mai The Sky Bar after the show.', '', 'uploads/events/banner_1772047685_699f4d4563cf1.jpg', 'uploads/events/poster_1772047685_699f4d4563f71.jpg', 'uploads/events/venue_1772035159_699f1c57a1e4c.jpg', ' Yi Peng Grand Ballroom, Meliá Chiang Mai ', '', '', '', '<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3354.3106304628263!2d99.00020741019513!3d18.78529968228683!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30da3bae54e74dd3%3A0x4db450713b90aedf!2sMeli%C3%A1%20Chiang%20Mai!5e1!3m2!1sen!2sth!4v1772035137795!5m2!1sen!2sth\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>', '[\"uploads\\/events\\/gallery_1772035289_699f1cd966623_0.jpg\",\"uploads\\/events\\/gallery_1772035289_699f1cd966763_1.jpg\",\"uploads\\/events\\/gallery_1772035289_699f1cd96681b_2.jpg\",\"uploads\\/events\\/gallery_1772035289_699f1cd9668b6_3.jpg\",\"uploads\\/events\\/gallery_1772035289_699f1cd96696e_4.jpg\"]', '2026-02-23 19:30:20'),
-(14, 'Jazz Arabica 2025', NULL, 'A Festival of Creativity: Where Opportunity Meets the Dreams of Tomorrow.', NULL, '2025-11-05 10:00:00', '2025-11-07 23:59:00', 'Jing Jai Market, North Gate Spirit', 'Jazz Arabica #3 ????????\r\nThe CMSJ team, in collaboration with Chiang Mai Touch Social Enterprise, proudly presents the 3rd Jazz Arabica Festival.\r\nWhen people, community, and dreams meet again. The \"3rd Jazz Arabica Festival\" is a space for sharing stories and inspiration, woven from upstream to downstream.\r\nWe invite you to experience the way of life of our brothers and sisters from the diverse cultures of Northern Thailand through melodies and unique community products. Come and listen to the story of \"Bringing Dreams and Opportunities Back Home\"—a small yet powerful force creating sustainable change for the community and society.\r\n.\r\nJoin us in sharing these wonderful stories from November 5-7, 2025.\r\n????️ November 5, 2025\r\n6:00 PM - 9:00 PM at Jing Jai Market\r\n✨ “Highland Heritage: Long Table Dinner”: An evening meal at a long table, featuring heritage cuisine from the mountains.\r\n????️ November 6, 2025\r\n9:00 AM - 6:30 PM at Jing Jai Market\r\nExplore community products including coffee, tea, honey, naturally dyed woven fabrics, local rice, and regional foods.\r\nParticipate in workshops.\r\nEnjoy captivating ethnic and jazz music performances.\r\n????️ November 7, 2025\r\n5:00 PM - 8:00 PM at North Gate Spirit\r\n✨ Experience the story of \"People, Bees, and the Forest\" while enjoying live music and a special \"Honey Cocktail\" menu from Baan Huai Hin Lad Nai, Chiang Rai.\r\n.\r\nThis year, we have created special souvenirs. All proceeds after expenses will support our community development mission (Land Scape Change). We hope you will follow and support our journey!\r\n.\r\nFor more information and updates:\r\nFacebook: Chiangmai Touch\r\nInstagram: Chiangmai_touch\r\nLine: @chiangmai.touch\r\nor https://lin.ee/EovI7z9\r\nWebsite: https://chiangmaitouch.org', NULL, 'uploads/events/banner_1772034599_699f1a270ab24.jpg', 'uploads/events/poster_1772034599_699f1a270ace8.jpg', 'uploads/events/venue_1772034599_699f1a270b055.jpg', 'Jing Jai Market', NULL, '', NULL, '<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3353.8985140737414!2d98.99307441019572!3d18.80598438227011!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30da3ac0cb5efccd%3A0x9fbfb1d2cc918b06!2sJing%20Jai%20Market%20Chiang%20Mai!5e1!3m2!1sen!2sth!4v1772034393157!5m2!1sen!2sth\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>', '[\"uploads\\/events\\/gallery_1772034599_699f1a270b20a_0.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b314_1.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b441_2.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b57e_3.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b717_4.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b840_5.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b95e_6.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270ba74_7.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270bb7b_8.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270bcfe_9.jpg\"]', '2026-02-24 05:04:19'),
+(14, 'Jazz Arabica 2025', '', 'A Festival of Creativity: Where Opportunity Meets the Dreams of Tomorrow.', '', '2025-11-05 10:00:00', '2025-11-07 23:59:00', 'Jing Jai Market, North Gate Spirit', 'Jazz Arabica #3 ????????\r\nThe CMSJ team, in collaboration with Chiang Mai Touch Social Enterprise, proudly presents the 3rd Jazz Arabica Festival.\r\nWhen people, community, and dreams meet again. The \"3rd Jazz Arabica Festival\" is a space for sharing stories and inspiration, woven from upstream to downstream.\r\nWe invite you to experience the way of life of our brothers and sisters from the diverse cultures of Northern Thailand through melodies and unique community products. Come and listen to the story of \"Bringing Dreams and Opportunities Back Home\"—a small yet powerful force creating sustainable change for the community and society.\r\n.\r\nJoin us in sharing these wonderful stories from November 5-7, 2025.\r\n????️ November 5, 2025\r\n6:00 PM - 9:00 PM at Jing Jai Market\r\n✨ “Highland Heritage: Long Table Dinner”: An evening meal at a long table, featuring heritage cuisine from the mountains.\r\n????️ November 6, 2025\r\n9:00 AM - 6:30 PM at Jing Jai Market\r\nExplore community products including coffee, tea, honey, naturally dyed woven fabrics, local rice, and regional foods.\r\nParticipate in workshops.\r\nEnjoy captivating ethnic and jazz music performances.\r\n????️ November 7, 2025\r\n5:00 PM - 8:00 PM at North Gate Spirit\r\n✨ Experience the story of \"People, Bees, and the Forest\" while enjoying live music and a special \"Honey Cocktail\" menu from Baan Huai Hin Lad Nai, Chiang Rai.\r\n.\r\nThis year, we have created special souvenirs. All proceeds after expenses will support our community development mission (Land Scape Change). We hope you will follow and support our journey!\r\n.\r\nFor more information and updates:\r\nFacebook: Chiangmai Touch\r\nInstagram: Chiangmai_touch\r\nLine: @chiangmai.touch\r\nor https://lin.ee/EovI7z9\r\nWebsite: https://chiangmaitouch.org', '', 'uploads/events/banner_1772034599_699f1a270ab24.jpg', 'uploads/events/poster_1772034599_699f1a270ace8.jpg', 'uploads/events/venue_1772034599_699f1a270b055.jpg', 'Jing Jai Market', '', '', '', '<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3353.8985140737414!2d98.99307441019572!3d18.80598438227011!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30da3ac0cb5efccd%3A0x9fbfb1d2cc918b06!2sJing%20Jai%20Market%20Chiang%20Mai!5e1!3m2!1sen!2sth!4v1772034393157!5m2!1sen!2sth\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>', '[\"uploads\\/events\\/gallery_1772034599_699f1a270b20a_0.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b314_1.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b441_2.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b57e_3.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b717_4.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b840_5.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270b95e_6.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270ba74_7.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270bb7b_8.jpg\",\"uploads\\/events\\/gallery_1772034599_699f1a270bcfe_9.jpg\"]', '2026-02-24 05:04:19'),
 (16, 'Chaing Mai Street Jazz Festival 2025', NULL, 'Chiang Mai JAzz City', NULL, '2025-12-01 18:00:00', '2025-12-07 23:59:00', 'Old Chiangmai Cultural Center', 'Chiang Mai Street Jazz Festival 2025\r\nThe 7th Chiang Mai Street Jazz Festival\r\n“Chiang Mai Jazz City: Let the City Play its Jazz”\r\n\r\nWhat if a place wasn’t remembered by its sights, but instead by its sounds?\r\nChiang Mai is discovering its identity through a new melody, and that language is ‘Jazz.’\r\n‘Jazz’ isn’t just imported music; it is an embraced culture. It is the charm of improvisation, seeping into the daily lives of the city’s people. It is a dialogue that arises between cultural heritage and the pulse of the modern era.\r\nA “Jazz City” doesn’t mean a city with performance stages, but a city where the entire city becomes the stage. It is a city where the chatter of people, the rhythm of the wind, and the colors of the streets merge and are played out as a single song.\r\nThe 7th Chiang Mai Street Jazz Festival is a celebration where the line between artist and audience blurs, and we all become part of a grand orchestra named “Chiang Mai.”\r\nWe invite you to be part of an experience where the entire city rises to play jazz together. From December 1-4, with street jazz performances in the old town; December 5-6, 2025, with mini-concerts at leading jazz bars across the city: Moment’s Notice Jazz Club, The Mellowship Jazz Club, Mahoree City of Music, Karmar Community Space, and The North Gate Jazz Co-op; and on December 7, 2025, the main stage event at the Old Chiang Mai Cultural Center.\r\nCome, let’s play our city’s song, loud and clear.\r\nEarly Bird tickets are available at a special price from 20 July until September 30, 2025, at:\r\n', NULL, 'uploads/events/banner_1772030568_699f0a688ed0d.jpg', 'uploads/events/poster_1772030568_699f0a688eecd.jpg', 'uploads/events/venue_1772030568_699f0a688f116.jpg', 'Old Chiangmai Cultural Center', NULL, '', NULL, '<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3354.571504725366!2d98.97752731019477!3d18.772194682297318!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30da30707126c48d%3A0xd1745bfec3160e06!2sOld%20Chiangmai%20Cultural%20Center!5e1!3m2!1sen!2sth!4v1772030496605!5m2!1sen!2sth\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>', '[\"uploads\\/events\\/gallery_1772030568_699f0a688f254_0.jpg\",\"uploads\\/events\\/gallery_1772030568_699f0a688f7eb_1.jpg\",\"uploads\\/events\\/gallery_1772030568_699f0a688fc55_2.jpg\",\"uploads\\/events\\/gallery_1772030568_699f0a68901b4_3.jpg\",\"uploads\\/events\\/gallery_1772030568_699f0a6890738_4.jpg\",\"uploads\\/events\\/gallery_1772030568_699f0a6890c3d_5.jpg\",\"uploads\\/events\\/gallery_1772030568_699f0a68911ce_6.jpg\",\"uploads\\/events\\/gallery_1772030568_699f0a68917a1_7.jpg\",\"uploads\\/events\\/gallery_1772030568_699f0a6891d44_8.jpg\",\"uploads\\/events\\/gallery_1772030568_699f0a6892401_9.jpg\"]', '2026-02-24 06:48:05'),
 (20, 'Chiang Mai Street Jazz Big Band LIVE at North Gate Jazz Co-op', NULL, '', NULL, '2025-06-02 21:45:00', '2025-06-02 22:45:00', 'North Gate Jazz Co-op ', '???????? Chiang Mai Street Jazz Big Band LIVE at North Gate Jazz Co-op ????????\r\nDate: Monday, 2 June 2025\r\nTime: 21:45\r\nVenue: North Gate Jazz Co-op (Old City, Chiang Mai)\r\n???? Free entry – first come, first swing! ????\r\nPrepare for an explosive night of big-band energy as more than 20 of Chiang Mai’s finest jazz musicians join forces on one stage. Expect classic swing, modern grooves, and plenty of space for soaring solos. Grab your friends, claim a table early, and let the horns do the talking!\r\n???? Follow @ChiangMaiStreetJazz for updates. See you under the green neon!', NULL, 'uploads/events/banner_1772036786_699f22b27baf6.jpg', 'uploads/events/poster_1772036786_699f22b27be0f.jpg', 'uploads/events/venue_1772036786_699f22b27c04f.jpg', 'The North Gate Jazz Co-Op', NULL, '', NULL, '<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3354.1128403830876!2d98.9844916101954!3d18.795229782278756!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30da3a9725192b57%3A0x81bb3e0b9483c631!2sThe%20North%20Gate%20Jazz%20Co-Op!5e1!3m2!1sen!2sth!4v1772036768881!5m2!1sen!2sth\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>', '[]', '2026-02-24 20:46:33'),
 (21, 'Chiang Mai Street Jazz Bigband LIVE at Moment’s Notice Jazz Club ', NULL, 'A full-power big band in an intimate room tight horns, roaring swing, and modern grooves all night.', NULL, '2025-09-18 21:30:00', '2025-09-18 22:30:00', 'Moment’s Notice Jazz Club', 'Chiang Mai Street Jazz Bigband LIVE at Moment’s Notice Jazz Club ????\r\n\r\nA full-power big band in an intimate room tight horns, roaring swing, and modern grooves all night.\r\n\r\nDate: Thursday, 18 September 2025\r\nTime: 21:30\r\nVenue: Moment’s Notice Jazz Club\r\nEntry: Free first come, first served\r\n\r\nArrive early to secure your seat; the club fills fast.\r\n', NULL, 'uploads/events/banner_1772036073_699f1fe9c049a.jpg', 'uploads/events/poster_1772036073_699f1fe9c05bf.jpg', 'uploads/events/venue_1772036073_699f1fe9c0725.jpg', '', NULL, '', NULL, '<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2087.558902059924!2d98.98115007492035!3d18.773025764336754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30da3b166f87d877%3A0x684830c8be282862!2sMoment&#39;s%20Notice%20Jazz%20Club!5e1!3m2!1sen!2sth!4v1772036062891!5m2!1sen!2sth\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>', '[]', '2026-02-25 16:14:33'),
 (22, 'Chiang Mai International Jazz Week 2025', NULL, 'Let\'s celebrate UNESCO International Jazz Day Chiang Mai-style!', NULL, '2025-04-30 18:00:00', '2025-05-04 23:59:00', 'North Gate Jazz Co-op, The Mellowship Jazz Club, Moment’s Notice Jazz Club', 'Let\'s celebrate UNESCO International Jazz Day Chiang Mai-style!\r\nJoin us from 30 April – 4 May 2025 at Chiang Mai\'s favorite jazz venues:\r\n\r\nPlus, enjoy live music by various fantastic local jazz bands every night! ????✨\r\nFree Entry! Don\'t miss this vibrant celebration of jazz music in the heart of Chiang Mai!\r\nStay tuned for more details at:', NULL, 'uploads/events/banner_1772037416_699f2528ddda6.jpg', 'uploads/events/poster_1772037416_699f2528ddf9b.jpg', NULL, '', NULL, 'North Gate Jazz Co-op, The Mellowship Jazz Club, Moment’s Notice Jazz Club', NULL, '', '[]', '2026-02-25 16:36:56');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_bookings`
+--
+
+CREATE TABLE `event_bookings` (
+  `id` int(11) NOT NULL,
+  `booking_code` varchar(50) NOT NULL COMMENT 'รหัสการจอง เช่น #TK1001',
+  `user_id` int(11) DEFAULT NULL COMMENT 'ID ของ User ที่ล็อคอิน (ถ้ามี)',
+  `event_id` int(11) NOT NULL COMMENT 'จองของงานเทศกาลไหน',
+  `customer_name` varchar(150) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `total_amount` decimal(10,2) NOT NULL COMMENT 'ยอดรวมที่ต้องจ่าย',
+  `payment_status` enum('pending','paid','canceled') DEFAULT 'pending',
+  `slip_image` varchar(255) DEFAULT NULL COMMENT 'รูปสลิปโอนเงิน',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_booking_items`
+--
+
+CREATE TABLE `event_booking_items` (
+  `id` int(11) NOT NULL,
+  `booking_id` int(11) NOT NULL,
+  `ticket_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `price_per_unit` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -174,9 +208,6 @@ INSERT INTO `event_lineups` (`id`, `event_id`, `lineup_date`, `lineup_time`, `li
 (52, 16, '2025-12-07', '20:20:00', 'OLD CHIANGMAI CULTURAL CENTER', 'Yoh Duck Quartet Feat. Krit Buranavitayawut', '2026-02-25 14:42:48'),
 (53, 16, '2025-12-07', '21:40:00', 'OLD CHIANGMAI CULTURAL CENTER', 'Gen-Z Quartet', '2026-02-25 14:42:48'),
 (54, 16, '2025-12-07', '23:00:00', 'OLD CHIANGMAI CULTURAL CENTER', 'Groovy Doopy x Rachael', '2026-02-25 14:42:48'),
-(55, 14, '2025-11-05', '18:00:00', 'Jing Jai Market', 'Highland Heritage : Long Table Dinner', '2026-02-25 15:49:59'),
-(56, 14, '2025-11-05', '18:00:00', 'Jing Jai Market', '“Highland Heritage: Long Table Dinner”: An evening meal at a long table, featuring heritage cuisine from the mountains.', '2026-02-25 15:49:59'),
-(57, 14, '2025-11-07', '17:00:00', 'North Gate Spirit', 'Experience the story of \"People, Bees, and the Forest\" while enjoying live music and a special \"Honey Cocktail\" menu from Baan Huai Hin Lad Nai, Chiang Rai.', '2026-02-25 15:49:59'),
 (67, 20, '2025-06-02', '21:45:00', 'North Gate Jazz Co-op', 'Chiang Mai Street Jazz Big Band', '2026-02-25 16:26:26'),
 (68, 21, '2026-09-18', '21:30:00', 'Moment’s Notice Jazz Club', 'Chiang Mai Street Jazz Bigband LIVE', '2026-02-25 16:27:33'),
 (76, 22, '2025-05-01', '20:00:00', 'North Gate Jazz Co-op', 'CMSJ BIGBAND', '2026-02-25 16:39:06'),
@@ -189,7 +220,10 @@ INSERT INTO `event_lineups` (`id`, `event_id`, `lineup_date`, `lineup_time`, `li
 (119, 13, '2026-02-08', '18:00:00', 'Melia Chiang Mai Hotel — Yi Peng Grand Ballroom', 'Doors Open Arrive early for cocktails, canapes, and conversation with fellow jazz lovers in an elegant ballroom setting.', '2026-02-27 21:02:51'),
 (120, 13, '2026-02-08', '19:00:00', 'Melia Chiang Mai Hotel — Yi Peng Grand Ballroom', 'First Set', '2026-02-27 21:02:51'),
 (121, 13, '2026-02-08', '19:45:00', 'Melia Chiang Mai Hotel — Yi Peng Grand Ballroom', 'Intermission & Open Bar', '2026-02-27 21:02:51'),
-(122, 13, '2026-02-08', '20:15:00', 'Melia Chiang Mai Hotel — Yi Peng Grand Ballroom', 'Second Set', '2026-02-27 21:02:51');
+(122, 13, '2026-02-08', '20:15:00', 'Melia Chiang Mai Hotel — Yi Peng Grand Ballroom', 'Second Set', '2026-02-27 21:02:51'),
+(123, 14, '2025-11-05', '18:00:00', 'Jing Jai Market', 'Highland Heritage : Long Table Dinner', '2026-03-01 08:45:11'),
+(124, 14, '2025-11-05', '18:00:00', 'Jing Jai Market', '“Highland Heritage: Long Table Dinner”: An evening meal at a long table, featuring heritage cuisine from the mountains.', '2026-03-01 08:45:11'),
+(125, 14, '2025-11-07', '17:00:00', 'North Gate Spirit', 'Experience the story of \"People, Bees, and the Forest\" while enjoying live music and a special \"Honey Cocktail\" menu from Baan Huai Hin Lad Nai, Chiang Rai.', '2026-03-01 08:45:11');
 
 -- --------------------------------------------------------
 
@@ -212,7 +246,8 @@ CREATE TABLE `event_tickets` (
 --
 
 INSERT INTO `event_tickets` (`id`, `event_id`, `title`, `details`, `price`, `amount`, `is_open`) VALUES
-(98, 13, 'Adult Ticket', '', 850.00, 160, 0);
+(98, 13, 'Adult Ticket', '', 850.00, 160, 0),
+(99, 14, 'T', 't', 600.00, 6, 1);
 
 -- --------------------------------------------------------
 
@@ -301,12 +336,12 @@ CREATE TABLE `forum_topics` (
 --
 
 INSERT INTO `forum_topics` (`id`, `category_id`, `user_id`, `title`, `content`, `image_url`, `video_link`, `views`, `created_at`) VALUES
-(10, 1, 5, 'fg', 'fg', NULL, NULL, 4, '2026-02-27 16:45:04'),
+(10, 1, 5, 'fg', 'fg', NULL, NULL, 5, '2026-02-27 16:45:04'),
 (22, 1, 1, 'w', 'w', NULL, NULL, 5, '2026-02-27 17:50:56'),
 (23, 1, 1, 'Test', 'hello', 'uploads/forum/topic_img_1772194407_69a18a672fcaf.jpg', NULL, 26, '2026-02-27 19:13:27'),
-(24, 1, 1, 'TEST1', 'rrrrrrr', 'uploads/forum/topic_img_1772201176_69a1a4d83ce26.jpg', NULL, 31, '2026-02-27 21:06:16'),
+(24, 1, 1, 'TEST1', 'rrrrrrr', 'uploads/forum/topic_img_1772201176_69a1a4d83ce26.jpg', NULL, 32, '2026-02-27 21:06:16'),
 (25, 1, 7, 'Test', 'HHHHHHHH', NULL, NULL, 7, '2026-02-28 00:39:17'),
-(26, 1, 7, 'HHHH', 'HHHHH', NULL, NULL, 14, '2026-02-28 00:39:38');
+(26, 1, 7, 'HHHH', 'HHHHH', NULL, NULL, 15, '2026-02-28 00:39:38');
 
 -- --------------------------------------------------------
 
@@ -357,19 +392,10 @@ CREATE TABLE `orders` (
   `address` text NOT NULL COMMENT 'ที่อยู่จัดส่ง',
   `phone` varchar(20) NOT NULL COMMENT 'เบอร์โทรศัพท์',
   `email` varchar(100) DEFAULT NULL COMMENT 'อีเมลลูกค้า',
-  `payment_status` enum('pending','success','failed') NOT NULL DEFAULT 'pending' COMMENT 'สถานะการชำระเงิน',
+  `payment_status` varchar(255) DEFAULT NULL COMMENT 'สถานะการชำระเงิน',
   `order_status` enum('pending','success','canceled') NOT NULL DEFAULT 'pending' COMMENT 'สถานะคำสั่งซื้อ',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'เวลาที่สั่งซื้อ'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `orders`
---
-
-INSERT INTO `orders` (`order_id`, `order_code`, `customer_name`, `address`, `phone`, `email`, `payment_status`, `order_status`, `created_at`) VALUES
-(1, '#25364', 'Suwaree Kalo', 'Chiangmai', '+66235458', 'hu@lol.com', 'pending', 'pending', '2026-02-28 17:21:14'),
-(2, '#25365', 'John Doe', 'Bangkok', '+66899999', 'john@lol.com', 'success', 'success', '2026-02-28 17:21:14'),
-(3, '#25366', 'Jane Smith', 'Phuket', '+66877777', 'jane@lol.com', 'failed', 'canceled', '2026-02-28 17:21:14');
 
 -- --------------------------------------------------------
 
@@ -384,15 +410,6 @@ CREATE TABLE `order_items` (
   `quantity` int(11) NOT NULL DEFAULT 1 COMMENT 'จำนวนชิ้นที่สั่ง (Amount)',
   `price_per_unit` decimal(10,2) NOT NULL COMMENT 'ราคาต่อชิ้น ณ ตอนที่สั่งซื้อ'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `order_items`
---
-
-INSERT INTO `order_items` (`item_id`, `order_id`, `product_id`, `quantity`, `price_per_unit`) VALUES
-(1, 1, 1, 5, 350.00),
-(2, 2, 2, 1, 150.00),
-(3, 3, 1, 2, 350.00);
 
 -- --------------------------------------------------------
 
@@ -420,7 +437,32 @@ CREATE TABLE `products` (
 
 INSERT INTO `products` (`product_id`, `product_code`, `name`, `price`, `stock_balance`, `description`, `image_products`, `image_banner`, `sale_status`, `created_at`, `updated_at`) VALUES
 (1, 'HKL001', 'เสื้อยืด CMBigband', 350.00, 50, 'เสื้อยืด Cotton 100% สกรีนลาย CMBigband', '[]', NULL, 'open', '2026-02-28 17:21:14', '2026-02-28 17:21:14'),
-(2, 'HKL002', 'แก้วมัค CMBigband', 150.00, 20, 'แก้วเซรามิกเก็บความร้อน', '[]', NULL, 'open', '2026-02-28 17:21:14', '2026-02-28 17:21:14');
+(2, 'HKL002', 'แก้วมัค CMBigband', 150.00, 20, 'แก้วเซรามิกเก็บความร้อน', '[]', NULL, 'open', '2026-02-28 17:21:14', '2026-02-28 17:21:14'),
+(5, 'HKL69a357cbc4d9d', 'rrrrrrrrr', 88000.00, 50, 'tyutyuytuytu', '[]', NULL, 'open', '2026-02-28 21:02:03', '2026-02-28 21:02:03'),
+(6, 'HKL69a357da3ca99', 'werwerwer', 85005.00, 300, 'erwerwtrwer', '[]', NULL, 'open', '2026-02-28 21:02:18', '2026-02-28 21:02:18'),
+(7, 'HKL69a357e269592', 'asdfasdfs', 8000.00, 50, 'asdfasdfasdfds', '[]', NULL, 'open', '2026-02-28 21:02:26', '2026-02-28 21:02:26');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ticket_orders`
+--
+
+CREATE TABLE `ticket_orders` (
+  `order_id` int(11) NOT NULL,
+  `order_code` varchar(50) NOT NULL COMMENT 'รหัสออเดอร์ เช่น #T25364',
+  `event_id` int(11) NOT NULL COMMENT 'อ้างอิงรหัสงานอีเวนต์ (ตาราง events)',
+  `ticket_id` int(11) NOT NULL COMMENT 'อ้างอิงรหัสประเภทตั๋ว (ตาราง event_tickets)',
+  `customer_name` varchar(150) NOT NULL COMMENT 'ชื่อ-นามสกุลลูกค้า',
+  `address` text NOT NULL COMMENT 'ที่อยู่จัดส่งเอกสาร/ข้อมูล',
+  `phone` varchar(20) NOT NULL COMMENT 'เบอร์โทรศัพท์',
+  `email` varchar(100) DEFAULT NULL COMMENT 'อีเมลลูกค้า',
+  `amount` int(11) NOT NULL DEFAULT 1 COMMENT 'จำนวนตั๋วที่ซื้อ',
+  `total_price` decimal(10,2) NOT NULL COMMENT 'ราคารวมทั้งหมด ณ ตอนที่ซื้อ',
+  `payment_status` varchar(255) NOT NULL DEFAULT '' COMMENT 'สถานะการชำระเงิน',
+  `order_status` enum('pending','success','canceled') NOT NULL DEFAULT 'pending' COMMENT 'สถานะคำสั่งซื้อ',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() COMMENT 'เวลาที่ทำรายการสั่งซื้อ'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -449,6 +491,20 @@ INSERT INTO `users` (`id`, `username`, `password`, `email`, `role`, `status`, `c
 (5, 'maji', '$2y$10$dK/vEh4mkIZmU0JSHZdARegp2XEtO.T7s397lfFAVaL80RA4HJ8Dq', 'maji@gmail.com', 'user', 'approved', '2026-02-25 10:51:04'),
 (7, 'yo1', '$2y$10$UHjZxaWypTUz2Kgi9nx/Ie8/BX0n0HPsQoeTq1mUz0mTa8j2jWInq', 'yo1@gmail.com', 'user', '', '2026-02-27 17:21:30');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_profiles`
+--
+
+CREATE TABLE `user_profiles` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `saved_name` varchar(150) NOT NULL,
+  `saved_phone` varchar(20) NOT NULL,
+  `saved_email` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 --
 -- Indexes for dumped tables
 --
@@ -476,6 +532,22 @@ ALTER TABLE `course_reviews`
 --
 ALTER TABLE `events`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `event_bookings`
+--
+ALTER TABLE `event_bookings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `booking_code` (`booking_code`),
+  ADD KEY `event_id` (`event_id`);
+
+--
+-- Indexes for table `event_booking_items`
+--
+ALTER TABLE `event_booking_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `booking_id` (`booking_id`),
+  ADD KEY `ticket_id` (`ticket_id`);
 
 --
 -- Indexes for table `event_lineups`
@@ -538,10 +610,26 @@ ALTER TABLE `products`
   ADD UNIQUE KEY `product_code` (`product_code`);
 
 --
+-- Indexes for table `ticket_orders`
+--
+ALTER TABLE `ticket_orders`
+  ADD PRIMARY KEY (`order_id`),
+  ADD UNIQUE KEY `order_code` (`order_code`),
+  ADD KEY `event_id` (`event_id`),
+  ADD KEY `ticket_id` (`ticket_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `user_profiles`
+--
+ALTER TABLE `user_profiles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id` (`user_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -572,16 +660,28 @@ ALTER TABLE `events`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
+-- AUTO_INCREMENT for table `event_bookings`
+--
+ALTER TABLE `event_bookings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `event_booking_items`
+--
+ALTER TABLE `event_booking_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `event_lineups`
 --
 ALTER TABLE `event_lineups`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT for table `event_tickets`
 --
 ALTER TABLE `event_tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
 -- AUTO_INCREMENT for table `forum_categories`
@@ -623,7 +723,13 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `ticket_orders`
+--
+ALTER TABLE `ticket_orders`
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -632,8 +738,27 @@ ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
+-- AUTO_INCREMENT for table `user_profiles`
+--
+ALTER TABLE `user_profiles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `event_bookings`
+--
+ALTER TABLE `event_bookings`
+  ADD CONSTRAINT `event_bookings_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `event_booking_items`
+--
+ALTER TABLE `event_booking_items`
+  ADD CONSTRAINT `event_booking_items_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `event_bookings` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `event_booking_items_ibfk_2` FOREIGN KEY (`ticket_id`) REFERENCES `event_tickets` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `event_lineups`
@@ -653,6 +778,19 @@ ALTER TABLE `event_tickets`
 ALTER TABLE `order_items`
   ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
+
+--
+-- Constraints for table `ticket_orders`
+--
+ALTER TABLE `ticket_orders`
+  ADD CONSTRAINT `fk_ticket_orders_event` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_ticket_orders_ticket` FOREIGN KEY (`ticket_id`) REFERENCES `event_tickets` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `user_profiles`
+--
+ALTER TABLE `user_profiles`
+  ADD CONSTRAINT `user_profiles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
