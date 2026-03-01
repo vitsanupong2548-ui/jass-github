@@ -1220,9 +1220,10 @@ switch($action) {
         if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
         $ticketId = $_GET['ticket_id'] ?? 0;
         try {
-            $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM ticket_orders WHERE ticket_id = ?");
+            $stmt = $pdo->prepare("SELECT SUM(amount) as count FROM ticket_orders WHERE ticket_id = ? AND order_status != 'canceled'");
             $stmt->execute([$ticketId]);
-            echo json_encode(["status" => "success", "count" => $stmt->fetchColumn()]);
+            $count = $stmt->fetchColumn();
+            echo json_encode(["status" => "success", "count" => $count ? $count : 0]);
         } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
         break;
 

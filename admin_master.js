@@ -1174,7 +1174,7 @@ document.getElementById('store-order-search')?.addEventListener('input', (e) => 
 // ==========================================
 window.loadTicketOrderData = async (ticketId = null) => {
     const tbody = document.getElementById('ticket-order-tbody');
-    tbody.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-gray-500">กำลังโหลดข้อมูล...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-gray-500">กำลังโหลดข้อมูล...</td></tr>';
     try {
         let url = getApiUrl('get_ticket_orders');
         if (ticketId) url += `&ticket_id=${ticketId}`;
@@ -1204,7 +1204,7 @@ window.renderTicketOrders = () => {
     });
 
     if (filteredOrders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-gray-500 font-bold bg-gray-50">ไม่พบออเดอร์ที่ค้นหา</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-gray-500 font-bold bg-gray-50">ไม่พบออเดอร์ที่ค้นหา</td></tr>';
         return;
     }
 
@@ -1218,7 +1218,6 @@ window.renderTicketOrders = () => {
             <td class="p-3 font-bold text-gray-700 whitespace-nowrap">${o.order_code}</td>
             <td class="p-3 text-left leading-tight min-w-[150px]"><div class="font-bold text-blue-600 line-clamp-1">${o.event_name || '-'}</div><div class="text-[10px] text-gray-500 line-clamp-1">${o.ticket_name}</div></td>
             <td class="p-3 whitespace-nowrap">${o.customer_name}</td>
-            <td class="p-3 text-left text-[11px] leading-tight min-w-[120px]"><div class="line-clamp-2" title="${o.address}">${o.address || '-'}</div></td>
             <td class="p-3 whitespace-nowrap">${o.phone}</td>
             <td class="p-3 whitespace-nowrap">${o.email || '-'}</td>
             <td class="p-3 text-center font-bold text-blue-600 text-sm">${o.amount}</td>

@@ -37,7 +37,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 <body class="h-screen flex overflow-hidden">
 
    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col h-full z-10" id="sidebar">
-        <div class="p-6"><h1 class="text-2xl font-bold">Admin Panel</h1></div>
+        <div class="p-6"><a href="index2.html" class="flex flex-col hover:opacity-80 transition"><h1 class="text-2xl font-bold">Admin Panel</h1><span class="text-xs text-blue-500 mt-1">🏠 ไปหน้าเว็บไซต์หลัก</span></a></div>
         <nav class="flex-1 overflow-y-auto">
             <ul class="space-y-1">
                 <li><a href="#" data-target="section-admin" class="nav-link block px-6 py-3 font-semibold bg-gray-100 text-gray-800">Admin (User Mgt.)</a></li>
@@ -66,6 +66,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             </ul>
         </nav>
         <div class="p-4 border-t border-gray-200">
+            <a href="index2.html" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded font-semibold mb-2">🔙 กลับหน้าแรกเว็บไซต์</a>
             <button id="logout-btn" type="button" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded font-semibold">ออกจากระบบ</button>
         </div>
     </aside>
@@ -831,7 +832,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                                 <th class="px-3 py-4">รหัสออเดอร์</th>
                                 <th class="px-3 py-4 w-48">ชื่องาน / บัตร</th>
                                 <th class="px-3 py-4 w-32">ชื่อลูกค้า</th>
-                                <th class="px-3 py-4 w-32">ที่อยู่</th>
                                 <th class="px-3 py-4">เบอร์โทร</th>
                                 <th class="px-3 py-4">อีเมล</th>
                                 <th class="px-3 py-4">จำนวน</th>
@@ -980,10 +980,10 @@ window.changeLayout = (selectEl) => {
             innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl course-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${valEn}">`; 
         } else if (type === 'embed') { 
             // 🌟 เพิ่ม Embed
-            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-embed-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50" placeholder="วางโค้ด Embed (เช่น โค้ดจาก Facebook, Twitter, Spotify)">${valEn}</textarea>`;
+            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-embed-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 break-all whitespace-pre-wrap resize-y" placeholder="วางโค้ด Embed (เช่น โค้ดจาก Facebook, Twitter, Spotify)">${valEn}</textarea>`;
         } else if (type === 'iframe') { 
             // 🌟 เพิ่ม iFrame
-            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-iframe-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50" placeholder="วางโค้ด <iframe ...> (เช่น Google Maps หรือเว็บอื่น)">${valEn}</textarea>`;
+            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-iframe-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 break-all whitespace-pre-wrap resize-y" placeholder="วางโค้ด <iframe ...> (เช่น Google Maps หรือเว็บอื่น)">${valEn}</textarea>`;
         }
 
         itemDiv.innerHTML = `<div class="border-2 border-gray-200 p-2 rounded-2xl bg-white shadow-sm relative h-full flex flex-col hover:border-[#10a349] transition-colors">${controls}${innerContent}</div>`;
@@ -1030,9 +1030,9 @@ window.changeLayout = (selectEl) => {
         } else if (type === 'video') { 
             innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl cmb-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${valEn}">`; 
         } else if (type === 'embed') { 
-            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-embed-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50" placeholder="วางโค้ด Embed (เช่น Facebook, TikTok)">${valEn}</textarea>`;
+            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-embed-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 break-all whitespace-pre-wrap resize-y" placeholder="วางโค้ด Embed (เช่น Facebook, TikTok)">${valEn}</textarea>`;
         } else if (type === 'iframe') { 
-            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-iframe-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50" placeholder="วางโค้ด <iframe ...> (เช่น แผนที่)">${valEn}</textarea>`;
+            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] cmb-iframe-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 break-all whitespace-pre-wrap resize-y" placeholder="วางโค้ด <iframe ...> (เช่น แผนที่)">${valEn}</textarea>`;
         }
 
         itemDiv.innerHTML = `<div class="border-2 border-gray-200 p-2 rounded-2xl bg-white shadow-sm relative h-full flex flex-col hover:border-blue-400 transition-colors">${controls}${innerContent}</div>`;

@@ -1,6 +1,6 @@
 window.homepageData = {};
-window.frontendMusicians = []; 
-window.frontendEvents = []; 
+window.frontendMusicians = [];
+window.frontendEvents = [];
 window.frontendCourses = [];
 
 // ==========================================
@@ -10,19 +10,19 @@ async function initFrontend() {
     try {
         const res = await fetch('api/get_homepage.php').catch(() => null);
         if (res && res.ok) window.homepageData = await res.json();
-    } catch (e) {}
-    
+    } catch (e) { }
+
     const includes = document.querySelectorAll('[data-include]');
     const promises = Array.from(includes).map(async el => {
         const file = el.getAttribute('data-include');
         try {
             const html = await (await fetch(file + '?v=' + new Date().getTime())).text();
             el.innerHTML = html;
-        } catch(err) {}
+        } catch (err) { }
     });
-    
+
     await Promise.all(promises);
-    
+
     if (typeof window.applyDataToDOM === 'function') window.applyDataToDOM(document);
 }
 
@@ -31,30 +31,30 @@ async function initFrontend() {
 // ==========================================
 async function loadFrontendMusicians() {
     try {
-        if(window.frontendMusicians.length === 0) {
+        if (window.frontendMusicians.length === 0) {
             const res = await fetch('backend.php?action=get_all_musicians');
             if (!res.ok) return;
             const result = await res.json();
             if (result.status === 'success') window.frontendMusicians = result.data;
         }
-        
+
         const musicians = window.frontendMusicians;
         const artistLibrary = musicians.filter(m => m.network_type === 'artist_library');
         const jazzNetwork = musicians.filter(m => m.network_type === 'jazz_network');
-        
+
         const artistContainer = document.querySelector('#artists-library-grid-template .clone-main-content');
         if (artistContainer) {
-            artistContainer.innerHTML = ''; 
+            artistContainer.innerHTML = '';
             artistLibrary.forEach((artist, index) => {
                 const imgUrl = artist.profile_image || './png/Chiangmai Blue.png';
                 const displayTitle = (window.currentLang === 'th' && artist.title_th) ? artist.title_th : (artist.title || 'Untitled');
 
                 artistContainer.innerHTML += `
                     <a href="#" data-musician-id="${artist.id}" class="artist-link block group relative rounded-[1.5rem] overflow-hidden aspect-square cursor-pointer shadow-lg bg-black/10">
-                        <img id="dyn-artist${index+1}_img" src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <img id="dyn-artist${index + 1}_img" src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 w-full p-4 md:p-5 flex justify-between items-end gap-2">
-                            <h3 id="dyn-artist${index+1}_name" class="text-base sm:text-lg lg:text-xl font-header font-bold text-white leading-[1.2] text-left break-words w-full whitespace-normal line-clamp-3">${displayTitle}</h3>
+                            <h3 id="dyn-artist${index + 1}_name" class="text-base sm:text-lg lg:text-xl font-header font-bold text-white leading-[1.2] text-left break-words w-full whitespace-normal line-clamp-3">${displayTitle}</h3>
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 sm:w-7 sm:h-7 text-white transition-transform duration-300 group-hover:translate-x-1 shrink-0 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                         </div>
                     </a>
@@ -64,24 +64,24 @@ async function loadFrontendMusicians() {
 
         const jazzContainer = document.querySelector('#jazz-network-grid-template .clone-main-content');
         if (jazzContainer) {
-            jazzContainer.innerHTML = ''; 
+            jazzContainer.innerHTML = '';
             jazzNetwork.forEach((jazz, index) => {
                 const imgUrl = jazz.profile_image || './png/Jazz Arabica Vol.3.png';
                 const displayTitle = (window.currentLang === 'th' && jazz.title_th) ? jazz.title_th : (jazz.title || 'Untitled');
 
                 jazzContainer.innerHTML += `
                     <a href="#" data-musician-id="${jazz.id}" class="artist-link block group relative rounded-[1.5rem] overflow-hidden aspect-square cursor-pointer shadow-lg bg-black/10">
-                        <img id="dyn-partner${index+1}_img" src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        <img id="dyn-partner${index + 1}_img" src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 w-full p-4 md:p-5 flex justify-between items-end gap-2">
-                            <h3 id="dyn-partner${index+1}_name" class="text-base sm:text-lg lg:text-xl font-header font-bold text-white leading-[1.2] text-left break-words w-full whitespace-normal line-clamp-3">${displayTitle}</h3>
+                            <h3 id="dyn-partner${index + 1}_name" class="text-base sm:text-lg lg:text-xl font-header font-bold text-white leading-[1.2] text-left break-words w-full whitespace-normal line-clamp-3">${displayTitle}</h3>
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 sm:w-7 sm:h-7 text-white transition-transform duration-300 group-hover:translate-x-1 shrink-0 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                         </div>
                     </a>
                 `;
             });
         }
-    } catch (err) {}
+    } catch (err) { }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -102,10 +102,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (typeof translateUI === 'function') translateUI(window.currentLang);
 
-    window.switchFrontLang = function(btn, lang) {
-        if(window.currentLang === lang) return; 
-        localStorage.setItem('siteLang', lang); 
-        window.location.reload(); 
+    window.switchFrontLang = function (btn, lang) {
+        if (window.currentLang === lang) return;
+        localStorage.setItem('siteLang', lang);
+        window.location.reload();
     };
 
     const menuToggle = document.getElementById('menu-toggle');
@@ -117,26 +117,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (menuToggle) {
         menuToggle.addEventListener('click', () => {
             mobileMenuContainer.classList.remove('hidden');
-            requestAnimationFrame(() => { 
-                menuBackdrop.classList.remove('opacity-0'); 
-                menuPanel.classList.remove('translate-x-full'); 
+            requestAnimationFrame(() => {
+                menuBackdrop.classList.remove('opacity-0');
+                menuPanel.classList.remove('translate-x-full');
             });
         });
     }
-    
+
     const closeMenu = () => {
-        menuBackdrop.classList.add('opacity-0'); 
+        menuBackdrop.classList.add('opacity-0');
         menuPanel.classList.add('translate-x-full');
         setTimeout(() => mobileMenuContainer.classList.add('hidden'), 300);
     };
     if (closeMenuBtn) closeMenuBtn.addEventListener('click', closeMenu);
     if (menuBackdrop) menuBackdrop.addEventListener('click', closeMenu);
+
+    // Make nav-trigger links functional (Mobile menu & Footer)
+    document.querySelectorAll('.nav-trigger').forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = trigger.getAttribute('data-trigger');
+            const targetCard = document.querySelector(`.card[data-target="${targetId}"]`);
+            if (targetCard) {
+                closeMenu();
+                setTimeout(() => {
+                    targetCard.click();
+                    // Scroll to top of main container so the card view is visible
+                    const mainContent = document.getElementById('main-content');
+                    if (mainContent) {
+                        mainContent.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 300);
+            }
+        });
+    });
 });
 
 // ==========================================
 // 3. ระบบแสดงรายละเอียดศิลปิน (Artist Detail)
 // ==========================================
-window.showArtistDetailContent = function(artistType, artistNum, linkElement = null) {
+window.showArtistDetailContent = function (artistType, artistNum, linkElement = null) {
     const template = document.getElementById('artist-detail-template');
     if (!activeClone || !template) return;
     activeClone.querySelector('.content-visible')?.classList.remove('content-visible');
@@ -147,34 +167,34 @@ window.showArtistDetailContent = function(artistType, artistNum, linkElement = n
     }
 
     setTimeout(() => {
-        activeClone.style.backgroundColor = 'transparent'; 
+        activeClone.style.backgroundColor = 'transparent';
         activeClone.style.padding = '0';
-        
+
         if (musicianId && window.frontendMusicians) {
             const musician = window.frontendMusicians.find(m => m.id == musicianId);
             if (musician) {
                 const bannerImg = musician.banner_image || 'https://placehold.co/1200x400/333/ccc?text=No+Banner';
                 const profileImg = musician.profile_image || 'https://placehold.co/600x800/222/ddd?text=No+Profile';
-                
+
                 const title = (window.currentLang === 'th' && musician.title_th) ? musician.title_th : (musician.title || 'Untitled');
                 const rawGenre = (window.currentLang === 'th' && musician.genre_th) ? musician.genre_th : musician.genre;
                 const rawDetails = (window.currentLang === 'th' && musician.details_th) ? musician.details_th : musician.details;
 
                 const genre = rawGenre ? `<p class="italic text-gray-700 font-medium mb-3 break-words break-all whitespace-normal">${rawGenre}</p>` : '';
                 const detailsHtml = rawDetails ? `<div class="break-words break-all whitespace-normal">${rawDetails.replace(/\n/g, '<br>')}</div>` : '';
-                
+
                 let socialsHTML = '';
-                if(musician.facebook) socialsHTML += `<a href="${musician.facebook}" target="_blank" class="text-[#1877F2] hover:opacity-80 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>`;
-                if(musician.tiktok) socialsHTML += `<a href="${musician.tiktok}" target="_blank" class="text-black hover:opacity-80 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.04-.1z"/></svg></a>`;
-                if(musician.instagram) socialsHTML += `<a href="${musician.instagram}" target="_blank" class="text-[#E1306C] hover:opacity-80 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>`;
-                
+                if (musician.facebook) socialsHTML += `<a href="${musician.facebook}" target="_blank" class="text-[#1877F2] hover:opacity-80 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>`;
+                if (musician.tiktok) socialsHTML += `<a href="${musician.tiktok}" target="_blank" class="text-black hover:opacity-80 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.04-.1z"/></svg></a>`;
+                if (musician.instagram) socialsHTML += `<a href="${musician.instagram}" target="_blank" class="text-[#E1306C] hover:opacity-80 transition"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>`;
+
                 let contactLine = '';
                 if (musician.whatsapp) contactLine = `Contact : ${musician.whatsapp}`;
                 else if (musician.email) contactLine = `Contact : ${musician.email}`;
 
                 let videoHtml = '';
-                try { 
-                    const vids = JSON.parse(musician.video_link || '[]'); 
+                try {
+                    const vids = JSON.parse(musician.video_link || '[]');
                     if (vids.length > 0) {
                         videoHtml = `
                             <div class="flex items-center gap-4 mb-4 mt-8">
@@ -185,10 +205,10 @@ window.showArtistDetailContent = function(artistType, artistNum, linkElement = n
                         `;
                         vids.forEach(v => {
                             let embedUrl = v;
-                            if(v.includes('youtube.com/watch?v=')) embedUrl = v.replace('watch?v=', 'embed/');
-                            else if(v.includes('youtu.be/')) embedUrl = v.replace('youtu.be/', 'youtube.com/embed/');
+                            if (v.includes('youtube.com/watch?v=')) embedUrl = v.replace('watch?v=', 'embed/');
+                            else if (v.includes('youtu.be/')) embedUrl = v.replace('youtu.be/', 'youtube.com/embed/');
 
-                            if(embedUrl.includes('embed/')) {
+                            if (embedUrl.includes('embed/')) {
                                 videoHtml += `<div class="w-full aspect-video rounded-xl overflow-hidden shadow-sm border border-gray-200"><iframe width="100%" height="100%" src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
                             } else {
                                 videoHtml += `<a href="${v}" target="_blank" class="bg-[#ffc107] text-black font-bold p-4 rounded-xl flex items-center justify-center hover:bg-black hover:text-white transition shadow-sm h-full min-h-[100px] text-center break-all text-sm px-4">▶ Play Video</a>`;
@@ -196,7 +216,7 @@ window.showArtistDetailContent = function(artistType, artistNum, linkElement = n
                         });
                         videoHtml += `</div>`;
                     }
-                } catch(e){}
+                } catch (e) { }
 
                 activeClone.innerHTML = `
                     <div class="artist-detail-content hide-scrollbar h-full overflow-y-auto bg-[#f8f9fa] text-black rounded-2xl pb-12">
@@ -227,28 +247,28 @@ window.showArtistDetailContent = function(artistType, artistNum, linkElement = n
                 `;
             }
         }
-        
+
         requestAnimationFrame(() => activeClone.querySelector('.artist-detail-content')?.classList.add('content-visible'));
 
         const backButton = document.createElement('button'); backButton.innerHTML = '&#8592;'; backButton.className = 'nav-btn nav-btn-left'; backButton.style.left = '20px'; backButton.style.color = '#121212'; backButton.style.borderColor = '#121212';
-        backButton.addEventListener('click', (e) => { 
-            e.stopPropagation(); 
+        backButton.addEventListener('click', (e) => {
+            e.stopPropagation();
             if (mainContainer.dataset.initialHeight) { mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`; delete mainContainer.dataset.initialHeight; }
-            showMainCategoryContent(); 
+            showMainCategoryContent();
         });
         const closeBtn = document.createElement('button'); closeBtn.innerHTML = '&times;'; closeBtn.className = 'close-btn'; closeBtn.style.top = '20px'; closeBtn.style.right = '20px';
         closeBtn.addEventListener('click', (e) => { e.stopPropagation(); collapseCard(activeClone, activeCard); });
         activeClone.appendChild(backButton); activeClone.appendChild(closeBtn);
-        
-        if(window.applyDataToDOM) window.applyDataToDOM(activeClone);
+
+        if (window.applyDataToDOM) window.applyDataToDOM(activeClone);
     }, 300);
 }
 
 // ==========================================
 // 4. ระบบจัดการหน้าต่างแบบ Dynamic
 // ==========================================
-window.applyDataToDOM = async function(container) {
-    
+window.applyDataToDOM = async function (container) {
+
     // --------------------------------------------------
     // A. ส่วนของ Festival & Event
     // --------------------------------------------------
@@ -257,31 +277,31 @@ window.applyDataToDOM = async function(container) {
         const festivalContainer = container.querySelector('#festival-content .clone-main-content') || container.querySelector('.clone-main-content');
         if (festivalContainer) {
             try {
-                if(window.frontendEvents.length === 0) {
+                if (window.frontendEvents.length === 0) {
                     const response = await fetch('backend.php?action=get_front_events&t=' + new Date().getTime());
                     const result = await response.json();
                     if (result.status === 'success' && result.data.length > 0) window.frontendEvents = result.data;
                 }
-                
-                festivalContainer.innerHTML = ''; 
+
+                festivalContainer.innerHTML = '';
                 const hiddenContainer = document.getElementById('hidden-card-content');
-                
+
                 window.frontendEvents.forEach((event) => {
                     const title = (window.currentLang === 'th' && event.title_th) ? event.title_th : event.title;
-                    if (!title || title.trim() === '') return; 
-                    
+                    if (!title || title.trim() === '') return;
+
                     const short_desc = (window.currentLang === 'th' && event.short_description_th) ? event.short_description_th : event.short_description;
                     const detailsText = (window.currentLang === 'th' && event.details_th) ? event.details_th : event.details;
                     const venue_title = (window.currentLang === 'th' && event.venue_title_th) ? event.venue_title_th : event.venue_title;
                     const venue_details = (window.currentLang === 'th' && event.venue_details_th) ? event.venue_details_th : event.venue_details;
-                    
+
                     const safeStartDate = event.start_date.replace(/-/g, "/");
                     const startD = new Date(safeStartDate);
                     const endStr = event.end_date && event.end_date !== '0000-00-00 00:00:00' ? event.end_date : event.start_date;
                     const safeEndDate = endStr.replace(/-/g, "/");
                     const endD = new Date(safeEndDate);
                     const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-                    
+
                     let dateCard = '';
                     if (startD.getTime() !== endD.getTime() && startD.getMonth() === endD.getMonth()) {
                         dateCard = `${String(startD.getDate()).padStart(2, '0')}-${String(endD.getDate()).padStart(2, '0')}<br>${monthNames[startD.getMonth()]}<br>${startD.getFullYear()}`;
@@ -290,7 +310,7 @@ window.applyDataToDOM = async function(container) {
                     }
 
                     const imageUrl = event.banner_image ? event.banner_image : 'https://placehold.co/1200x400/1a1a1a/ffffff?text=Jazz+Event';
-                    
+
                     const cardHTML = `
                         <div data-event-index="${event.id}" class="event-link relative rounded-2xl overflow-hidden group cursor-pointer bg-black/40 border border-white/20 min-h-[160px] md:min-h-[180px] flex items-end p-5 lg:p-6 transition-transform duration-300 hover:scale-[1.02] mb-4">
                             <img src="${imageUrl}" class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen group-hover:opacity-90 transition-opacity duration-300">
@@ -310,22 +330,22 @@ window.applyDataToDOM = async function(container) {
                         </div>
                     `;
                     festivalContainer.innerHTML += cardHTML;
-                    
-                    if(hiddenContainer) {
+
+                    if (hiddenContainer) {
                         const posterImg = event.poster_image ? event.poster_image : 'https://placehold.co/600x800/222/fff?text=Poster';
                         const leftCol = `<div class="lg:col-span-4 flex flex-col gap-6"><img src="${posterImg}" class="w-full rounded-lg shadow-md border border-gray-200"><button class="flex items-center gap-2 text-lg font-bold hover:text-gray-500 transition-colors w-fit" onclick="document.querySelector('.close-btn').click()"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>Go Back</button></div>`;
 
                         let detailDiv = document.getElementById('event-detail-content-' + event.id);
-                        if(!detailDiv) { detailDiv = document.createElement('div'); detailDiv.id = 'event-detail-content-' + event.id; detailDiv.className = 'hidden'; hiddenContainer.appendChild(detailDiv); }
+                        if (!detailDiv) { detailDiv = document.createElement('div'); detailDiv.id = 'event-detail-content-' + event.id; detailDiv.className = 'hidden'; hiddenContainer.appendChild(detailDiv); }
                         const dateFormatted = `${String(startD.getDate()).padStart(2, '0')} ${monthNames[startD.getMonth()]} ${startD.getFullYear()}`;
-                       detailDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h1 class="text-3xl sm:text-4xl lg:text-5xl font-header font-bold mb-2 tracking-tight break-words">${title}</h1><h3 class="text-lg md:text-xl font-bold mb-4 text-gray-500 break-words">${event.location || 'Chiangmai Jazz City'}</h3><p class="text-sm sm:text-base font-medium mb-6 text-black">${dateFormatted}</p><hr class="border-gray-300 border-t-2 mb-6"><div class="prose prose-sm sm:prose-base max-w-none text-black font-medium leading-relaxed text-sm whitespace-pre-line break-words">${detailsText ? detailsText.replace(/\n/g, '<br>') : 'ไม่มีรายละเอียด...'}</div></div></div>`;
+                        detailDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h1 class="text-3xl sm:text-4xl lg:text-5xl font-header font-bold mb-2 tracking-tight break-words">${title}</h1><h3 class="text-lg md:text-xl font-bold mb-4 text-gray-500 break-words">${event.location || 'Chiangmai Jazz City'}</h3><p class="text-sm sm:text-base font-medium mb-6 text-black">${dateFormatted}</p><hr class="border-gray-300 border-t-2 mb-6"><div class="prose prose-sm sm:prose-base max-w-none text-black font-medium leading-relaxed text-sm whitespace-pre-line break-words">${detailsText ? detailsText.replace(/\n/g, '<br>') : 'ไม่มีรายละเอียด...'}</div></div></div>`;
 
-                      let bookDiv = document.getElementById('book-now-content-' + event.id);
-                        if(!bookDiv) { bookDiv = document.createElement('div'); bookDiv.id = 'book-now-content-' + event.id; bookDiv.className = 'hidden'; hiddenContainer.appendChild(bookDiv); }
-                        
-                 // 1. ส่วนเลือกตั๋ว (ครอบด้วยคลาส ticket-selection-section)
+                        let bookDiv = document.getElementById('book-now-content-' + event.id);
+                        if (!bookDiv) { bookDiv = document.createElement('div'); bookDiv.id = 'book-now-content-' + event.id; bookDiv.className = 'hidden'; hiddenContainer.appendChild(bookDiv); }
+
+                        // 1. ส่วนเลือกตั๋ว (ครอบด้วยคลาส ticket-selection-section)
                         let ticketsHTML = '<div class="ticket-selection-section flex flex-col gap-4 w-full transition-opacity duration-300">';
-                        if(event.tickets && event.tickets.length > 0) {
+                        if (event.tickets && event.tickets.length > 0) {
                             event.tickets.forEach(t => {
                                 // 🌟 เพิ่ม data-ticket-id และเปลี่ยนเลขตรงกลางเป็น 0
                                 ticketsHTML += `
@@ -345,11 +365,11 @@ window.applyDataToDOM = async function(container) {
                                 </div>`;
                             });
                             ticketsHTML += `<div class="mt-6 flex flex-col gap-6"><label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="chk-ticket-agree mt-1 w-4 h-4 rounded border-gray-300 text-black focus:ring-black"><span class="text-[10px] sm:text-xs text-black font-medium leading-relaxed">By checking this box, I hereby agree that my information will be shared to our Event Organizers</span></label><button class="btn-buy-ticket w-full bg-black text-white font-header font-bold text-xl py-4 rounded-full tracking-wider hover:bg-gray-800 transition-colors uppercase shadow-lg" data-event-id="${event.id}">BUY TICKET</button></div>`;
-                        } else { 
-                            ticketsHTML += '<p class="text-gray-500 font-medium mt-4">ไม่มีข้อมูลบัตรเข้าชมสำหรับงานนี้</p>'; 
+                        } else {
+                            ticketsHTML += '<p class="text-gray-500 font-medium mt-4">ไม่มีข้อมูลบัตรเข้าชมสำหรับงานนี้</p>';
                         }
                         ticketsHTML += '</div>';
-                     
+
 
                         // 2. ส่วนชำระเงิน QR Code (ซ่อนไว้ก่อนด้วยคลาส hidden)
                         let qrPaymentHTML = `
@@ -391,21 +411,21 @@ window.applyDataToDOM = async function(container) {
                         // นำทั้ง 2 ส่วนมาต่อกัน
                         bookDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8 flex flex-col relative">${ticketsHTML}${qrPaymentHTML}</div></div>`;
                         let lineDiv = document.getElementById('line-up-content-' + event.id);
-                        if(!lineDiv) { lineDiv = document.createElement('div'); lineDiv.id = 'line-up-content-' + event.id; lineDiv.className = 'hidden'; hiddenContainer.appendChild(lineDiv); }
+                        if (!lineDiv) { lineDiv = document.createElement('div'); lineDiv.id = 'line-up-content-' + event.id; lineDiv.className = 'hidden'; hiddenContainer.appendChild(lineDiv); }
                         let lineupHTML = '';
-                        if(event.lineups && event.lineups.length > 0) {
+                        if (event.lineups && event.lineups.length > 0) {
                             const groupedByDate = {};
-                            event.lineups.forEach(l => { const d = l.lineup_date || 'TBA'; if(!groupedByDate[d]) groupedByDate[d] = []; groupedByDate[d].push(l); });
-                            lineupHTML = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-8">'; 
+                            event.lineups.forEach(l => { const d = l.lineup_date || 'TBA'; if (!groupedByDate[d]) groupedByDate[d] = []; groupedByDate[d].push(l); });
+                            lineupHTML = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-8">';
                             for (const [dateStr, items] of Object.entries(groupedByDate)) {
                                 let dateHeader = dateStr;
-                                if(dateStr !== 'TBA') { const dObj = new Date(dateStr.replace(/-/g, "/")); dateHeader = `${String(dObj.getDate()).padStart(2, '0')} ${monthNames[dObj.getMonth()]} ${dObj.getFullYear()}`; }
+                                if (dateStr !== 'TBA') { const dObj = new Date(dateStr.replace(/-/g, "/")); dateHeader = `${String(dObj.getDate()).padStart(2, '0')} ${monthNames[dObj.getMonth()]} ${dObj.getFullYear()}`; }
                                 lineupHTML += `<div><h3 class="text-2xl font-header font-bold mb-4 border-b-2 border-gray-300 pb-2 uppercase">${dateHeader}</h3>`;
                                 const groupedByStage = {};
-                                items.forEach(l => { const s = l.lineup_stage || 'Main Stage'; if(!groupedByStage[s]) groupedByStage[s] = []; groupedByStage[s].push(l); });
+                                items.forEach(l => { const s = l.lineup_stage || 'Main Stage'; if (!groupedByStage[s]) groupedByStage[s] = []; groupedByStage[s].push(l); });
                                 for (const [stageName, stageItems] of Object.entries(groupedByStage)) {
                                     lineupHTML += `<div class="mb-6"><h4 class="font-bold text-sm mb-2 uppercase text-black tracking-wider">${stageName}</h4><ul class="text-sm text-gray-700 space-y-1">`;
-                                    stageItems.forEach(item => { lineupHTML += `<li><span class="font-bold mr-2">${item.lineup_time ? item.lineup_time.substring(0,5) : ''}</span> ${item.band_name}</li>`; });
+                                    stageItems.forEach(item => { lineupHTML += `<li><span class="font-bold mr-2">${item.lineup_time ? item.lineup_time.substring(0, 5) : ''}</span> ${item.band_name}</li>`; });
                                     lineupHTML += `</ul></div>`;
                                 }
                                 lineupHTML += `</div>`;
@@ -415,7 +435,7 @@ window.applyDataToDOM = async function(container) {
                         lineDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8">${lineupHTML}</div></div>`;
 
                         let venueDiv = document.getElementById('venue-content-' + event.id);
-                        if(!venueDiv) { venueDiv = document.createElement('div'); venueDiv.id = 'venue-content-' + event.id; venueDiv.className = 'hidden'; hiddenContainer.appendChild(venueDiv); }
+                        if (!venueDiv) { venueDiv = document.createElement('div'); venueDiv.id = 'venue-content-' + event.id; venueDiv.className = 'hidden'; hiddenContainer.appendChild(venueDiv); }
                         let venueHTML = '';
                         if (event.venue_image) venueHTML += `<img src="${event.venue_image}" class="w-full aspect-[16/9] object-cover rounded-xl shadow-md border border-gray-200 mb-6">`;
                         venueHTML += `<h2 class="text-3xl sm:text-4xl font-header font-bold mb-4 text-black tracking-tight">${venue_title || 'Venue Location'}</h2>`;
@@ -427,14 +447,14 @@ window.applyDataToDOM = async function(container) {
                         venueDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8 flex flex-col">${venueHTML}</div></div>`;
 
                         let galDiv = document.getElementById('gallery-content-' + event.id);
-                        if(!galDiv) { galDiv = document.createElement('div'); galDiv.id = 'gallery-content-' + event.id; galDiv.className = 'hidden'; hiddenContainer.appendChild(galDiv); }
+                        if (!galDiv) { galDiv = document.createElement('div'); galDiv.id = 'gallery-content-' + event.id; galDiv.className = 'hidden'; hiddenContainer.appendChild(galDiv); }
                         let galleryHTML = '<div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">';
-                        if(event.gallery_images) {
+                        if (event.gallery_images) {
                             try {
                                 const images = JSON.parse(event.gallery_images);
-                                if(images.length > 0) { images.forEach(img => { galleryHTML += `<img src="${img}" class="w-full aspect-square object-cover rounded-lg shadow-sm hover:opacity-80 transition cursor-pointer">`; }); } 
+                                if (images.length > 0) { images.forEach(img => { galleryHTML += `<img src="${img}" class="w-full aspect-square object-cover rounded-lg shadow-sm hover:opacity-80 transition cursor-pointer">`; }); }
                                 else { galleryHTML += '<p class="col-span-3 text-gray-500 font-medium">ยังไม่มีรูปภาพแกลลอรี่สำหรับงานนี้</p>'; }
-                            } catch(e){ galleryHTML += '<p class="col-span-3 text-gray-500 font-medium">ยังไม่มีรูปภาพแกลลอรี่สำหรับงานนี้</p>'; }
+                            } catch (e) { galleryHTML += '<p class="col-span-3 text-gray-500 font-medium">ยังไม่มีรูปภาพแกลลอรี่สำหรับงานนี้</p>'; }
                         } else { galleryHTML += '<p class="col-span-3 text-gray-500 font-medium">ยังไม่มีรูปภาพแกลลอรี่สำหรับงานนี้</p>'; }
                         galleryHTML += '</div>';
                         galDiv.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">${leftCol}<div class="lg:col-span-8"><h2 class="text-3xl font-header font-bold mb-2">Event Gallery</h2>${galleryHTML}</div></div>`;
@@ -450,12 +470,12 @@ window.applyDataToDOM = async function(container) {
     // --------------------------------------------------
     const isCourse = container.querySelector('#dyn-course_main_title');
     if (isCourse) {
-        const leftPane = isCourse.closest('.md\\:col-span-1'); 
+        const leftPane = isCourse.closest('.md\\:col-span-1');
         const rightPane = isCourse.closest('.grid').querySelector('.clone-main-content');
 
         if (rightPane) {
             try {
-                if(window.frontendCourses.length === 0) {
+                if (window.frontendCourses.length === 0) {
                     const response = await fetch('backend.php?action=get_all_courses&t=' + new Date().getTime());
                     const result = await response.json();
                     if (result.status === 'success' && result.data.length > 0) window.frontendCourses = result.data;
@@ -465,19 +485,19 @@ window.applyDataToDOM = async function(container) {
                 if (courses[0]) {
                     const bigImg = rightPane.querySelector('#dyn-course_vid_img');
                     const bigTitle = rightPane.querySelector('#dyn-course_sub_title');
-                    const bigCreator = rightPane.querySelector('#dyn-course_main_creator'); 
+                    const bigCreator = rightPane.querySelector('#dyn-course_main_creator');
                     const bigLink = bigImg ? bigImg.closest('.course-link') : null;
-                    
+
                     if (bigImg) bigImg.src = courses[0].banner_image || 'https://placehold.co/800x450/333/fff?text=No+Image';
                     if (bigTitle) bigTitle.textContent = (window.currentLang === 'th' && courses[0].title_th) ? courses[0].title_th : (courses[0].title || 'Untitled Course');
-                    if (bigCreator) bigCreator.textContent = `By ` + ((window.currentLang === 'th' && courses[0].creator_th) ? courses[0].creator_th : (courses[0].creator || 'Unknown')); 
-                    if (bigLink) bigLink.setAttribute('data-course-index', courses[0].id); 
+                    if (bigCreator) bigCreator.textContent = `By ` + ((window.currentLang === 'th' && courses[0].creator_th) ? courses[0].creator_th : (courses[0].creator || 'Unknown'));
+                    if (bigLink) bigLink.setAttribute('data-course-index', courses[0].id);
                 }
 
                 const listContainer = rightPane.querySelector('#course-list-container');
                 if (listContainer) {
                     listContainer.className = 'flex gap-4 overflow-x-auto snap-x snap-mandatory hide-scrollbar flex-grow scroll-smooth';
-                    listContainer.innerHTML = ''; 
+                    listContainer.innerHTML = '';
 
                     const smallCourses = courses.slice(1);
                     smallCourses.forEach((c) => {
@@ -497,13 +517,13 @@ window.applyDataToDOM = async function(container) {
                         `;
                     });
 
-                    const prevBtn = listContainer.previousElementSibling; 
-                    const nextBtn = listContainer.nextElementSibling;     
+                    const prevBtn = listContainer.previousElementSibling;
+                    const nextBtn = listContainer.nextElementSibling;
 
                     if (prevBtn && nextBtn) {
                         const getScrollAmount = () => {
                             const firstItem = listContainer.querySelector('.course-link');
-                            return firstItem ? firstItem.offsetWidth + 16 : 300; 
+                            return firstItem ? firstItem.offsetWidth + 16 : 300;
                         };
 
                         prevBtn.onclick = () => listContainer.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
@@ -542,13 +562,13 @@ window.applyDataToDOM = async function(container) {
                         if (!window.isUserLoggedIn) {
                             // ใช้ระบบ Alert แบบใหม่ที่มี Callback ป้องกัน Modal ซ้อนกัน
                             window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนดูรายละเอียดคอร์สครับ!' : 'Please login to view course details!');
-                            return; 
+                            return;
                         }
 
                         const mainContainer = document.querySelector('.main-container');
                         if (mainContainer && !mainContainer.dataset.initialHeight) {
                             mainContainer.dataset.initialHeight = mainContainer.offsetHeight;
-                            mainContainer.style.height = `${mainContainer.offsetHeight * 2.5}px`; 
+                            mainContainer.style.height = `${mainContainer.offsetHeight * 2.5}px`;
                         }
 
                         const courseId = newLink.getAttribute('data-course-index');
@@ -557,20 +577,20 @@ window.applyDataToDOM = async function(container) {
 
                         let detailsHtml = '<div class="w-full flex flex-wrap -mx-2 items-stretch">';
                         const targetDetails = window.currentLang === 'th' ? course.details_th : course.details;
-                        
-                        if(targetDetails) {
+
+                        if (targetDetails) {
                             try {
                                 let detailsArray = typeof targetDetails === 'string' ? JSON.parse(targetDetails) : targetDetails;
-                                if(Array.isArray(detailsArray)) {
+                                if (Array.isArray(detailsArray)) {
                                     detailsArray.forEach(item => {
-                                        let widthClass = 'w-full'; 
-                                        if (item.layout === 'col-2') widthClass = 'w-1/2'; 
-                                        else if (item.layout === 'col-3') widthClass = 'w-1/3'; 
+                                        let widthClass = 'w-full';
+                                        if (item.layout === 'col-2') widthClass = 'w-1/2';
+                                        else if (item.layout === 'col-3') widthClass = 'w-1/3';
                                         else if (item.layout === 'col-4') widthClass = 'w-1/4';
 
                                         detailsHtml += `<div class="${widthClass} px-2 mb-6 flex flex-col justify-start">`;
 
-                                       if (item.type === 'text') {
+                                        if (item.type === 'text') {
                                             detailsHtml += `<div class="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-[#050505] font-medium leading-relaxed w-full break-words">${item.value ? item.value.replace(/\n/g, '<br>') : ''}</div>`;
                                         } else if (item.type === 'h2') {
                                             detailsHtml += `<h2 class="text-3xl sm:text-4xl font-header font-bold text-[#050505] mt-6 mb-4 w-full break-words leading-tight">${item.value}</h2>`;
@@ -578,22 +598,22 @@ window.applyDataToDOM = async function(container) {
                                             detailsHtml += `<h3 class="text-2xl sm:text-3xl font-header font-bold text-[#050505] mt-5 mb-3 w-full break-words leading-snug">${item.value}</h3>`;
                                         } else if (item.type === 'h4') {
                                             detailsHtml += `<h4 class="text-xl sm:text-2xl font-bold text-[#050505] mt-4 mb-2 w-full break-words leading-snug">${item.value}</h4>`;
-                                        }else if (item.type === 'image') {
+                                        } else if (item.type === 'image') {
                                             detailsHtml += `<img src="${item.value}" class="w-full h-auto object-cover rounded-2xl shadow-sm border border-gray-200">`;
-                                    } else if (item.type === 'video') {
+                                        } else if (item.type === 'video') {
                                             let vidSrc = item.value;
                                             let isVertical = false;
-                                            
+
                                             // เช็คว่าเป็น YouTube Shorts หรือไม่
-                                            if(vidSrc.includes('youtube.com/shorts/')) {
+                                            if (vidSrc.includes('youtube.com/shorts/')) {
                                                 vidSrc = vidSrc.replace('youtube.com/shorts/', 'youtube.com/embed/');
                                                 isVertical = true;
-                                            } else if(vidSrc.includes('youtube.com/watch?v=')) {
+                                            } else if (vidSrc.includes('youtube.com/watch?v=')) {
                                                 vidSrc = vidSrc.replace('watch?v=', 'embed/');
-                                            } else if(vidSrc.includes('youtu.be/')) {
+                                            } else if (vidSrc.includes('youtu.be/')) {
                                                 vidSrc = vidSrc.replace('youtu.be/', 'youtube.com/embed/');
                                             }
-                                            
+
                                             // ถ้าเป็นแนวตั้ง (Shorts)
                                             if (isVertical) {
                                                 // ปรับให้เป็น iframe แบบไม่ล็อก aspect ratio, จำกัดความกว้าง 400px และความสูง 700px (ขนาดมาตรฐานมือถือ)
@@ -603,32 +623,41 @@ window.applyDataToDOM = async function(container) {
                                                 detailsHtml += `<iframe src="${vidSrc}" class="w-full aspect-video rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe>`;
                                             }
                                         } else if (item.type === 'embed') {
-                                            // Embed ของโซเชียลอื่นๆ
                                             detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${item.value}</div>`;
                                         } else if (item.type === 'iframe') {
-                                            // iFrame 
                                             let rawCode = item.value;
-                                            if(rawCode.includes('<iframe')) {
-                                                rawCode = rawCode.replace(/width="[^"]*"/, 'width="100%"');
-                                                // ให้ความสูงปรับตามอัตโนมัติ (min-height) แทน
-                                                if (!rawCode.includes('height=')) rawCode = rawCode.replace('<iframe', '<iframe style="min-height: 500px;"');
+
+                                            // Handle cases like Canva that wrap iframe in a restrictive div
+                                            if (rawCode.includes('<div') && rawCode.includes('padding-top')) {
+                                                rawCode = rawCode.replace(/padding-top:\s*[^;]+;/g, 'padding-top: 0;');
+                                                rawCode = rawCode.replace(/height:\s*0;/g, 'height: auto;');
                                             }
-                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${rawCode}</div>`;
-                                        
-                                        } else if (item.type === 'embed' || item.type === 'iframe') {
-                                            let rawCode = item.value;
-                                            // ปรับขนาด iframe ให้อัตโนมัติและไม่ล้นจอ
-                                            if(rawCode.includes('<iframe')) {
-                                                rawCode = rawCode.replace(/width="[^"]*"/, 'width="100%"').replace(/height="[^"]*"/, 'style="aspect-ratio: 16/9; min-height: 300px;"');
+
+                                            if (rawCode.includes('<iframe')) {
+                                                if (!rawCode.includes('width=')) rawCode = rawCode.replace('<iframe', '<iframe width="100%"');
+                                                else rawCode = rawCode.replace(/width="[^"]*"/g, 'width="100%"');
+
+                                                if (!rawCode.includes('height=')) rawCode = rawCode.replace('<iframe', '<iframe height="600"');
+                                                else rawCode = rawCode.replace(/height="[^"]*"/g, 'height="600"');
+
+                                                // Override inline absolute positioning from Canva that crushes the content
+                                                rawCode = rawCode.replace(/position:\s*absolute;/g, 'position: relative;');
+
+                                                // Guarantee max-width is 100% so documents like Google Docs don't overflow horizontally
+                                                if (rawCode.includes('style=')) {
+                                                    rawCode = rawCode.replace('style="', 'style="width: 100% !important; max-width: 100vw !important; box-sizing: border-box; overflow: hidden !important; ');
+                                                } else {
+                                                    rawCode = rawCode.replace('<iframe', '<iframe style="width: 100% !important; max-width: 100vw !important; box-sizing: border-box; overflow: hidden !important;"');
+                                                }
                                             }
-                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center">${rawCode}</div>`;
+                                            detailsHtml += `<div class="block w-full max-w-full overflow-hidden shrink-0 rounded-xl shadow-sm my-4">${rawCode}</div>`;
                                         }
-                                        
-                                       
-                                        detailsHtml += `</div>`; 
+
+
+                                        detailsHtml += `</div>`;
                                     });
                                 }
-                            } catch(e) {}
+                            } catch (e) { }
                         }
                         detailsHtml += '</div>';
 
@@ -662,10 +691,10 @@ window.applyDataToDOM = async function(container) {
 
                         gridView.classList.add('hidden');
                         detailView.classList.remove('hidden');
-                        
+
                         setTimeout(() => {
                             const innerDetail = document.getElementById('course-detail-inner');
-                            if(innerDetail) innerDetail.classList.remove('opacity-0');
+                            if (innerDetail) innerDetail.classList.remove('opacity-0');
                         }, 50);
 
                         const leftPane = mainContainer.querySelector('.md\\:col-span-1');
@@ -678,20 +707,20 @@ window.applyDataToDOM = async function(container) {
                         detailView.querySelector('#course-back-btn').addEventListener('click', (e2) => {
                             e2.preventDefault();
                             e2.stopPropagation();
-                            
+
                             if (mainContainer && mainContainer.dataset.initialHeight) {
                                 mainContainer.style.height = `${mainContainer.dataset.initialHeight}px`;
                                 delete mainContainer.dataset.initialHeight;
                             }
 
                             const innerDetail = document.getElementById('course-detail-inner');
-                            if(innerDetail) innerDetail.classList.add('opacity-0');
+                            if (innerDetail) innerDetail.classList.add('opacity-0');
 
                             setTimeout(() => {
                                 detailView.classList.add('hidden');
                                 gridView.classList.remove('hidden');
-                                detailView.innerHTML = ''; 
-                                
+                                detailView.innerHTML = '';
+
                                 if (leftPane) leftPane.classList.remove('hidden');
                                 if (rightPane) {
                                     rightPane.classList.remove('md:col-span-4');
@@ -711,31 +740,31 @@ window.applyDataToDOM = async function(container) {
     window.courseReviewCurrentPage = 1;
     const COURSE_REVIEWS_PER_PAGE = 3; // หน้าละ 3 รีวิว
 
-    window.loadCourseReviews = async function() {
+    window.loadCourseReviews = async function () {
         try {
             const res = await fetch('backend.php?action=get_course_reviews');
             const result = await res.json();
-            if(result.status === 'success') {
+            if (result.status === 'success') {
                 window.courseReviewsData = result.data;
                 window.courseReviewCurrentPage = 1;
                 renderCourseReviews();
             }
-        } catch(e) {}
+        } catch (e) { }
     }
 
-   // 🌟 ฟังก์ชันเปลี่ยนหน้ารีวิวคอร์สเรียน (แก้หน้าจอกระโดดแล้ว)
-    window.changeCourseReviewPage = function(newPage) {
+    // 🌟 ฟังก์ชันเปลี่ยนหน้ารีวิวคอร์สเรียน (แก้หน้าจอกระโดดแล้ว)
+    window.changeCourseReviewPage = function (newPage) {
         window.courseReviewCurrentPage = newPage;
         renderCourseReviews();
-        
+
         // ค้นหากล่องเลื่อนเนื้อหาเฉพาะของ Course (กล่องสีเขียว)
         const scrollContainer = document.querySelector('.clone-content');
         const reviewSection = document.getElementById('course-review-section');
-        
+
         if (scrollContainer && reviewSection) {
             const containerRect = scrollContainer.getBoundingClientRect();
             const sectionRect = reviewSection.getBoundingClientRect();
-            
+
             // เลื่อนเฉพาะกล่องด้านใน ไปที่คำว่า Feedback & Review (เว้นขอบบนนิดนึง)
             const scrollPos = scrollContainer.scrollTop + (sectionRect.top - containerRect.top) - 40;
             scrollContainer.scrollTo({ top: scrollPos, behavior: 'smooth' });
@@ -745,12 +774,12 @@ window.applyDataToDOM = async function(container) {
     function renderCourseReviews() {
         const listContainer = document.getElementById('course-reviews-list');
         const pageContainer = document.getElementById('course-review-pagination');
-        if(!listContainer) return;
+        if (!listContainer) return;
 
         let html = '';
-        if(window.courseReviewsData.length === 0) {
+        if (window.courseReviewsData.length === 0) {
             html = window.currentLang === 'th' ? '<p class="text-white/60 italic">ยังไม่มีรีวิว</p>' : '<p class="text-white/60 italic">No reviews yet</p>';
-            if(pageContainer) pageContainer.innerHTML = '';
+            if (pageContainer) pageContainer.innerHTML = '';
         } else {
             const startIndex = (window.courseReviewCurrentPage - 1) * COURSE_REVIEWS_PER_PAGE;
             const endIndex = startIndex + COURSE_REVIEWS_PER_PAGE;
@@ -759,7 +788,7 @@ window.applyDataToDOM = async function(container) {
             paginatedItems.forEach(review => {
                 const d = new Date(review.created_at);
                 const dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-                
+
                 // ดาว 5 ดวงตายตัวตามคำขอ
                 const starsHtml = `<div class="text-white text-lg tracking-widest mb-1">★★★★★</div>`;
 
@@ -779,15 +808,15 @@ window.applyDataToDOM = async function(container) {
             const totalPages = Math.ceil(window.courseReviewsData.length / COURSE_REVIEWS_PER_PAGE);
             if (totalPages > 1 && pageContainer) {
                 let pageHtml = `<div class="flex items-center gap-2 font-bold text-lg text-white">`;
-                
+
                 pageHtml += `<button onclick="event.stopPropagation(); window.changeCourseReviewPage(${window.courseReviewCurrentPage - 1})" class="hover:text-gray-300 transition" ${window.courseReviewCurrentPage === 1 ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>&lt;&lt; Previous</button><span class="px-2">|</span>`;
-                
+
                 for (let i = 1; i <= totalPages; i++) {
                     const isActive = i === window.courseReviewCurrentPage ? 'text-white underline underline-offset-4' : 'text-white/60 hover:text-white transition';
                     pageHtml += `<button onclick="event.stopPropagation(); window.changeCourseReviewPage(${i})" class="${isActive}">${i}</button>`;
-                    if(i < totalPages) pageHtml += `<span class="px-2 text-white/60">|</span>`;
+                    if (i < totalPages) pageHtml += `<span class="px-2 text-white/60">|</span>`;
                 }
-                
+
                 pageHtml += `<span class="px-2">|</span><button onclick="event.stopPropagation(); window.changeCourseReviewPage(${window.courseReviewCurrentPage + 1})" class="hover:text-gray-300 transition" ${window.courseReviewCurrentPage === totalPages ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>Next &gt;&gt;</button>`;
                 pageHtml += `</div>`;
                 pageContainer.innerHTML = pageHtml;
@@ -816,10 +845,10 @@ window.applyDataToDOM = async function(container) {
             try {
                 const response = await fetch('backend.php?action=get_cmbigband&t=' + new Date().getTime());
                 const result = await response.json();
-                
+
                 if (result.status === 'success' && result.data) {
                     const bbData = result.data;
-                    
+
                     if (bbData.banner_image && bigbandImg) {
                         bigbandImg.src = bbData.banner_image;
                     }
@@ -834,24 +863,24 @@ window.applyDataToDOM = async function(container) {
                         const mainContainer = document.querySelector('.main-container');
                         if (mainContainer && !mainContainer.dataset.initialHeight) {
                             mainContainer.dataset.initialHeight = mainContainer.offsetHeight;
-                            mainContainer.style.height = `${mainContainer.offsetHeight * 2.5}px`; 
+                            mainContainer.style.height = `${mainContainer.offsetHeight * 2.5}px`;
                         }
 
                         let detailsHtml = '<div class="w-full flex flex-wrap -mx-2 items-stretch">';
                         const targetDetails = window.currentLang === 'th' ? bbData.details_th : bbData.details;
-                        
+
                         if (targetDetails && targetDetails !== 'null' && targetDetails !== '[]') {
                             try {
                                 let detailsArray = typeof targetDetails === 'string' ? JSON.parse(targetDetails) : targetDetails;
                                 if (Array.isArray(detailsArray) && detailsArray.length > 0) {
                                     detailsArray.forEach(item => {
-                                        let widthClass = 'w-full'; 
-                                        if (item.layout === 'col-2') widthClass = 'w-1/2'; 
-                                        else if (item.layout === 'col-3') widthClass = 'w-1/3'; 
+                                        let widthClass = 'w-full';
+                                        if (item.layout === 'col-2') widthClass = 'w-1/2';
+                                        else if (item.layout === 'col-3') widthClass = 'w-1/3';
                                         else if (item.layout === 'col-4') widthClass = 'w-1/4';
 
                                         detailsHtml += `<div class="${widthClass} px-2 mb-6 flex flex-col justify-start">`;
-                                      if (item.type === 'text') {
+                                        if (item.type === 'text') {
                                             detailsHtml += `<div class="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-[#050505] font-medium leading-relaxed w-full break-words">${item.value ? item.value.replace(/\n/g, '<br>') : ''}</div>`;
                                         } else if (item.type === 'h2') {
                                             detailsHtml += `<h2 class="text-3xl sm:text-4xl font-header font-bold text-[#050505] mt-6 mb-4 w-full break-words leading-tight">${item.value}</h2>`;
@@ -861,18 +890,18 @@ window.applyDataToDOM = async function(container) {
                                             detailsHtml += `<h4 class="text-xl sm:text-2xl font-bold text-[#050505] mt-4 mb-2 w-full break-words leading-snug">${item.value}</h4>`;
                                         } else if (item.type === 'image') {
                                             detailsHtml += `<img src="${item.value}" class="w-full h-auto object-cover rounded-2xl shadow-sm border border-gray-200">`;
-                                       } else if (item.type === 'video') {
+                                        } else if (item.type === 'video') {
                                             let vidSrc = item.value;
                                             let isVertical = false;
-                                            if(vidSrc.includes('youtube.com/shorts/')) {
+                                            if (vidSrc.includes('youtube.com/shorts/')) {
                                                 vidSrc = vidSrc.replace('youtube.com/shorts/', 'youtube.com/embed/');
                                                 isVertical = true;
-                                            } else if(vidSrc.includes('youtube.com/watch?v=')) {
+                                            } else if (vidSrc.includes('youtube.com/watch?v=')) {
                                                 vidSrc = vidSrc.replace('watch?v=', 'embed/');
-                                            } else if(vidSrc.includes('youtu.be/')) {
+                                            } else if (vidSrc.includes('youtu.be/')) {
                                                 vidSrc = vidSrc.replace('youtu.be/', 'youtube.com/embed/');
                                             }
-                                            
+
                                             if (isVertical) {
                                                 detailsHtml += `<div class="w-full flex justify-center"><iframe src="${vidSrc}" class="w-full max-w-[350px] aspect-[9/16] rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe></div>`;
                                             } else {
@@ -882,17 +911,37 @@ window.applyDataToDOM = async function(container) {
                                             detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${item.value}</div>`;
                                         } else if (item.type === 'iframe') {
                                             let rawCode = item.value;
-                                            if(rawCode.includes('<iframe')) {
-                                                rawCode = rawCode.replace(/width="[^"]*"/, 'width="100%"');
-                                                if (!rawCode.includes('height=')) rawCode = rawCode.replace('<iframe', '<iframe height="450"');
+
+                                            // Handle cases like Canva that wrap iframe in a restrictive div
+                                            if (rawCode.includes('<div') && rawCode.includes('padding-top')) {
+                                                rawCode = rawCode.replace(/padding-top:\s*[^;]+;/g, 'padding-top: 0;');
+                                                rawCode = rawCode.replace(/height:\s*0;/g, 'height: auto;');
                                             }
-                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${rawCode}</div>`;
+
+                                            if (rawCode.includes('<iframe')) {
+                                                if (!rawCode.includes('width=')) rawCode = rawCode.replace('<iframe', '<iframe width="100%"');
+                                                else rawCode = rawCode.replace(/width="[^"]*"/g, 'width="100%"');
+
+                                                if (!rawCode.includes('height=')) rawCode = rawCode.replace('<iframe', '<iframe height="600"');
+                                                else rawCode = rawCode.replace(/height="[^"]*"/g, 'height="600"');
+
+                                                // Override inline absolute positioning from Canva that crushes the content
+                                                rawCode = rawCode.replace(/position:\s*absolute;/g, 'position: relative;');
+
+                                                // Guarantee max-width is 100% so documents like Google Docs don't overflow horizontally
+                                                if (rawCode.includes('style=')) {
+                                                    rawCode = rawCode.replace('style="', 'style="width: 100% !important; max-width: 100vw !important; box-sizing: border-box; overflow: hidden !important; ');
+                                                } else {
+                                                    rawCode = rawCode.replace('<iframe', '<iframe style="width: 100% !important; max-width: 100vw !important; box-sizing: border-box; overflow: hidden !important;"');
+                                                }
+                                            }
+                                            detailsHtml += `<div class="block w-full max-w-full overflow-hidden shrink-0 rounded-xl shadow-sm my-4">${rawCode}</div>`;
                                         }
                                     });
                                 } else {
-                                     detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">${window.currentLang === 'th' ? 'ยังไม่มีรายละเอียด' : 'No details available'}</div>`;
+                                    detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">${window.currentLang === 'th' ? 'ยังไม่มีรายละเอียด' : 'No details available'}</div>`;
                                 }
-                            } catch(e) {}
+                            } catch (e) { }
                         } else {
                             detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">${window.currentLang === 'th' ? 'ยังไม่มีรายละเอียด' : 'No details available'}</div>`;
                         }
@@ -926,10 +975,10 @@ window.applyDataToDOM = async function(container) {
 
                         gridView.classList.add('hidden');
                         detailView.classList.remove('hidden');
-                        
+
                         setTimeout(() => {
                             const innerDetail = document.getElementById('bigband-detail-inner');
-                            if(innerDetail) innerDetail.classList.remove('opacity-0');
+                            if (innerDetail) innerDetail.classList.remove('opacity-0');
                         }, 50);
 
                         detailView.querySelector('#bb-back-btn').addEventListener('click', (e2) => {
@@ -943,17 +992,17 @@ window.applyDataToDOM = async function(container) {
                             }
 
                             const innerDetail = document.getElementById('bigband-detail-inner');
-                            if(innerDetail) innerDetail.classList.add('opacity-0');
+                            if (innerDetail) innerDetail.classList.add('opacity-0');
 
                             setTimeout(() => {
                                 detailView.classList.add('hidden');
                                 gridView.classList.remove('hidden');
-                                detailView.innerHTML = ''; 
+                                detailView.innerHTML = '';
                             }, 300);
                         });
                     });
                 }
-            } catch (error) {}
+            } catch (error) { }
         }
     }
 
@@ -962,7 +1011,7 @@ window.applyDataToDOM = async function(container) {
     // --------------------------------------------------
     const isForum = container.querySelector('#forum-questions-list');
     if (isForum) {
-        if(typeof window.loadForumTopics === 'function') {
+        if (typeof window.loadForumTopics === 'function') {
             window.loadForumTopics();
         }
     }
@@ -972,7 +1021,7 @@ window.applyDataToDOM = async function(container) {
     // --------------------------------------------------
     const isStore = container.querySelector('#dynamic-store-grid');
     if (isStore) {
-        if(typeof window.loadFrontendStoreProducts === 'function') {
+        if (typeof window.loadFrontendStoreProducts === 'function') {
             window.loadFrontendStoreProducts(container); // ส่ง container เข้าไปเพื่อแก้บั๊กคลิกไม่ติด
         }
     }
@@ -989,42 +1038,64 @@ document.addEventListener('DOMContentLoaded', async () => {
     const registerContainer = document.getElementById('register-form-container');
     const showRegisterBtn = document.getElementById('show-register-btn');
     const showLoginBtn = document.getElementById('show-login-btn');
-    const headerAuthBtn = document.getElementById('header-auth-btn'); 
+    const headerAuthBtn = document.getElementById('header-auth-btn');
+    const mobileAuthBtn = document.getElementById('mobile-auth-btn');
 
     try {
         const res = await fetch('backend.php?action=check_auth');
         const result = await res.json();
         if (result.status === 'success' && result.logged_in) {
             window.isUserLoggedIn = true;
-            if(headerAuthBtn) {
+            if (headerAuthBtn) {
                 headerAuthBtn.textContent = 'Log out';
                 headerAuthBtn.classList.add('text-red-500');
+            }
+            if (mobileAuthBtn) {
+                mobileAuthBtn.textContent = 'Log out';
+                mobileAuthBtn.classList.add('text-red-500');
+            }
+            if (result.role === 'admin') {
+                const adminBtn = document.getElementById('admin-panel-btn');
+                if (adminBtn) adminBtn.classList.remove('hidden');
+                const mobileAdminBtn = document.getElementById('mobile-admin-btn');
+                if (mobileAdminBtn) mobileAdminBtn.classList.remove('hidden');
             }
         } else {
             window.isUserLoggedIn = false;
         }
-    } catch(e) {}
+    } catch (e) { }
 
-    const closeAuthModal = () => { if(authModal) authModal.classList.add('hidden'); };
+    const closeAuthModal = () => { if (authModal) authModal.classList.add('hidden'); };
     if (closeAuthBtn) closeAuthBtn.addEventListener('click', closeAuthModal);
     if (authBackdrop) authBackdrop.addEventListener('click', closeAuthModal);
     if (showRegisterBtn) showRegisterBtn.addEventListener('click', () => { loginContainer.classList.add('hidden'); registerContainer.classList.remove('hidden'); });
     if (showLoginBtn) showLoginBtn.addEventListener('click', () => { registerContainer.classList.add('hidden'); loginContainer.classList.remove('hidden'); });
 
-    if(headerAuthBtn) {
-        headerAuthBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            if (window.isUserLoggedIn) {
-                await fetch('backend.php?action=logout');
-                window.isUserLoggedIn = false;
-                window.location.reload(); 
-            } else {
-                if(loginContainer) loginContainer.classList.remove('hidden');
-                if(registerContainer) registerContainer.classList.add('hidden');
-                if(authModal) authModal.classList.remove('hidden');
+    const handleAuthClick = async (e) => {
+        e.preventDefault();
+        if (window.isUserLoggedIn) {
+            await fetch('backend.php?action=logout');
+            window.isUserLoggedIn = false;
+            window.location.reload();
+        } else {
+            if (loginContainer) loginContainer.classList.remove('hidden');
+            if (registerContainer) registerContainer.classList.add('hidden');
+            if (authModal) authModal.classList.remove('hidden');
+
+            // ปิดเมนูมือถือเวลาเปิด modal
+            const mobileMenuContainer = document.getElementById('mobile-menu-container');
+            if (mobileMenuContainer && !mobileMenuContainer.classList.contains('hidden')) {
+                const menuBackdrop = document.getElementById('menu-backdrop');
+                const menuPanel = document.getElementById('menu-panel');
+                if (menuBackdrop) menuBackdrop.classList.add('opacity-0');
+                if (menuPanel) menuPanel.classList.add('translate-x-full');
+                setTimeout(() => mobileMenuContainer.classList.add('hidden'), 300);
             }
-        });
-    }
+        }
+    };
+
+    if (headerAuthBtn) headerAuthBtn.addEventListener('click', handleAuthClick);
+    if (mobileAuthBtn) mobileAuthBtn.addEventListener('click', handleAuthClick);
 
     const loginForm = document.getElementById('front-login-form');
     if (loginForm) {
@@ -1032,11 +1103,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             const errorMsg = document.getElementById('login-error');
             const submitBtn = loginForm.querySelector('button[type="submit"]');
-            
+
             errorMsg.classList.add('hidden');
-            submitBtn.textContent = window.currentLang === 'th' ? 'กำลังเข้าสู่ระบบ...' : 'Logging in...'; 
+            submitBtn.textContent = window.currentLang === 'th' ? 'กำลังเข้าสู่ระบบ...' : 'Logging in...';
             submitBtn.disabled = true;
-            
+
             const formData = new FormData();
             formData.append('username', document.getElementById('login-username').value);
             formData.append('password', document.getElementById('login-password').value);
@@ -1044,15 +1115,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const res = await fetch('backend.php?action=login', { method: 'POST', body: formData });
                 const result = await res.json();
-                
+
                 if (result.status === 'success') {
                     if (result.role === 'admin') {
-                        window.location.href = 'admin.php'; 
+                        window.location.href = 'admin.php';
                     } else {
                         window.isUserLoggedIn = true;
-                        if(headerAuthBtn) {
+                        if (headerAuthBtn) {
                             headerAuthBtn.textContent = 'Log out';
                             headerAuthBtn.classList.add('text-red-500');
+                        }
+                        const mAuthBtn = document.getElementById('mobile-auth-btn');
+                        if (mAuthBtn) {
+                            mAuthBtn.textContent = 'Log out';
+                            mAuthBtn.classList.add('text-red-500');
                         }
                         closeAuthModal();
                     }
@@ -1060,7 +1136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     errorMsg.textContent = result.message;
                     errorMsg.classList.remove('hidden');
                 }
-            } catch(err) {
+            } catch (err) {
                 errorMsg.textContent = window.currentLang === 'th' ? "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้" : "Cannot connect to server.";
                 errorMsg.classList.remove('hidden');
             } finally {
@@ -1077,11 +1153,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.preventDefault();
             const msgEl = document.getElementById('reg-msg');
             const submitBtn = regForm.querySelector('button[type="submit"]');
-            
+
             msgEl.classList.remove('hidden', 'text-red-500', 'text-green-500');
             submitBtn.textContent = window.currentLang === 'th' ? 'กำลังสมัครสมาชิก...' : 'Signing up...';
             submitBtn.disabled = true;
-            
+
             const formData = new FormData();
             formData.append('username', document.getElementById('reg-username').value);
             formData.append('email', document.getElementById('reg-email').value);
@@ -1090,7 +1166,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const res = await fetch('backend.php?action=register', { method: 'POST', body: formData });
                 const result = await res.json();
-                
+
                 if (result.status === 'success') {
                     msgEl.textContent = result.message || (window.currentLang === 'th' ? "สมัครสมาชิกสำเร็จ! กำลังพาท่านไปหน้าเข้าสู่ระบบ..." : "Registration successful! Redirecting to login...");
                     msgEl.classList.add('text-green-500');
@@ -1100,7 +1176,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     msgEl.textContent = result.message;
                     msgEl.classList.add('text-red-500');
                 }
-            } catch(err) {
+            } catch (err) {
                 msgEl.textContent = window.currentLang === 'th' ? "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้" : "Cannot connect to server.";
                 msgEl.classList.add('text-red-500');
             } finally {
@@ -1116,7 +1192,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ==========================================
 
 // 🌟 อัปเดต: เพิ่ม onClose Callback เพื่อแก้ปัญหาหน้าต่างซ้อนทับกัน
-window.showCustomAlert = function(message, onClose = null) {
+window.showCustomAlert = function (message, onClose = null) {
     const existing = document.getElementById('custom-alert-modal');
     if (existing) existing.remove();
     const modal = document.createElement('div');
@@ -1136,7 +1212,7 @@ window.showCustomAlert = function(message, onClose = null) {
     });
 }
 
-window.showCustomConfirm = function(message, onConfirm) {
+window.showCustomConfirm = function (message, onConfirm) {
     const existing = document.getElementById('custom-confirm-modal');
     if (existing) existing.remove();
     const modal = document.createElement('div');
@@ -1149,9 +1225,9 @@ window.showCustomConfirm = function(message, onConfirm) {
 }
 
 // 🌟 ฟังก์ชันรวมสำหรับเช็ค Login (ลดความซ้ำซ้อน)
-window.requireLogin = function(message) {
+window.requireLogin = function (message) {
     if (window.isUserLoggedIn) return true;
-    
+
     window.showCustomAlert(message, () => {
         document.getElementById('login-form-container')?.classList.remove('hidden');
         document.getElementById('register-form-container')?.classList.add('hidden');
@@ -1162,11 +1238,11 @@ window.requireLogin = function(message) {
 
 window.forumTopicsData = [];
 window.topicCurrentPage = 1;
-const TOPICS_PER_PAGE = 5; 
+const TOPICS_PER_PAGE = 5;
 
 window.currentTopicDetailData = null;
 window.commentCurrentPage = 1;
-const COMMENTS_PER_PAGE = 5; 
+const COMMENTS_PER_PAGE = 5;
 
 function generatePagination(totalItems, itemsPerPage, currentPage, type) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -1182,8 +1258,8 @@ function generatePagination(totalItems, itemsPerPage, currentPage, type) {
     return html;
 }
 
-window.changeForumPage = function(type, newPage) {
-    const scrollContainer = document.querySelector('.clone-content'); 
+window.changeForumPage = function (type, newPage) {
+    const scrollContainer = document.querySelector('.clone-content');
     if (type === 'topic') {
         window.topicCurrentPage = newPage;
         renderForumTopics();
@@ -1203,22 +1279,22 @@ window.changeForumPage = function(type, newPage) {
     }
 }
 
-window.loadForumTopics = async function() {
+window.loadForumTopics = async function () {
     try {
         const res = await fetch('backend.php?action=get_forum_topics');
         const result = await res.json();
-        if(result.status === 'success') {
+        if (result.status === 'success') {
             window.forumTopicsData = result.data;
-            window.topicCurrentPage = 1; 
+            window.topicCurrentPage = 1;
             renderForumTopics();
         }
-    } catch(e) { console.error(e); }
+    } catch (e) { console.error(e); }
 }
 
 function renderForumTopics() {
     const listContainers = document.querySelectorAll('#forum-questions-list');
     const pageContainers = document.querySelectorAll('#forum-topic-pagination');
-    if(listContainers.length === 0) return;
+    if (listContainers.length === 0) return;
 
     let t = {};
     if (typeof siteTranslations !== 'undefined' && siteTranslations[window.currentLang]) {
@@ -1226,7 +1302,7 @@ function renderForumTopics() {
     }
 
     let html = '';
-    if(window.forumTopicsData.length === 0) {
+    if (window.forumTopicsData.length === 0) {
         html = `<p class="text-white/80 mt-4 text-center">${t.forum_no_topics || 'No topics yet.'}</p>`;
         pageContainers.forEach(c => c.innerHTML = '');
     } else {
@@ -1237,10 +1313,10 @@ function renderForumTopics() {
         paginatedItems.forEach(topic => {
             const d = new Date(topic.created_at);
             const dateStr = d.toLocaleDateString(window.currentLang === 'th' ? 'th-TH' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-            
+
             const mediaTxt = t.forum_has_media || 'Media';
             const byTxt = t.forum_posted_by || 'by';
-            
+
             const hasMedia = (topic.image_url || topic.video_link) ? `<span class="ml-2 text-[10px] bg-white/20 px-2 py-0.5 rounded text-white font-bold inline-flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"></path></svg>${mediaTxt}</span>` : '';
 
             html += `
@@ -1256,32 +1332,32 @@ function renderForumTopics() {
         pageContainers.forEach(c => c.innerHTML = generatePagination(window.forumTopicsData.length, TOPICS_PER_PAGE, window.topicCurrentPage, 'topic'));
     }
     listContainers.forEach(c => c.innerHTML = html);
-    if(typeof window.translateUI === 'function') window.translateUI();
+    if (typeof window.translateUI === 'function') window.translateUI();
 }
 
-window.loadForumTopicDetail = async function(topicId) {
+window.loadForumTopicDetail = async function (topicId) {
     try {
         const res = await fetch(`backend.php?action=get_forum_topic_detail&topic_id=${topicId}`);
         const result = await res.json();
-        
+
         let t = {};
         if (typeof siteTranslations !== 'undefined' && siteTranslations[window.currentLang]) {
             t = siteTranslations[window.currentLang];
         }
 
-        if(result.status === 'success') {
+        if (result.status === 'success') {
             window.currentTopicDetailData = result.data;
-            window.commentCurrentPage = 1; 
-            
+            window.commentCurrentPage = 1;
+
             const topic = result.data.topic;
             const currentUserId = result.data.current_user_id;
-            window.currentUserId = currentUserId; 
-            
+            window.currentUserId = currentUserId;
+
             const d = new Date(topic.created_at);
             const dateStr = d.toLocaleDateString(window.currentLang === 'th' ? 'th-TH' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
             let mediaHtml = '';
-            if (topic.image_url) mediaHtml += `<img src="${topic.image_url}" class="w-full max-w-3xl rounded-xl mt-6 border border-white/20 shadow-md">`; 
+            if (topic.image_url) mediaHtml += `<img src="${topic.image_url}" class="w-full max-w-3xl rounded-xl mt-6 border border-white/20 shadow-md">`;
             if (topic.video_link) mediaHtml += `<div class="w-full max-w-3xl aspect-video mt-6 rounded-xl overflow-hidden border border-white/20 shadow-md bg-black"><video controls preload="metadata" class="w-full h-full object-contain"><source src="${topic.video_link}" type="video/mp4"></video></div>`;
 
             const isOwner = (currentUserId > 0 && topic.user_id == currentUserId);
@@ -1336,17 +1412,17 @@ window.loadForumTopicDetail = async function(topicId) {
             document.querySelector('.clone-content')?.scrollTo({ top: 0, behavior: 'smooth' });
 
             renderForumComments();
-            if(typeof window.translateUI === 'function') window.translateUI();
-        } else { 
-            window.showCustomAlert(window.currentLang === 'th' ? 'ไม่พบกระทู้นี้ หรืออาจจะถูกลบไปแล้ว' : 'Topic not found or has been deleted.'); 
+            if (typeof window.translateUI === 'function') window.translateUI();
+        } else {
+            window.showCustomAlert(window.currentLang === 'th' ? 'ไม่พบกระทู้นี้ หรืออาจจะถูกลบไปแล้ว' : 'Topic not found or has been deleted.');
         }
-    } catch(e) {}
+    } catch (e) { }
 }
 
 function renderForumComments() {
     const commentsList = document.getElementById('forum-comments-list');
     const pageContainer = document.getElementById('forum-comment-pagination');
-    if(!commentsList || !window.currentTopicDetailData) return;
+    if (!commentsList || !window.currentTopicDetailData) return;
 
     let t = {};
     if (typeof siteTranslations !== 'undefined' && siteTranslations[window.currentLang]) {
@@ -1356,7 +1432,7 @@ function renderForumComments() {
     const comments = window.currentTopicDetailData.comments;
     let html = '';
 
-    if(comments.length === 0) {
+    if (comments.length === 0) {
         html = `<div class="bg-black/10 rounded-xl p-8 text-center text-white/50 italic border border-white/10">${t.forum_no_comments || 'No comments yet.'}</div>`;
         pageContainer.innerHTML = '';
     } else {
@@ -1367,7 +1443,7 @@ function renderForumComments() {
         paginatedComments.forEach(c => {
             const cd = new Date(c.created_at);
             const cDateStr = cd.toLocaleDateString(window.currentLang === 'th' ? 'th-TH' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-            
+
             const isLiked = localStorage.getItem(`liked_comment_${c.id}_user_${window.currentUserId}`);
             const heartColor = isLiked ? 'text-pink-500' : 'text-white/50 hover:text-pink-400';
 
@@ -1395,16 +1471,16 @@ function renderForumComments() {
 
 if (!window.forumClickListenerActive) {
     document.addEventListener('click', async (e) => {
-        
+
         const likeBtn = e.target.closest('.btn-like-comment');
         if (likeBtn && !likeBtn.disabled) {
             e.preventDefault();
             if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนกดถูกใจความคิดเห็นครับ!' : 'Please login to like comments!')) return;
-            
+
             const commentId = likeBtn.getAttribute('data-id');
             const countSpan = likeBtn.querySelector('.like-count');
             const storageKey = `liked_comment_${commentId}_user_${window.currentUserId}`;
-            const isLiked = localStorage.getItem(storageKey); 
+            const isLiked = localStorage.getItem(storageKey);
             likeBtn.disabled = true;
 
             const fd = new FormData();
@@ -1417,25 +1493,25 @@ if (!window.forumClickListenerActive) {
                 if (result.status === 'success') {
                     countSpan.textContent = result.likes;
                     if (isLiked) {
-                        localStorage.removeItem(storageKey); 
+                        localStorage.removeItem(storageKey);
                         likeBtn.classList.remove('text-pink-500');
                         likeBtn.classList.add('text-white/50', 'hover:text-pink-400');
                     } else {
-                        localStorage.setItem(storageKey, 'true'); 
+                        localStorage.setItem(storageKey, 'true');
                         likeBtn.classList.remove('text-white/50', 'hover:text-pink-400');
                         likeBtn.classList.add('text-pink-500');
                     }
-                    likeBtn.classList.add('scale-110'); 
-                    setTimeout(()=> likeBtn.classList.remove('scale-110'), 200);
+                    likeBtn.classList.add('scale-110');
+                    setTimeout(() => likeBtn.classList.remove('scale-110'), 200);
                 }
-            } catch(err) { }
+            } catch (err) { }
             finally { likeBtn.disabled = false; }
         }
 
         if (e.target.closest('#dyn-forum_btn_write_comment')) {
             e.preventDefault();
             if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็นครับ!' : 'Please login first!')) return;
-            
+
             document.getElementById('forum-comment-box-container').classList.remove('hidden');
             e.target.closest('#dyn-forum_btn_write_comment').classList.add('hidden');
             document.getElementById('dyn-forum_input_comment').focus();
@@ -1452,7 +1528,7 @@ if (!window.forumClickListenerActive) {
             e.preventDefault();
             document.getElementById('forum-display-content').classList.add('hidden');
             document.getElementById('forum-edit-form').classList.remove('hidden');
-            document.getElementById('forum-owner-actions').classList.add('hidden'); 
+            document.getElementById('forum-owner-actions').classList.add('hidden');
         }
 
         if (e.target.closest('#btn-cancel-edit')) {
@@ -1478,8 +1554,8 @@ if (!window.forumClickListenerActive) {
             saveEditBtn.disabled = true;
 
             const fd = new FormData();
-            fd.append('topic_id', topicId); 
-            fd.append('title', newTitle); 
+            fd.append('topic_id', topicId);
+            fd.append('title', newTitle);
             fd.append('content', newContent);
             if (newImg && newImg.files.length > 0) fd.append('topic_image', newImg.files[0]);
             if (newVid && newVid.files.length > 0) fd.append('topic_video', newVid.files[0]);
@@ -1487,9 +1563,9 @@ if (!window.forumClickListenerActive) {
             try {
                 const res = await fetch('backend.php?action=edit_forum_topic', { method: 'POST', body: fd });
                 const result = await res.json();
-                if (result.status === 'success') loadForumTopicDetail(topicId); 
+                if (result.status === 'success') loadForumTopicDetail(topicId);
                 else window.showCustomAlert('Error: ' + result.message);
-            } catch (err) { window.showCustomAlert(window.currentLang === 'th' ? 'อัปโหลดล้มเหลว ตรวจสอบขนาดไฟล์' : 'Upload failed. Please check file size.'); } 
+            } catch (err) { window.showCustomAlert(window.currentLang === 'th' ? 'อัปโหลดล้มเหลว ตรวจสอบขนาดไฟล์' : 'Upload failed. Please check file size.'); }
             finally { saveEditBtn.textContent = originalText; saveEditBtn.disabled = false; }
         }
 
@@ -1509,7 +1585,7 @@ if (!window.forumClickListenerActive) {
                         window.showCustomAlert(window.currentLang === 'th' ? 'ลบกระทู้เรียบร้อยแล้ว' : 'Topic deleted successfully.');
                         document.getElementById('forum-detail-view').classList.add('hidden');
                         document.getElementById('forum-main-view').classList.remove('hidden');
-                        loadForumTopics(); 
+                        loadForumTopics();
                     } else { window.showCustomAlert('Error: ' + result.message); }
                 } catch (err) { window.showCustomAlert(window.currentLang === 'th' ? 'ข้อผิดพลาดในการเชื่อมต่อ' : 'Connection Error'); }
             });
@@ -1521,13 +1597,13 @@ if (!window.forumClickListenerActive) {
         const postBtn = e.target.closest('#dyn-forum_btn_post');
         if (postBtn) {
             e.preventDefault();
-            if (window.isPostingTopic) return; 
+            if (window.isPostingTopic) return;
             if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนตั้งคำถามครับ!' : 'Please login before posting a topic!')) return;
 
             const container = postBtn.closest('.bg-white\\/20');
-            const titleInput = container.querySelector('#dyn-forum_input_title'); 
+            const titleInput = container.querySelector('#dyn-forum_input_title');
             const contentInput = container.querySelector('#dyn-forum_input_content');
-            const imgInput = container.querySelector('#forum-image-input'); 
+            const imgInput = container.querySelector('#forum-image-input');
             const vidInput = container.querySelector('#forum-video-input');
 
             if (!titleInput.value.trim() || !contentInput.value.trim()) { window.showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกหัวข้อและรายละเอียดให้ครบถ้วน' : 'Please fill all fields.'); return; }
@@ -1546,11 +1622,11 @@ if (!window.forumClickListenerActive) {
                 const result = await res.json();
                 if (result.status === 'success') {
                     titleInput.value = ''; contentInput.value = '';
-                    if(imgInput) imgInput.value = ''; if(vidInput) vidInput.value = '';
-                    const preview = document.getElementById('forum-media-preview'); if(preview) preview.classList.add('hidden');
-                    loadForumTopics(); 
+                    if (imgInput) imgInput.value = ''; if (vidInput) vidInput.value = '';
+                    const preview = document.getElementById('forum-media-preview'); if (preview) preview.classList.add('hidden');
+                    loadForumTopics();
                 } else { window.showCustomAlert((window.currentLang === 'th' ? 'เกิดข้อผิดพลาด: ' : 'Error: ') + result.message); }
-            } catch(err) { window.showCustomAlert(window.currentLang === 'th' ? 'อัปโหลดล้มเหลว ลองตรวจสอบขนาดไฟล์' : 'Upload failed. Please check file size.'); } 
+            } catch (err) { window.showCustomAlert(window.currentLang === 'th' ? 'อัปโหลดล้มเหลว ลองตรวจสอบขนาดไฟล์' : 'Upload failed. Please check file size.'); }
             finally { postBtn.textContent = originalText; postBtn.disabled = false; window.isPostingTopic = false; }
         }
 
@@ -1563,15 +1639,15 @@ if (!window.forumClickListenerActive) {
         if (backBtn) {
             document.getElementById('forum-detail-view').classList.add('hidden');
             document.getElementById('forum-main-view').classList.remove('hidden');
-            loadForumTopics(); 
+            loadForumTopics();
         }
 
         const replyBtn = e.target.closest('#dyn-forum_btn_reply');
         if (replyBtn) {
             e.preventDefault();
-            if (window.isPostingReply) return; 
+            if (window.isPostingReply) return;
             if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อน!' : 'Please login first!')) return;
-            
+
             const commentInput = document.getElementById('dyn-forum_input_comment');
             const commentText = commentInput.value.trim();
             const topicId = replyBtn.getAttribute('data-topic-id');
@@ -1585,7 +1661,7 @@ if (!window.forumClickListenerActive) {
             const fd = new FormData();
             fd.append('topic_id', topicId); fd.append('comment_text', commentText);
 
-           try {
+            try {
                 const res = await fetch('backend.php?action=save_forum_comment', { method: 'POST', body: fd });
                 const result = await res.json();
                 if (result.status === 'success') {
@@ -1594,75 +1670,75 @@ if (!window.forumClickListenerActive) {
                     document.getElementById('dyn-forum_btn_write_comment').classList.remove('hidden');
                     loadForumTopicDetail(topicId);
                 }
-            } catch(err) {}
+            } catch (err) { }
             finally { replyBtn.textContent = originalText; replyBtn.disabled = false; window.isPostingReply = false; }
         }
     });
 
     document.addEventListener('change', (e) => {
         const previewContainer = document.getElementById('forum-media-preview');
-        
+
         if (e.target && e.target.id === 'forum-image-input') {
             const imgPreview = document.getElementById('forum-img-preview');
             const imgName = document.getElementById('forum-img-name');
             if (e.target.files.length > 0) {
-                if(imgName) imgName.textContent = e.target.files[0].name;
-                if(imgPreview) imgPreview.classList.remove('hidden');
-                if(previewContainer) { previewContainer.classList.remove('hidden'); previewContainer.classList.add('flex'); }
-            } else { if(imgPreview) imgPreview.classList.add('hidden'); }
+                if (imgName) imgName.textContent = e.target.files[0].name;
+                if (imgPreview) imgPreview.classList.remove('hidden');
+                if (previewContainer) { previewContainer.classList.remove('hidden'); previewContainer.classList.add('flex'); }
+            } else { if (imgPreview) imgPreview.classList.add('hidden'); }
         }
-        
+
         if (e.target && e.target.id === 'forum-video-input') {
             const vidPreview = document.getElementById('forum-vid-preview');
             const vidName = document.getElementById('forum-vid-name');
             if (e.target.files.length > 0) {
-                if(vidName) vidName.textContent = e.target.files[0].name;
-                if(vidPreview) vidPreview.classList.remove('hidden');
-                if(previewContainer) { previewContainer.classList.remove('hidden'); previewContainer.classList.add('flex'); }
-            } else { if(vidPreview) vidPreview.classList.add('hidden'); }
+                if (vidName) vidName.textContent = e.target.files[0].name;
+                if (vidPreview) vidPreview.classList.remove('hidden');
+                if (previewContainer) { previewContainer.classList.remove('hidden'); previewContainer.classList.add('flex'); }
+            } else { if (vidPreview) vidPreview.classList.add('hidden'); }
         }
 
         if (e.target && e.target.id === 'edit-forum-image') {
             const nameSpan = document.getElementById('edit-img-name');
-            if(e.target.files.length > 0) {
+            if (e.target.files.length > 0) {
                 nameSpan.textContent = (window.currentLang === 'th' ? "✔ เลือก: " : "✔ Selected: ") + e.target.files[0].name;
                 nameSpan.classList.replace('text-white/70', 'text-green-300');
             }
         }
         if (e.target && e.target.id === 'edit-forum-video') {
             const nameSpan = document.getElementById('edit-vid-name');
-            if(e.target.files.length > 0) {
+            if (e.target.files.length > 0) {
                 nameSpan.textContent = (window.currentLang === 'th' ? "✔ เลือก: " : "✔ Selected: ") + e.target.files[0].name;
                 nameSpan.classList.replace('text-white/70', 'text-green-300');
             }
         }
     });
 
-    window.forumClickListenerActive = true; 
+    window.forumClickListenerActive = true;
 }
 
 // ==========================================
 // 9. ระบบ Store & Merch (Cart + Wishlist)
 // ==========================================
 
-window.frontendStoreProductsData = []; 
-window.currentViewingProductId = null; 
+window.frontendStoreProductsData = [];
+window.currentViewingProductId = null;
 
 // ฟังก์ชันโหลดข้อมูลและวาดการ์ด
-window.loadFrontendStoreProducts = async function(container = document) {
+window.loadFrontendStoreProducts = async function (container = document) {
     const grid = container.querySelector('#dynamic-store-grid');
     if (!grid) return;
 
     try {
         grid.innerHTML = `<div class="col-span-full text-center py-20 font-bold text-black/50">${window.currentLang === 'th' ? 'กำลังโหลดสินค้า...' : 'Loading products...'}</div>`;
-        
+
         const response = await fetch('backend.php?action=get_store_stock');
         const result = await response.json();
 
         if (result.status === 'success') {
             const products = result.data;
-            window.frontendStoreProductsData = products; 
-            grid.innerHTML = ''; 
+            window.frontendStoreProductsData = products;
+            grid.innerHTML = '';
 
             const availableProducts = products.filter(p => p.sale_status === 'open' && p.stock_balance > 0);
 
@@ -1680,25 +1756,25 @@ window.loadFrontendStoreProducts = async function(container = document) {
                     try {
                         const images = JSON.parse(p.image_products);
                         if (images.length > 0) imageUrl = images[0];
-                    } catch (e) {}
+                    } catch (e) { }
                 }
 
                 const formattedPrice = parseFloat(p.price).toLocaleString() + '.-';
-                
+
                 // เช็คว่าสินค้านี้อยู่ใน Wishlist หรือไม่ (เปลี่ยนสีหัวใจ)
                 const isWished = wishlist.includes(p.product_id.toString());
                 const heartColorClass = isWished ? 'text-red-500' : 'text-gray-300 hover:text-red-400';
                 const heartFill = isWished ? 'currentColor' : 'none';
 
                 const card = document.createElement('div');
-                card.className = 'bg-black text-white rounded-2xl overflow-hidden shadow-lg relative flex flex-col group h-[280px] cursor-pointer hover:shadow-2xl transition transform hover:-translate-y-1'; 
-                
-                card.onclick = function(e) {
+                card.className = 'bg-black text-white rounded-2xl overflow-hidden shadow-lg relative flex flex-col group h-[280px] cursor-pointer hover:shadow-2xl transition transform hover:-translate-y-1';
+
+                card.onclick = function (e) {
                     // ถ้าคลิกโดนปุ่มหัวใจ ให้ข้ามการเปิด Detail View
-                    if(e.target.closest('.btn-wishlist-toggle')) return;
+                    if (e.target.closest('.btn-wishlist-toggle')) return;
                     window.showStoreProductDetail(p.product_id, this);
                 };
-                
+
                 card.innerHTML = `
                     <div class="relative bg-white h-2/3 flex items-center justify-center overflow-hidden p-4">
                         <img src="${imageUrl}" alt="${p.name}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
@@ -1725,14 +1801,14 @@ window.loadFrontendStoreProducts = async function(container = document) {
     }
 };
 
-window.showStoreProductDetail = function(productId, clickedCardElement) {
+window.showStoreProductDetail = function (productId, clickedCardElement) {
     const activeContainer = window.activeClone || document;
-    
+
     const mainView = activeContainer.querySelector('#store-main-view');
     const detailView = activeContainer.querySelector('#store-detail-view');
-    
+
     if (!mainView || !detailView) return;
-    
+
     const product = window.frontendStoreProductsData.find(p => p.product_id == productId);
     if (!product) return;
 
@@ -1742,8 +1818,8 @@ window.showStoreProductDetail = function(productId, clickedCardElement) {
     if (product.image_products) {
         try {
             const images = JSON.parse(product.image_products);
-            if (images.length > 0) imageUrl = images[0]; 
-        } catch (e) {}
+            if (images.length > 0) imageUrl = images[0];
+        } catch (e) { }
     }
     const bannerUrl = product.image_banner || 'https://placehold.co/1200x400/e06f64/fff?text=Store+Banner';
 
@@ -1760,7 +1836,7 @@ window.showStoreProductDetail = function(productId, clickedCardElement) {
         const wishlist = JSON.parse(localStorage.getItem('jazz_store_wishlist')) || [];
         const isWished = wishlist.includes(productId.toString());
         const svg = wishlistBtn.querySelector('.heart-icon');
-        if(isWished) {
+        if (isWished) {
             wishlistBtn.classList.replace('text-gray-400', 'text-red-500');
             svg.setAttribute('fill', 'currentColor');
         } else {
@@ -1770,7 +1846,7 @@ window.showStoreProductDetail = function(productId, clickedCardElement) {
     }
 
     const qtyInput = activeContainer.querySelector('#detail-qty-input');
-    if(qtyInput) qtyInput.value = 1;
+    if (qtyInput) qtyInput.value = 1;
 
     // ซ่อนปุ่มระบบ
     const sysNavBtns = activeContainer.querySelectorAll('.nav-btn, .close-btn');
@@ -1781,16 +1857,16 @@ window.showStoreProductDetail = function(productId, clickedCardElement) {
     detailView.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-window.hideStoreProductDetail = function() {
+window.hideStoreProductDetail = function () {
     const activeContainer = window.activeClone || document;
     const mainView = activeContainer.querySelector('#store-main-view');
     const detailView = activeContainer.querySelector('#store-detail-view');
-    
+
     if (mainView && detailView) {
         detailView.classList.add('hidden');
         mainView.classList.remove('hidden');
-        window.currentViewingProductId = null; 
-        
+        window.currentViewingProductId = null;
+
         // เปิดปุ่มระบบกลับมา
         const sysNavBtns = activeContainer.querySelectorAll('.nav-btn, .close-btn');
         sysNavBtns.forEach(btn => btn.style.display = '');
@@ -1800,11 +1876,11 @@ window.hideStoreProductDetail = function() {
 // ==========================================
 // 🌟 ระบบวาดข้อมูลลงตะกร้า (Render Cart)
 // ==========================================
-window.renderCartItems = function() {
+window.renderCartItems = function () {
     const activeContainer = window.activeClone || document;
     const cartContainer = activeContainer.querySelector('#cart-items-container');
     const totalEl = activeContainer.querySelector('#cart-total-price');
-    if(!cartContainer || !totalEl) return;
+    if (!cartContainer || !totalEl) return;
 
     let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
     cartContainer.innerHTML = '';
@@ -1822,7 +1898,7 @@ window.renderCartItems = function() {
 
         const img = item.image || 'https://placehold.co/100x100/efefef/000?text=No+Img';
         const itemLabel = window.currentLang === 'th' ? '/ ชิ้น' : '/ Item';
-        
+
         cartContainer.innerHTML += `
             <div class="flex flex-col sm:flex-row items-center gap-6 p-4 bg-white border border-gray-200 shadow-sm rounded-2xl relative">
                 <img src="${img}" class="w-24 h-24 object-cover rounded-xl bg-gray-100">
@@ -1851,10 +1927,10 @@ window.renderCartItems = function() {
 // ==========================================
 // 🌟 ระบบวาดข้อมูลลง Wishlist
 // ==========================================
-window.renderWishlistItems = function() {
+window.renderWishlistItems = function () {
     const activeContainer = window.activeClone || document;
     const wishlistContainer = activeContainer.querySelector('#wishlist-items-grid');
-    if(!wishlistContainer || window.frontendStoreProductsData.length === 0) return;
+    if (!wishlistContainer || window.frontendStoreProductsData.length === 0) return;
 
     const wishlistIds = JSON.parse(localStorage.getItem('jazz_store_wishlist')) || [];
     wishlistContainer.innerHTML = '';
@@ -1869,20 +1945,20 @@ window.renderWishlistItems = function() {
         if (!p) return;
 
         let imageUrl = 'https://placehold.co/300x300/efefef/000?text=No+Image';
-        if (p.image_products) { try { const images = JSON.parse(p.image_products); if (images.length > 0) imageUrl = images[0]; } catch (e) {} }
+        if (p.image_products) { try { const images = JSON.parse(p.image_products); if (images.length > 0) imageUrl = images[0]; } catch (e) { } }
 
         const formattedPrice = parseFloat(p.price).toLocaleString() + '.-';
 
         const card = document.createElement('div');
-        card.className = 'bg-black text-white rounded-2xl overflow-hidden shadow-lg relative flex flex-col group h-[280px] cursor-pointer hover:shadow-2xl transition transform hover:-translate-y-1'; 
-        
-        card.onclick = function(e) {
-            if(e.target.closest('.btn-wishlist-toggle')) return;
+        card.className = 'bg-black text-white rounded-2xl overflow-hidden shadow-lg relative flex flex-col group h-[280px] cursor-pointer hover:shadow-2xl transition transform hover:-translate-y-1';
+
+        card.onclick = function (e) {
+            if (e.target.closest('.btn-wishlist-toggle')) return;
             // ปิด Wishlist แล้วไปเปิด Detail
             activeContainer.querySelector('#store-wishlist-view').classList.add('hidden');
             window.showStoreProductDetail(p.product_id, this);
         };
-        
+
         card.innerHTML = `
             <div class="relative bg-white h-2/3 flex items-center justify-center overflow-hidden p-4">
                 <img src="${imageUrl}" alt="${p.name}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
@@ -1907,18 +1983,18 @@ window.renderWishlistItems = function() {
 // ==========================================
 // 🌟 Event Delegation ศูนย์รวม (ดักทุกการคลิกใน Store)
 // ==========================================
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const activeContainer = window.activeClone || document;
-    
+
     // -------------------------
     // ปุ่มลดจำนวน (-)
     // -------------------------
     if (e.target.closest('.btn-qty-minus')) {
         e.preventDefault();
         const container = e.target.closest('#store-detail-view');
-        if(!container) return;
+        if (!container) return;
         const qtyInput = container.querySelector('.store-qty-input');
-        if(qtyInput && parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
+        if (qtyInput && parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
     }
 
     // -------------------------
@@ -1927,10 +2003,10 @@ document.addEventListener('click', function(e) {
     if (e.target.closest('.btn-qty-plus')) {
         e.preventDefault();
         const container = e.target.closest('#store-detail-view');
-        if(!container) return;
+        if (!container) return;
         const qtyInput = container.querySelector('.store-qty-input');
-        if(!qtyInput) return;
-        
+        if (!qtyInput) return;
+
         let currentQty = parseInt(qtyInput.value) || 1;
         const product = window.frontendStoreProductsData.find(p => p.product_id == window.currentViewingProductId);
         const maxStock = product ? parseInt(product.stock_balance) : 1;
@@ -1947,8 +2023,8 @@ document.addEventListener('click', function(e) {
     // -------------------------
     if (e.target.closest('.btn-add-cart')) {
         e.preventDefault();
-        
-        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าลงตะกร้าครับ!' : 'Please login before adding items to your cart!')) return; 
+
+        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าลงตะกร้าครับ!' : 'Please login before adding items to your cart!')) return;
 
         if (!window.currentViewingProductId) return;
 
@@ -1960,7 +2036,7 @@ document.addEventListener('click', function(e) {
 
         let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
         const existingItemIndex = cart.findIndex(item => item.product_id == product.product_id);
-        
+
         if (existingItemIndex > -1) {
             if (cart[existingItemIndex].qty + qty <= parseInt(product.stock_balance)) {
                 cart[existingItemIndex].qty += qty;
@@ -1974,8 +2050,8 @@ document.addEventListener('click', function(e) {
 
         localStorage.setItem('jazz_store_cart', JSON.stringify(cart));
         window.showCustomAlert(window.currentLang === 'th' ? `เพิ่ม "${product.name}" จำนวน ${qty} ชิ้น ลงตะกร้าเรียบร้อย! 🛒` : `Added ${qty} x "${product.name}" to cart! 🛒`);
-        
-        if(qtyInput) qtyInput.value = 1;
+
+        if (qtyInput) qtyInput.value = 1;
     }
 
     // -------------------------
@@ -1983,9 +2059,9 @@ document.addEventListener('click', function(e) {
     // -------------------------
     if (e.target.closest('.btn-checkout')) {
         e.preventDefault();
-        
+
         // เช็ค Login ก่อน Checkout
-        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนดำเนินการชำระเงินครับ!' : 'Please login before proceeding to checkout!')) return; 
+        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนดำเนินการชำระเงินครับ!' : 'Please login before proceeding to checkout!')) return;
 
         let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
         if (cart.length === 0) {
@@ -2008,7 +2084,7 @@ document.addEventListener('click', function(e) {
                     if (savedInfo.province) form.querySelector('#chk-province').value = savedInfo.province;
                     if (savedInfo.zip) form.querySelector('#chk-zip').value = savedInfo.zip;
                 }
-            } catch(err) {}
+            } catch (err) { }
         }
 
         // วาดข้อมูลสรุปยอดและสลับหน้าต่าง
@@ -2031,7 +2107,7 @@ document.addEventListener('click', function(e) {
     // -------------------------
     if (e.target.closest('.btn-confirm-order')) {
         e.preventDefault();
-        
+
         const checkoutForm = activeContainer.querySelector('#checkout-form');
         const checkoutView = activeContainer.querySelector('#store-checkout-view');
         if (!checkoutForm || !checkoutView) return;
@@ -2040,11 +2116,11 @@ document.addEventListener('click', function(e) {
         const fname = checkoutForm.querySelector('#chk-fname').value.trim();
         const lname = checkoutForm.querySelector('#chk-lname').value.trim();
         const phone = checkoutForm.querySelector('#chk-phone').value.trim();
-        const email = checkoutForm.querySelector('#chk-email') ? checkoutForm.querySelector('#chk-email').value.trim() : ''; 
+        const email = checkoutForm.querySelector('#chk-email') ? checkoutForm.querySelector('#chk-email').value.trim() : '';
         const address = checkoutForm.querySelector('#chk-address').value.trim();
         const province = checkoutForm.querySelector('#chk-province').value.trim();
         const zip = checkoutForm.querySelector('#chk-zip').value.trim();
-        
+
         const saveInfoChecked = checkoutForm.querySelector('#chk-save-info')?.checked;
 
         // 2. ตรวจสอบว่ากรอกข้อมูลครบไหม
@@ -2101,31 +2177,31 @@ document.addEventListener('click', function(e) {
             method: 'POST',
             body: fd
         })
-        .then(res => res.json())
-        .then(result => {
-            if (result.status === 'success') {
-                // ส่งสำเร็จ -> เคลียร์ตะกร้า
-                localStorage.removeItem('jazz_store_cart');
-                checkoutForm.reset();
-                if(slipInput) slipInput.value = '';
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    // ส่งสำเร็จ -> เคลียร์ตะกร้า
+                    localStorage.removeItem('jazz_store_cart');
+                    checkoutForm.reset();
+                    if (slipInput) slipInput.value = '';
 
-                // แสดงข้อความขอบคุณ และปิดหน้า Checkout กลับไปหน้า Store หลัก
-                window.showCustomAlert(window.currentLang === 'th' ? '🎉 ขอบคุณสำหรับการสั่งซื้อ!\nระบบได้รับข้อมูลแล้ว ทีมงานจะตรวจสอบและติดต่อกลับไปเร็วๆ นี้ครับ' : '🎉 Thank you for your order!\nWe have received your details and will process it shortly.', () => {
-                    activeContainer.querySelector('#store-checkout-view')?.classList.add('hidden');
-                    activeContainer.querySelector('#store-main-view')?.classList.remove('hidden');
-                    activeContainer.querySelectorAll('.nav-btn, .close-btn').forEach(b => b.style.display = '');
-                });
-            } else {
-                window.showCustomAlert('Error: ' + result.message);
-            }
-        })
-        .catch(err => {
-            window.showCustomAlert(window.currentLang === 'th' ? 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์' : 'Connection error.');
-        })
-        .finally(() => {
-            btn.innerHTML = originalHTML; // คืนค่าหน้าตาปุ่มเดิม
-            btn.disabled = false;
-        });
+                    // แสดงข้อความขอบคุณ และปิดหน้า Checkout กลับไปหน้า Store หลัก
+                    window.showCustomAlert(window.currentLang === 'th' ? '🎉 ขอบคุณสำหรับการสั่งซื้อ!\nระบบได้รับข้อมูลแล้ว ทีมงานจะตรวจสอบและติดต่อกลับไปเร็วๆ นี้ครับ' : '🎉 Thank you for your order!\nWe have received your details and will process it shortly.', () => {
+                        activeContainer.querySelector('#store-checkout-view')?.classList.add('hidden');
+                        activeContainer.querySelector('#store-main-view')?.classList.remove('hidden');
+                        activeContainer.querySelectorAll('.nav-btn, .close-btn').forEach(b => b.style.display = '');
+                    });
+                } else {
+                    window.showCustomAlert('Error: ' + result.message);
+                }
+            })
+            .catch(err => {
+                window.showCustomAlert(window.currentLang === 'th' ? 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์' : 'Connection error.');
+            })
+            .finally(() => {
+                btn.innerHTML = originalHTML; // คืนค่าหน้าตาปุ่มเดิม
+                btn.disabled = false;
+            });
     }
     // -------------------------
     // ระบบ เปิด-ปิด Modal (Cart / Wishlist)
@@ -2141,8 +2217,8 @@ document.addEventListener('click', function(e) {
 
     if (e.target.closest('.btn-open-wishlist')) {
         e.preventDefault();
-        
-        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนดูรายการโปรดครับ!' : 'Please login to view your wishlist!')) return; 
+
+        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนดูรายการโปรดครับ!' : 'Please login to view your wishlist!')) return;
 
         window.renderWishlistItems();
         activeContainer.querySelectorAll('.nav-btn, .close-btn').forEach(btn => btn.style.display = 'none');
@@ -2155,13 +2231,13 @@ document.addEventListener('click', function(e) {
         e.preventDefault();
         activeContainer.querySelector('#store-cart-view')?.classList.add('hidden');
         activeContainer.querySelector('#store-wishlist-view')?.classList.add('hidden');
-        
+
         if (window.currentViewingProductId) {
             activeContainer.querySelector('#store-detail-view')?.classList.remove('hidden');
         } else {
             activeContainer.querySelector('#store-main-view')?.classList.remove('hidden');
             activeContainer.querySelectorAll('.nav-btn, .close-btn').forEach(btn => btn.style.display = '');
-            window.loadFrontendStoreProducts(activeContainer); 
+            window.loadFrontendStoreProducts(activeContainer);
         }
     }
 
@@ -2173,10 +2249,10 @@ document.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
 
-        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนบันทึกรายการโปรดครับ!' : 'Please login to save to your wishlist!')) return; 
+        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนบันทึกรายการโปรดครับ!' : 'Please login to save to your wishlist!')) return;
 
         const productId = wishlistBtn.getAttribute('data-id');
-        if(!productId) return;
+        if (!productId) return;
 
         let wishlist = JSON.parse(localStorage.getItem('jazz_store_wishlist')) || [];
         const index = wishlist.indexOf(productId);
@@ -2185,7 +2261,7 @@ document.addEventListener('click', function(e) {
         if (index > -1) {
             wishlist.splice(index, 1);
             wishlistBtn.classList.replace('text-red-500', 'text-gray-300');
-            if(wishlistBtn.classList.contains('text-gray-400')) wishlistBtn.classList.replace('text-gray-400', 'text-gray-300');
+            if (wishlistBtn.classList.contains('text-gray-400')) wishlistBtn.classList.replace('text-gray-400', 'text-gray-300');
             svg.setAttribute('fill', 'none');
         } else {
             wishlist.push(productId);
@@ -2211,22 +2287,22 @@ document.addEventListener('click', function(e) {
         const index = cartQtyBtn.getAttribute('data-index');
         const change = parseInt(cartQtyBtn.getAttribute('data-change'));
         let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
-        
-        if(cart[index]) {
+
+        if (cart[index]) {
             const product = window.frontendStoreProductsData.find(p => p.product_id == cart[index].product_id);
             const maxStock = product ? parseInt(product.stock_balance) : 1;
 
             let newQty = parseInt(cart[index].qty) + change;
             if (newQty < 1) newQty = 1;
-            
+
             if (newQty > maxStock) {
                 window.showCustomAlert(window.currentLang === 'th' ? `ขออภัย มีสต๊อกเพียง ${maxStock} ชิ้น` : `Sorry, only ${maxStock} items left in stock.`);
                 newQty = maxStock;
             }
-            
+
             cart[index].qty = newQty;
             localStorage.setItem('jazz_store_cart', JSON.stringify(cart));
-            window.renderCartItems(); 
+            window.renderCartItems();
         }
     }
 
@@ -2236,29 +2312,29 @@ document.addEventListener('click', function(e) {
         let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
         cart.splice(index, 1);
         localStorage.setItem('jazz_store_cart', JSON.stringify(cart));
-        window.renderCartItems(); 
+        window.renderCartItems();
     }
     // ==========================================
-// 🌟 ระบบวาดข้อมูลสรุปออเดอร์หน้า Checkout
-// ==========================================
-window.renderCheckoutSummary = function() {
-    const activeContainer = window.activeClone || document;
-    const summaryContainer = activeContainer.querySelector('#checkout-summary-items');
-    const subtotalEl = activeContainer.querySelector('#checkout-subtotal');
-    const grandtotalEl = activeContainer.querySelector('#checkout-grandtotal');
-    
-    if(!summaryContainer || !subtotalEl || !grandtotalEl) return;
+    // 🌟 ระบบวาดข้อมูลสรุปออเดอร์หน้า Checkout
+    // ==========================================
+    window.renderCheckoutSummary = function () {
+        const activeContainer = window.activeClone || document;
+        const summaryContainer = activeContainer.querySelector('#checkout-summary-items');
+        const subtotalEl = activeContainer.querySelector('#checkout-subtotal');
+        const grandtotalEl = activeContainer.querySelector('#checkout-grandtotal');
 
-    let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
-    summaryContainer.innerHTML = '';
-    let totalPrice = 0;
+        if (!summaryContainer || !subtotalEl || !grandtotalEl) return;
 
-    cart.forEach(item => {
-        const itemTotal = parseFloat(item.price) * parseInt(item.qty);
-        totalPrice += itemTotal;
-        const img = item.image || 'https://placehold.co/100x100/efefef/000?text=No+Img';
-        
-        summaryContainer.innerHTML += `
+        let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
+        summaryContainer.innerHTML = '';
+        let totalPrice = 0;
+
+        cart.forEach(item => {
+            const itemTotal = parseFloat(item.price) * parseInt(item.qty);
+            totalPrice += itemTotal;
+            const img = item.image || 'https://placehold.co/100x100/efefef/000?text=No+Img';
+
+            summaryContainer.innerHTML += `
             <div class="flex items-center gap-4">
                 <img src="${img}" class="w-16 h-16 object-cover rounded-lg bg-white border border-gray-200">
                 <div class="flex-1 min-w-0">
@@ -2268,22 +2344,22 @@ window.renderCheckoutSummary = function() {
                 <div class="font-bold text-sm text-black whitespace-nowrap">${itemTotal.toLocaleString()}.-</div>
             </div>
         `;
-    });
+        });
 
-    subtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
-    grandtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
-};
+        subtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
+        grandtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
+    };
 });
 // ==========================================
 // 10. ระบบจัดการตั๋ว Event (Tickets)
 // ==========================================
-document.addEventListener('click', function(e) {
-    
+document.addEventListener('click', function (e) {
+
     // 1. ปุ่มลดจำนวนตั๋ว (-)
     if (e.target.closest('.btn-ticket-minus')) {
         e.preventDefault();
         const wrapper = e.target.closest('.flex.items-center.border.border-black');
-        if(wrapper) {
+        if (wrapper) {
             const qtySpan = wrapper.querySelector('.ticket-qty-val');
             let qty = parseInt(qtySpan.innerText) || 0;
             if (qty > 0) { // ล็อคไม่ให้จำนวนติดลบ
@@ -2296,26 +2372,26 @@ document.addEventListener('click', function(e) {
     if (e.target.closest('.btn-ticket-plus')) {
         e.preventDefault();
         const wrapper = e.target.closest('.flex.items-center.border.border-black');
-        if(wrapper) {
+        if (wrapper) {
             const qtySpan = wrapper.querySelector('.ticket-qty-val');
             let qty = parseInt(qtySpan.innerText) || 0;
             qtySpan.innerText = qty + 1;
         }
     }
 
-   // ==========================================
+    // ==========================================
     // 3. ระบบคลิก BUY TICKET (สลับเป็นหน้า QR)
     // ==========================================
     if (e.target.closest('.btn-buy-ticket')) {
         e.preventDefault();
-        
+
         // บังคับ Login
         if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนทำการจองตั๋วครับ!' : 'Please login before booking tickets!')) return;
 
         const btn = e.target.closest('.btn-buy-ticket');
         const selectionSection = btn.closest('.ticket-selection-section');
-        const mainWrapper = selectionSection.parentElement; 
-        
+        const mainWrapper = selectionSection.parentElement;
+
         if (selectionSection && mainWrapper) {
             const checkbox = selectionSection.querySelector('.chk-ticket-agree');
             if (checkbox && !checkbox.checked) {
@@ -2331,12 +2407,12 @@ document.addEventListener('click', function(e) {
             ticketRows.forEach(row => {
                 const qtySpan = row.querySelector('.ticket-qty-val');
                 const priceSpan = row.querySelector('span[data-price]');
-                
+
                 if (qtySpan && priceSpan) {
                     let qty = parseInt(qtySpan.innerText) || 0;
                     let price = parseFloat(priceSpan.getAttribute('data-price')) || 0;
                     let ticketId = priceSpan.getAttribute('data-ticket-id');
-                    
+
                     if (qty > 0) {
                         totalPrice += (qty * price);
                         selectedTickets.push({ ticket_id: ticketId, qty: qty, price: price });
@@ -2356,7 +2432,7 @@ document.addEventListener('click', function(e) {
 
                 // เก็บข้อมูลตั๋วใส่ปุ่ม Confirm
                 const confirmBtn = paymentSection.querySelector('.btn-confirm-payment');
-                if(confirmBtn) {
+                if (confirmBtn) {
                     confirmBtn.setAttribute('data-event-id', eventId);
                     confirmBtn.setAttribute('data-selected-tickets', JSON.stringify(selectedTickets));
                 }
@@ -2376,7 +2452,7 @@ document.addEventListener('click', function(e) {
         const paymentSection = e.target.closest('.ticket-payment-section');
         const mainWrapper = paymentSection.parentElement;
         const selectionSection = mainWrapper.querySelector('.ticket-selection-section');
-        
+
         if (paymentSection && selectionSection) {
             paymentSection.classList.add('hidden');
             selectionSection.classList.remove('hidden');
@@ -2390,13 +2466,13 @@ document.addEventListener('click', function(e) {
         e.preventDefault();
         const btn = e.target.closest('.btn-confirm-payment');
         const paymentSection = btn.closest('.ticket-payment-section');
-        
+
         // ดึงข้อมูล Input
         const inputs = paymentSection.querySelectorAll('input[type="text"], input[type="tel"]');
         const fullName = inputs[0] ? inputs[0].value.trim() : '';
         const phone = inputs[1] ? inputs[1].value.trim() : '';
         const fileInput = paymentSection.querySelector('input[type="file"]');
-        
+
         if (!fullName || !phone) {
             window.showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกชื่อและเบอร์โทรให้ครบถ้วนครับ' : 'Please fill in your name and phone number.');
             return;
@@ -2422,24 +2498,24 @@ document.addEventListener('click', function(e) {
             method: 'POST',
             body: fd
         })
-        .then(res => res.json())
-        .then(result => {
-            if (result.status === 'success') {
-                window.showCustomAlert(window.currentLang === 'th' ? '✅ ชำระเงินและส่งหลักฐานสำเร็จ! ขอบคุณสำหรับการสั่งซื้อครับ' : '✅ Payment and slip submitted successfully!', () => {
-                    const closeBtn = document.querySelector('.close-btn');
-                    if (closeBtn) closeBtn.click(); // ปิดหน้าต่างกลับไปหน้าแรก
-                });
-            } else {
-                window.showCustomAlert('Error: ' + result.message);
-            }
-        })
-        .catch(err => {
-            window.showCustomAlert(window.currentLang === 'th' ? 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์' : 'Connection error.');
-        })
-        .finally(() => {
-            btn.innerText = originalText;
-            btn.disabled = false;
-        });
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === 'success') {
+                    window.showCustomAlert(window.currentLang === 'th' ? '✅ ชำระเงินและส่งหลักฐานสำเร็จ! ขอบคุณสำหรับการสั่งซื้อครับ' : '✅ Payment and slip submitted successfully!', () => {
+                        const closeBtn = document.querySelector('.close-btn');
+                        if (closeBtn) closeBtn.click(); // ปิดหน้าต่างกลับไปหน้าแรก
+                    });
+                } else {
+                    window.showCustomAlert('Error: ' + result.message);
+                }
+            })
+            .catch(err => {
+                window.showCustomAlert(window.currentLang === 'th' ? 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์' : 'Connection error.');
+            })
+            .finally(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
     }
 }); // 🌟 ปิดวงเล็บ Ticket Event ตรงนี้! 🌟
 
@@ -2447,22 +2523,22 @@ document.addEventListener('click', function(e) {
 // ==========================================
 // 🌟 ฟังก์ชันเสริมสำหรับหน้า Checkout ของ Store (จากของเดิม)
 // ==========================================
-window.togglePaymentView = function() {
+window.togglePaymentView = function () {
     const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
     const promptpayView = document.getElementById('pay-view-promptpay');
     const bankView = document.getElementById('pay-view-bank');
-    
+
     if (selectedMethod === 'promptpay') {
-        if(promptpayView) { promptpayView.classList.remove('hidden'); promptpayView.classList.add('flex'); }
-        if(bankView) { bankView.classList.add('hidden'); bankView.classList.remove('flex'); }
+        if (promptpayView) { promptpayView.classList.remove('hidden'); promptpayView.classList.add('flex'); }
+        if (bankView) { bankView.classList.add('hidden'); bankView.classList.remove('flex'); }
     } else {
-        if(promptpayView) { promptpayView.classList.add('hidden'); promptpayView.classList.remove('flex'); }
-        if(bankView) { bankView.classList.remove('hidden'); bankView.classList.add('flex'); }
+        if (promptpayView) { promptpayView.classList.add('hidden'); promptpayView.classList.remove('flex'); }
+        if (bankView) { bankView.classList.remove('hidden'); bankView.classList.add('flex'); }
     }
 };
 
-window.copyBankAccount = function(text, btnElement) {
-    if(navigator.clipboard) {
+window.copyBankAccount = function (text, btnElement) {
+    if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
             const originalHTML = btnElement.innerHTML;
             btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
