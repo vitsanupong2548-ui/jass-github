@@ -323,17 +323,33 @@ window.applyDataToDOM = async function(container) {
                       let bookDiv = document.getElementById('book-now-content-' + event.id);
                         if(!bookDiv) { bookDiv = document.createElement('div'); bookDiv.id = 'book-now-content-' + event.id; bookDiv.className = 'hidden'; hiddenContainer.appendChild(bookDiv); }
                         
-                        // 1. ส่วนเลือกตั๋ว (ครอบด้วยคลาส ticket-selection-section)
+                 // 1. ส่วนเลือกตั๋ว (ครอบด้วยคลาส ticket-selection-section)
                         let ticketsHTML = '<div class="ticket-selection-section flex flex-col gap-4 w-full transition-opacity duration-300">';
                         if(event.tickets && event.tickets.length > 0) {
                             event.tickets.forEach(t => {
-                                ticketsHTML += `<div class="ticket-row flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-300 pb-4 pt-2"><div class="mb-4 sm:mb-0 max-w-sm pr-4"><h3 class="text-xl font-bold text-black mb-1 break-words">${t.title}</h3><p class="text-xs text-gray-600 font-medium leading-snug break-words whitespace-pre-line">${t.details || ''}</p></div><div class="flex items-center justify-between w-full sm:w-auto gap-6 shrink-0"><span class="text-xl font-bold text-black" data-price="${t.price}">${Number(t.price).toLocaleString('en-US')} THB</span><div class="flex items-center border border-black rounded bg-white"><button class="btn-ticket-minus w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">-</button><span class="ticket-qty-val w-10 text-center font-bold">1</span><button class="btn-ticket-plus w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">+</button></div></div></div>`;
+                                // 🌟 เพิ่ม data-ticket-id และเปลี่ยนเลขตรงกลางเป็น 0
+                                ticketsHTML += `
+                                <div class="ticket-row flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-300 pb-4 pt-2">
+                                    <div class="mb-4 sm:mb-0 max-w-sm pr-4">
+                                        <h3 class="text-xl font-bold text-black mb-1 break-words">${t.title}</h3>
+                                        <p class="text-xs text-gray-600 font-medium leading-snug break-words whitespace-pre-line">${t.details || ''}</p>
+                                    </div>
+                                    <div class="flex items-center justify-between w-full sm:w-auto gap-6 shrink-0">
+                                        <span class="text-xl font-bold text-black" data-price="${t.price}" data-ticket-id="${t.id}">${Number(t.price).toLocaleString('en-US')} THB</span>
+                                        <div class="flex items-center border border-black rounded bg-white">
+                                            <button class="btn-ticket-minus w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">-</button>
+                                            <span class="ticket-qty-val w-10 text-center font-bold">0</span>
+                                            <button class="btn-ticket-plus w-8 h-8 flex items-center justify-center text-xl font-bold bg-black text-white hover:bg-gray-800 transition">+</button>
+                                        </div>
+                                    </div>
+                                </div>`;
                             });
                             ticketsHTML += `<div class="mt-6 flex flex-col gap-6"><label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" class="chk-ticket-agree mt-1 w-4 h-4 rounded border-gray-300 text-black focus:ring-black"><span class="text-[10px] sm:text-xs text-black font-medium leading-relaxed">By checking this box, I hereby agree that my information will be shared to our Event Organizers</span></label><button class="btn-buy-ticket w-full bg-black text-white font-header font-bold text-xl py-4 rounded-full tracking-wider hover:bg-gray-800 transition-colors uppercase shadow-lg" data-event-id="${event.id}">BUY TICKET</button></div>`;
                         } else { 
                             ticketsHTML += '<p class="text-gray-500 font-medium mt-4">ไม่มีข้อมูลบัตรเข้าชมสำหรับงานนี้</p>'; 
                         }
                         ticketsHTML += '</div>';
+                     
 
                         // 2. ส่วนชำระเงิน QR Code (ซ่อนไว้ก่อนด้วยคลาส hidden)
                         let qrPaymentHTML = `
@@ -2045,17 +2061,14 @@ document.addEventListener('click', function(e) {
         }
 
         // 4. ดึงข้อมูลตะกร้า
-        let cartStr = localStorage.getItem('jazz_store_cart');
-        if (!cartStr || JSON.parse(cartStr).length === 0) {
+        let cart = localStorage.getItem('jazz_store_cart');
+        if (!cart || JSON.parse(cart).length === 0) {
             window.showCustomAlert(window.currentLang === 'th' ? 'ไม่พบสินค้าในตะกร้า' : 'No items in cart.');
             return;
         }
-        let cartArray = JSON.parse(cartStr);
-        let totalPrice = cartArray.reduce((sum, item) => sum + (parseFloat(item.price) * parseInt(item.qty)), 0);
 
         // วิธีชำระเงินที่เลือก (promptpay หรือ bank)
         const paymentMethod = checkoutView.querySelector('input[name="payment_method"]:checked')?.value || 'promptpay';
-        const paymentMethodText = paymentMethod === 'bank' ? 'โอนผ่านบัญชีธนาคาร' : 'QR PromptPay';
 
         // บันทึกข้อมูลที่อยู่ (ถ้าลูกค้าติ๊ก)
         if (saveInfoChecked) {
@@ -2075,19 +2088,16 @@ document.addEventListener('click', function(e) {
 
         // เตรียมข้อมูลส่งไป Backend
         const fd = new FormData();
-        fd.append('fname', fname);
-        fd.append('lname', lname);
+        fd.append('customer_name', fullName);
         fd.append('phone', phone);
         fd.append('email', email);
-        fd.append('address', address + ` (ชำระผ่าน: ${paymentMethodText})`);
-        fd.append('province', province);
-        fd.append('zipcode', zip);
-        fd.append('cart_items', cartStr);
-        fd.append('total_price', totalPrice);
-        fd.append('slip', slipInput.files[0]);
+        fd.append('address', fullAddress);
+        fd.append('cart_data', cart);
+        fd.append('payment_method', paymentMethod); // ส่งวิธีชำระเงิน
+        fd.append('slip', slipInput.files[0]); // ส่งไฟล์สลิปรูปภาพ 🌟
 
         // ยิง API บันทึกข้อมูล
-        fetch('backend.php?action=submit_order', {
+        fetch('backend.php?action=create_store_order', {
             method: 'POST',
             body: fd
         })
@@ -2117,7 +2127,6 @@ document.addEventListener('click', function(e) {
             btn.disabled = false;
         });
     }
-
     // -------------------------
     // ระบบ เปิด-ปิด Modal (Cart / Wishlist)
     // -------------------------
@@ -2229,11 +2238,8 @@ document.addEventListener('click', function(e) {
         localStorage.setItem('jazz_store_cart', JSON.stringify(cart));
         window.renderCartItems(); 
     }
-}); // 🌟 ปิดวงเล็บ Store Event ตรงนี้! 🌟
-
-
-// ==========================================
-// 🌟 ระบบวาดข้อมูลสรุปออเดอร์หน้า Checkout (Global Scope)
+    // ==========================================
+// 🌟 ระบบวาดข้อมูลสรุปออเดอร์หน้า Checkout
 // ==========================================
 window.renderCheckoutSummary = function() {
     const activeContainer = window.activeClone || document;
@@ -2267,8 +2273,7 @@ window.renderCheckoutSummary = function() {
     subtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
     grandtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
 };
-
-
+});
 // ==========================================
 // 10. ระบบจัดการตั๋ว Event (Tickets)
 // ==========================================
@@ -2280,8 +2285,8 @@ document.addEventListener('click', function(e) {
         const wrapper = e.target.closest('.flex.items-center.border.border-black');
         if(wrapper) {
             const qtySpan = wrapper.querySelector('.ticket-qty-val');
-            let qty = parseInt(qtySpan.innerText) || 1;
-            if (qty > 1) { // ล็อคไม่ให้จำนวนน้อยกว่า 1
+            let qty = parseInt(qtySpan.innerText) || 0;
+            if (qty > 0) { // ล็อคไม่ให้จำนวนติดลบ
                 qtySpan.innerText = qty - 1;
             }
         }
@@ -2293,7 +2298,7 @@ document.addEventListener('click', function(e) {
         const wrapper = e.target.closest('.flex.items-center.border.border-black');
         if(wrapper) {
             const qtySpan = wrapper.querySelector('.ticket-qty-val');
-            let qty = parseInt(qtySpan.innerText) || 1;
+            let qty = parseInt(qtySpan.innerText) || 0;
             qtySpan.innerText = qty + 1;
         }
     }
@@ -2303,42 +2308,61 @@ document.addEventListener('click', function(e) {
     // ==========================================
     if (e.target.closest('.btn-buy-ticket')) {
         e.preventDefault();
+        
+        // บังคับ Login
+        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนทำการจองตั๋วครับ!' : 'Please login before booking tickets!')) return;
+
         const btn = e.target.closest('.btn-buy-ticket');
         const selectionSection = btn.closest('.ticket-selection-section');
-        const mainWrapper = selectionSection.parentElement; // กล่องใหญ่สุดที่คลุมทั้งคู่
+        const mainWrapper = selectionSection.parentElement; 
         
         if (selectionSection && mainWrapper) {
-            // 1. เช็คติ๊กถูก
             const checkbox = selectionSection.querySelector('.chk-ticket-agree');
             if (checkbox && !checkbox.checked) {
-                alert(window.currentLang === 'th' ? 'กรุณาติ๊กยอมรับเงื่อนไข ก่อนทำการจองบัตรครับ' : 'Please check the agreement box before proceeding.');
+                window.showCustomAlert(window.currentLang === 'th' ? 'กรุณาติ๊กยอมรับเงื่อนไข ก่อนทำการจองบัตรครับ' : 'Please check the agreement box before proceeding.');
                 return;
             }
 
-            // 2. คำนวณราคารวม (เอาจำนวน x ราคา ของทุกใบที่เลือก)
             let totalPrice = 0;
+            let selectedTickets = []; // เก็บตั๋วที่ถูกเลือก
+            const eventId = btn.getAttribute('data-event-id');
+
             const ticketRows = selectionSection.querySelectorAll('.ticket-row');
             ticketRows.forEach(row => {
                 const qtySpan = row.querySelector('.ticket-qty-val');
                 const priceSpan = row.querySelector('span[data-price]');
+                
                 if (qtySpan && priceSpan) {
                     let qty = parseInt(qtySpan.innerText) || 0;
                     let price = parseFloat(priceSpan.getAttribute('data-price')) || 0;
-                    totalPrice += (qty * price);
+                    let ticketId = priceSpan.getAttribute('data-ticket-id');
+                    
+                    if (qty > 0) {
+                        totalPrice += (qty * price);
+                        selectedTickets.push({ ticket_id: ticketId, qty: qty, price: price });
+                    }
                 }
             });
 
-            // 3. สลับหน้าจอ ซ่อนส่วนเลือกตั๋ว -> แสดงหน้า QR Code
+            if (selectedTickets.length === 0) {
+                window.showCustomAlert(window.currentLang === 'th' ? 'กรุณาเลือกตั๋วอย่างน้อย 1 ใบครับ' : 'Please select at least 1 ticket.');
+                return;
+            }
+
             const paymentSection = mainWrapper.querySelector('.ticket-payment-section');
             if (paymentSection) {
-                // อัปเดตราคาให้ตรงกัน
                 const totalDisplay = paymentSection.querySelector('.final-total-price');
                 if (totalDisplay) totalDisplay.innerText = totalPrice.toLocaleString();
 
+                // เก็บข้อมูลตั๋วใส่ปุ่ม Confirm
+                const confirmBtn = paymentSection.querySelector('.btn-confirm-payment');
+                if(confirmBtn) {
+                    confirmBtn.setAttribute('data-event-id', eventId);
+                    confirmBtn.setAttribute('data-selected-tickets', JSON.stringify(selectedTickets));
+                }
+
                 selectionSection.classList.add('hidden');
                 paymentSection.classList.remove('hidden');
-                
-                // เลื่อนหน้าจอขึ้นมาให้เห็น QR กลางจอ
                 paymentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
@@ -2360,43 +2384,69 @@ document.addEventListener('click', function(e) {
     }
 
     // ==========================================
-    // 5. ปุ่ม Confirm Payment (ยืนยันชำระเงิน)
+    // 5. ปุ่ม Confirm Payment (ยืนยันชำระเงินและส่งข้อมูลลง DB)
     // ==========================================
     if (e.target.closest('.btn-confirm-payment')) {
         e.preventDefault();
         const btn = e.target.closest('.btn-confirm-payment');
         const paymentSection = btn.closest('.ticket-payment-section');
         
-        // เช็คก่อนว่าอัปโหลดสลิปหรือยัง
+        // ดึงข้อมูล Input
+        const inputs = paymentSection.querySelectorAll('input[type="text"], input[type="tel"]');
+        const fullName = inputs[0] ? inputs[0].value.trim() : '';
+        const phone = inputs[1] ? inputs[1].value.trim() : '';
         const fileInput = paymentSection.querySelector('input[type="file"]');
+        
+        if (!fullName || !phone) {
+            window.showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกชื่อและเบอร์โทรให้ครบถ้วนครับ' : 'Please fill in your name and phone number.');
+            return;
+        }
+
         if (fileInput && fileInput.files.length === 0) {
-            alert(window.currentLang === 'th' ? 'กรุณาอัปโหลดสลิปหลักฐานการโอนเงินด้วยครับ' : 'Please upload your payment slip.');
+            window.showCustomAlert(window.currentLang === 'th' ? 'กรุณาอัปโหลดสลิปหลักฐานการโอนเงินด้วยครับ' : 'Please upload your payment slip.');
             return;
         }
 
         const originalText = btn.innerText;
-        btn.innerText = window.currentLang === 'th' ? 'กำลังตรวจสอบ...' : 'Processing...';
+        btn.innerText = window.currentLang === 'th' ? 'กำลังดำเนินการ...' : 'Processing...';
         btn.disabled = true;
 
-        // จำลองการโหลดส่งข้อมูล
-        setTimeout(() => {
-            alert(window.currentLang === 'th' ? '✅ ชำระเงินและส่งหลักฐานสำเร็จ! ขอบคุณสำหรับการสั่งซื้อครับ' : '✅ Payment and slip submitted successfully!');
+        const fd = new FormData();
+        fd.append('event_id', btn.getAttribute('data-event-id'));
+        fd.append('tickets', btn.getAttribute('data-selected-tickets'));
+        fd.append('customer_name', fullName);
+        fd.append('phone', phone);
+        fd.append('slip_file', fileInput.files[0]);
+
+        fetch('backend.php?action=create_ticket_order', {
+            method: 'POST',
+            body: fd
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.status === 'success') {
+                window.showCustomAlert(window.currentLang === 'th' ? '✅ ชำระเงินและส่งหลักฐานสำเร็จ! ขอบคุณสำหรับการสั่งซื้อครับ' : '✅ Payment and slip submitted successfully!', () => {
+                    const closeBtn = document.querySelector('.close-btn');
+                    if (closeBtn) closeBtn.click(); // ปิดหน้าต่างกลับไปหน้าแรก
+                });
+            } else {
+                window.showCustomAlert('Error: ' + result.message);
+            }
+        })
+        .catch(err => {
+            window.showCustomAlert(window.currentLang === 'th' ? 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์' : 'Connection error.');
+        })
+        .finally(() => {
             btn.innerText = originalText;
             btn.disabled = false;
-            
-            // สั่งปิดหน้าต่างกลับไปหน้าแรก
-            const closeBtn = document.querySelector('.close-btn');
-            if (closeBtn) closeBtn.click();
-        }, 1500);
+        });
     }
 }); // 🌟 ปิดวงเล็บ Ticket Event ตรงนี้! 🌟
 
 
 // ==========================================
-// 🌟 ฟังก์ชันเสริมสำหรับหน้า Checkout (Global Scope)
+// 🌟 ฟังก์ชันเสริมสำหรับหน้า Checkout ของ Store (จากของเดิม)
 // ==========================================
-
-// สลับหน้าต่างชำระเงิน (PromptPay / Bank Transfer)
 window.togglePaymentView = function() {
     const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
     const promptpayView = document.getElementById('pay-view-promptpay');
@@ -2411,7 +2461,6 @@ window.togglePaymentView = function() {
     }
 };
 
-// ฟังก์ชันคัดลอกเลขบัญชี
 window.copyBankAccount = function(text, btnElement) {
     if(navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {

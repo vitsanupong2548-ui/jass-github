@@ -753,17 +753,42 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 </table>
             </div>
 
-            <div id="tab-inner-order" class="inner-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                <table class="w-full text-center text-xs">
-                    <thead class="bg-gray-100 border-b border-gray-200">
-                        <tr class="font-bold">
-                            <th class="px-2 py-3">Time</th><th class="px-2 py-3">Order Code</th><th class="px-2 py-3">Product</th>
-                            <th class="px-2 py-3">Customer</th><th class="px-2 py-3 max-w-[100px]">Address</th><th class="px-2 py-3">Phone</th>
-                            <th class="px-2 py-3">Amount</th><th class="px-2 py-3 w-28">Payment Slip</th><th class="px-2 py-3 w-24">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="store-order-tbody"></tbody>
-                </table>
+           <div id="tab-inner-order" class="inner-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                
+                <div class="p-4 bg-gray-50 border-b border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="relative w-full md:w-1/3">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" id="store-order-search" class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500 transition text-sm font-medium" placeholder="ค้นหารหัสออเดอร์, ชื่อ, เบอร์โทร...">
+                    </div>
+                    <div class="flex gap-2 w-full md:w-auto overflow-x-auto hide-scrollbar pb-1 md:pb-0">
+                        <button onclick="setStoreOrderFilter('all')" class="store-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-800 text-white" data-status="all">ทั้งหมด</button>
+                        <button onclick="setStoreOrderFilter('pending')" class="store-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-200 text-gray-700 hover:bg-yellow-400 hover:text-black" data-status="pending">Pending</button>
+                        <button onclick="setStoreOrderFilter('success')" class="store-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-200 text-gray-700 hover:bg-green-500 hover:text-white" data-status="success">Success</button>
+                        <button onclick="setStoreOrderFilter('canceled')" class="store-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-200 text-gray-700 hover:bg-red-500 hover:text-white" data-status="canceled">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-center text-xs min-w-[900px]">
+                        <thead class="bg-gray-100 border-b border-gray-200">
+                            <tr class="font-bold text-gray-700">
+                                <th class="px-3 py-4">วันที่ / เวลา</th>
+                                <th class="px-3 py-4">รหัสออเดอร์</th>
+                                <th class="px-3 py-4">ชื่อสินค้า</th>
+                                <th class="px-3 py-4 w-32">ชื่อลูกค้า</th>
+                                <th class="px-3 py-4 w-40">ที่อยู่จัดส่ง</th>
+                                <th class="px-3 py-4">เบอร์โทร</th>
+                                <th class="px-3 py-4">อีเมล</th>
+                                <th class="px-3 py-4">จำนวน</th>
+                                <th class="px-3 py-4 w-20">สลิป</th>
+                                <th class="px-3 py-4 w-32">สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="store-order-tbody"></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -781,17 +806,42 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 <div id="ticket-events-list" class="space-y-4"></div>
             </div>
 
-            <div id="tab-inner-ticket-order" class="inner-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                <table class="w-full text-center text-xs">
-                    <thead class="bg-gray-100 border-b border-gray-200">
-                        <tr class="font-bold">
-                            <th class="px-2 py-3">Time</th><th class="px-2 py-3">Order Code</th><th class="px-2 py-3">Event / Ticket</th>
-                            <th class="px-2 py-3">Customer</th><th class="px-2 py-3 max-w-[100px]">Address</th><th class="px-2 py-3">Phone</th>
-                            <th class="px-2 py-3">Amount</th><th class="px-2 py-3 w-28">Payment Slip</th><th class="px-2 py-3 w-24">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ticket-order-tbody"></tbody>
-                </table>
+          <div id="tab-inner-ticket-order" class="inner-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                
+                <div class="p-4 bg-gray-50 border-b border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="relative w-full md:w-1/3">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" id="ticket-order-search" class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition text-sm font-medium" placeholder="ค้นหารหัสออเดอร์, ชื่อ, เบอร์โทร...">
+                    </div>
+                    <div class="flex gap-2 w-full md:w-auto overflow-x-auto hide-scrollbar pb-1 md:pb-0">
+                        <button onclick="setTicketOrderFilter('all')" class="ticket-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-800 text-white" data-status="all">ทั้งหมด</button>
+                        <button onclick="setTicketOrderFilter('pending')" class="ticket-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-200 text-gray-700 hover:bg-yellow-400 hover:text-black" data-status="pending">Pending</button>
+                        <button onclick="setTicketOrderFilter('success')" class="ticket-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-200 text-gray-700 hover:bg-green-500 hover:text-white" data-status="success">Success</button>
+                        <button onclick="setTicketOrderFilter('canceled')" class="ticket-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-200 text-gray-700 hover:bg-red-500 hover:text-white" data-status="canceled">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-center text-xs min-w-[900px]">
+                        <thead class="bg-gray-100 border-b border-gray-200">
+                            <tr class="font-bold text-gray-700">
+                                <th class="px-3 py-4">วันที่ / เวลา</th>
+                                <th class="px-3 py-4">รหัสออเดอร์</th>
+                                <th class="px-3 py-4 w-48">ชื่องาน / บัตร</th>
+                                <th class="px-3 py-4 w-32">ชื่อลูกค้า</th>
+                                <th class="px-3 py-4 w-32">ที่อยู่</th>
+                                <th class="px-3 py-4">เบอร์โทร</th>
+                                <th class="px-3 py-4">อีเมล</th>
+                                <th class="px-3 py-4">จำนวน</th>
+                                <th class="px-3 py-4 w-20">สลิป</th>
+                                <th class="px-3 py-4 w-32">สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticket-order-tbody"></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -994,6 +1044,17 @@ window.changeLayout = (selectEl) => {
 </script>
 <div id="slip-modal" class="hidden fixed inset-0 bg-black/80 z-[200] flex justify-center items-center py-4 backdrop-blur-sm" onclick="closeSlipModal()">
         <img id="slip-full-image" src="" class="max-w-[90%] max-h-[90vh] object-contain rounded-lg shadow-2xl cursor-zoom-out bg-white p-2">
+    </div>
+
+    <div id="order-detail-modal" class="hidden fixed inset-0 bg-black/50 z-[150] flex justify-center items-center py-4 backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto relative">
+            <button onclick="document.getElementById('order-detail-modal').classList.add('hidden')" class="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+            <h3 class="text-xl font-bold mb-4 border-b pb-2">รายละเอียดข้อมูล</h3>
+            <div id="order-detail-content" class="space-y-3 text-sm"></div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="document.getElementById('order-detail-modal').classList.add('hidden')" class="px-6 py-2 bg-gray-200 font-bold rounded-lg hover:bg-gray-300">ปิด</button>
+            </div>
+        </div>
     </div>
 </body>
 </html>

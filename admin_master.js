@@ -5,15 +5,15 @@ const getApiUrl = (action) => 'backend.php?action=' + action;
 const fetchOptions = (method, body = null) => {
     const opts = { method: method };
     if (body) opts.body = body;
-    opts.credentials = 'include'; 
+    opts.credentials = 'include';
     return opts;
 };
 
 window.showToast = (message) => {
     const container = document.getElementById('toast-container');
     if (!container) return;
-    const toast = document.createElement('div'); 
-    toast.className = 'toast'; 
+    const toast = document.createElement('div');
+    toast.className = 'toast';
     toast.textContent = message;
     container.appendChild(toast);
     setTimeout(() => toast.classList.add('show'), 10);
@@ -21,8 +21,8 @@ window.showToast = (message) => {
 };
 
 // 🌟 ระบบสลับภาษาหน้าแอดมิน
-window.currentAdminLang = 'en'; 
-window.switchAdminLang = function(btn, lang, formType) {
+window.currentAdminLang = 'en';
+window.switchAdminLang = function (btn, lang, formType) {
     const container = btn.closest('.content-section');
     const btns = container.querySelectorAll(`.admin-lang-btn[data-form="${formType}"]`);
     btns.forEach(b => {
@@ -31,9 +31,9 @@ window.switchAdminLang = function(btn, lang, formType) {
     });
     btn.classList.remove('text-gray-400');
     btn.classList.add('text-red-500', 'border-b-2', 'border-red-500');
-    
+
     window.currentAdminLang = lang;
-    
+
     if (lang === 'th') {
         container.querySelectorAll('.lang-en').forEach(el => el.classList.add('hidden'));
         container.querySelectorAll('.lang-th').forEach(el => el.classList.remove('hidden'));
@@ -79,7 +79,7 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
         const result = await response.json();
         if (result.status === 'success') {
             loginScreen.classList.add('hidden'); sidebar.classList.remove('hidden'); mainContent.classList.remove('hidden');
-            showToast('เข้าสู่ระบบสำเร็จ'); switchTab('section-admin'); fetchUsers(); 
+            showToast('เข้าสู่ระบบสำเร็จ'); switchTab('section-admin'); fetchUsers();
         } else { showToast('ข้อผิดพลาด: ' + result.message); }
     } catch (error) { showToast('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'); }
 });
@@ -89,7 +89,7 @@ document.getElementById('logout-btn')?.addEventListener('click', async () => {
     try {
         await fetch(getApiUrl('logout')); // สั่งให้ Backend ยกเลิกการล็อกอิน
         window.location.href = 'index2.html'; // เด้งกลับหน้าเว็บหลัก
-    } catch(e) {
+    } catch (e) {
         window.location.href = 'index2.html';
     }
 });
@@ -103,31 +103,31 @@ const navLinks = document.querySelectorAll('.nav-link');
 function switchTab(targetId) {
     document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
     const target = document.getElementById(targetId);
-    if(target) target.classList.remove('hidden');
+    if (target) target.classList.remove('hidden');
     navLinks.forEach(link => {
         link.classList.remove('bg-gray-100', 'bg-blue-100', 'bg-yellow-100', 'bg-green-100', 'bg-gray-200', 'bg-orange-100', 'bg-pink-100'); // <--- เพิ่มสีใหม่ตรงนี้
-        if(link.getAttribute('data-target') === targetId) {
-            if(targetId.includes('festival')) link.classList.add('bg-blue-100');
-            else if(targetId.includes('admin')) link.classList.add('bg-gray-100');
-            else if(targetId.includes('musician')) link.classList.add('bg-yellow-100');
-            else if(targetId.includes('courses')) link.classList.add('bg-green-100');
-            else if(targetId.includes('cmbigband')) link.classList.add('bg-gray-200');
-            else if(targetId.includes('forum')) link.classList.add('bg-orange-100'); // 🌟 เพิ่มสีสำหรับ Forum
-            else if(targetId.includes('store')) link.classList.add('bg-pink-100');   // 🌟 เพิ่มสีสำหรับ Store
+        if (link.getAttribute('data-target') === targetId) {
+            if (targetId.includes('festival')) link.classList.add('bg-blue-100');
+            else if (targetId.includes('admin')) link.classList.add('bg-gray-100');
+            else if (targetId.includes('musician')) link.classList.add('bg-yellow-100');
+            else if (targetId.includes('courses')) link.classList.add('bg-green-100');
+            else if (targetId.includes('cmbigband')) link.classList.add('bg-gray-200');
+            else if (targetId.includes('forum')) link.classList.add('bg-orange-100'); // 🌟 เพิ่มสีสำหรับ Forum
+            else if (targetId.includes('store')) link.classList.add('bg-pink-100');   // 🌟 เพิ่มสีสำหรับ Store
             else link.classList.add('bg-gray-100');
         }
     });
 }
-navLinks.forEach(link => { 
-    link.addEventListener('click', (e) => { 
-        e.preventDefault(); const target = link.getAttribute('data-target'); switchTab(target); 
-        if(target === 'section-admin') fetchUsers(); 
-        if(target === 'section-festival') fetchEvents();
-        if(target === 'section-musician') fetchMusicians();
-        if(target === 'section-courses') fetchCourses();
-        if(target === 'section-cmbigband') loadCmbData();
-        if(target === 'section-forum') fetchAdminForumTopics();
-    }); 
+navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault(); const target = link.getAttribute('data-target'); switchTab(target);
+        if (target === 'section-admin') fetchUsers();
+        if (target === 'section-festival') fetchEvents();
+        if (target === 'section-musician') fetchMusicians();
+        if (target === 'section-courses') fetchCourses();
+        if (target === 'section-cmbigband') loadCmbData();
+        if (target === 'section-forum') fetchAdminForumTopics();
+    });
 });
 
 // =====================================================================
@@ -137,10 +137,10 @@ let cropper = null; let currentCropInputId = null; let currentCropContainerId = 
 window.previewImage = (input, imgId, aspectRatio = NaN) => {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             document.getElementById('cropper-modal').classList.remove('hidden');
             const imageEl = document.getElementById('cropper-image'); imageEl.src = e.target.result;
-            currentCropInputId = input.id; currentCropContainerId = imgId; 
+            currentCropInputId = input.id; currentCropContainerId = imgId;
             if (cropper) cropper.destroy();
             cropper = new Cropper(imageEl, { aspectRatio: aspectRatio, viewMode: 1, autoCropArea: 1 });
         }
@@ -154,27 +154,27 @@ window.applyCrop = () => {
     if (!cropper) return;
     cropper.getCroppedCanvas({ maxWidth: 1920, maxHeight: 1920 }).toBlob((blob) => {
         window.croppedImagesData[currentCropInputId] = blob;
-        const previewUrl = URL.createObjectURL(blob); 
+        const previewUrl = URL.createObjectURL(blob);
         const imgEl = document.getElementById(currentCropContainerId);
-        if(imgEl && imgEl.tagName === 'IMG') { imgEl.src = previewUrl; }
+        if (imgEl && imgEl.tagName === 'IMG') { imgEl.src = previewUrl; }
         document.getElementById('cropper-modal').classList.add('hidden'); cropper.destroy(); cropper = null;
-    }, 'image/jpeg', 0.90); 
+    }, 'image/jpeg', 0.90);
 };
 
-let globalGalleryFiles = new DataTransfer(); 
+let globalGalleryFiles = new DataTransfer();
 window.previewGalleryImages = (input) => {
-    if (input.files && input.files.length > 0) { 
-        Array.from(input.files).forEach(file => { if (globalGalleryFiles.files.length < 10) globalGalleryFiles.items.add(file); }); 
-        input.value = ''; renderGalleryPreviews(); 
+    if (input.files && input.files.length > 0) {
+        Array.from(input.files).forEach(file => { if (globalGalleryFiles.files.length < 10) globalGalleryFiles.items.add(file); });
+        input.value = ''; renderGalleryPreviews();
     }
 };
 
 function renderGalleryPreviews() {
-    const wrapper = document.getElementById('gallery-previews-wrapper'); if(!wrapper) return;
-    wrapper.innerHTML = ''; 
+    const wrapper = document.getElementById('gallery-previews-wrapper'); if (!wrapper) return;
+    wrapper.innerHTML = '';
     Array.from(globalGalleryFiles.files).forEach((file, index) => {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const previewDiv = document.createElement('div'); previewDiv.className = 'w-32 h-32 rounded-lg bg-cover bg-center shrink-0 shadow-sm border border-gray-200 relative group'; previewDiv.style.backgroundImage = `url('${e.target.result}')`;
             const removeBtn = document.createElement('button'); removeBtn.innerHTML = '✕'; removeBtn.className = 'absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow hover:bg-red-700';
             removeBtn.onclick = (e) => { e.preventDefault(); window.removeGalleryImage(index); }; previewDiv.appendChild(removeBtn); wrapper.appendChild(previewDiv);
@@ -188,16 +188,16 @@ window.removeGalleryImage = (idxToRemove) => { const dt = new DataTransfer(); Ar
 // =====================================================================
 // --- 3. User Management ---
 // =====================================================================
-let allUsersData = []; let selectedUserId = null; 
+let allUsersData = []; let selectedUserId = null;
 async function fetchUsers() {
-    try { const res = await fetch(getApiUrl('get_users')); const result = await res.json(); if (result.status === 'success') { allUsersData = result.data; renderUserTable(allUsersData); } } catch (e) {}
+    try { const res = await fetch(getApiUrl('get_users')); const result = await res.json(); if (result.status === 'success') { allUsersData = result.data; renderUserTable(allUsersData); } } catch (e) { }
 }
 function renderUserTable(usersArray) {
     const tbody = document.getElementById('user-table-body'); if (!tbody) return; tbody.innerHTML = ''; selectedUserId = null; updateActionButtons(null);
     if (usersArray.length === 0) { tbody.innerHTML = `<tr><td colspan="3" class="p-8 text-center text-gray-500 font-medium">ไม่พบข้อมูล</td></tr>`; return; }
     usersArray.forEach(user => {
         const tr = document.createElement('tr'); tr.className = 'border-b border-gray-100 hover:bg-blue-50 transition-colors duration-200 user-row cursor-pointer'; tr.setAttribute('data-id', user.id);
-        tr.addEventListener('click', function() { selectUserRow(this, user); });
+        tr.addEventListener('click', function () { selectUserRow(this, user); });
         let roleBadge = user.role === 'admin' ? `<span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Admin</span>` : `<span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">User</span>`;
         tr.innerHTML = `<td class="p-4 text-center font-bold text-gray-500">${user.id}</td><td class="p-4"><div class="font-extrabold text-base text-black">${user.username}</div><div class="text-xs text-gray-500 font-medium mt-0.5">${user.email}</div></td><td class="p-4 text-center">${roleBadge}</td>`;
         tbody.appendChild(tr);
@@ -209,8 +209,8 @@ function selectUserRow(rowElement, userData) {
 }
 function updateActionButtons(userData) {
     const btnPwd = document.getElementById('btn-action-password'); const btnDel = document.getElementById('btn-action-delete'); const statusEl = document.getElementById('user-selection-status');
-    if(btnPwd && btnDel && statusEl) {
-        if (selectedUserId && userData) { btnPwd.disabled = false; btnPwd.classList.remove('opacity-50', 'cursor-not-allowed'); btnDel.disabled = false; btnDel.classList.remove('opacity-50', 'cursor-not-allowed'); statusEl.innerHTML = `เลือกผู้ใช้งาน: <span class="text-blue-600 font-bold">${userData.username}</span> (ID: ${userData.id})`; } 
+    if (btnPwd && btnDel && statusEl) {
+        if (selectedUserId && userData) { btnPwd.disabled = false; btnPwd.classList.remove('opacity-50', 'cursor-not-allowed'); btnDel.disabled = false; btnDel.classList.remove('opacity-50', 'cursor-not-allowed'); statusEl.innerHTML = `เลือกผู้ใช้งาน: <span class="text-blue-600 font-bold">${userData.username}</span> (ID: ${userData.id})`; }
         else { btnPwd.disabled = true; btnPwd.classList.add('opacity-50', 'cursor-not-allowed'); btnDel.disabled = true; btnDel.classList.add('opacity-50', 'cursor-not-allowed'); statusEl.innerHTML = 'ยังไม่ได้เลือกผู้ใช้งาน'; }
     }
 }
@@ -221,15 +221,15 @@ document.getElementById('btn-action-delete')?.addEventListener('click', () => { 
 let deleteTargetId = null;
 window.closeConfirmModal = () => { deleteTargetId = null; document.getElementById('confirm-modal').classList.add('hidden'); };
 document.getElementById('confirm-delete-btn')?.addEventListener('click', async () => {
-    if(!deleteTargetId) return;
-    try { const fd = new FormData(); fd.append('user_id', deleteTargetId); const res = await fetch(getApiUrl('delete_user'), fetchOptions('POST', fd)); const result = await res.json(); if (result.status === 'success') { showToast(result.message); fetchUsers(); } } catch(error) {}
+    if (!deleteTargetId) return;
+    try { const fd = new FormData(); fd.append('user_id', deleteTargetId); const res = await fetch(getApiUrl('delete_user'), fetchOptions('POST', fd)); const result = await res.json(); if (result.status === 'success') { showToast(result.message); fetchUsers(); } } catch (error) { }
     window.closeConfirmModal();
 });
 let passwordTargetId = null;
 window.closePasswordModal = () => { passwordTargetId = null; document.getElementById('password-modal').classList.add('hidden'); };
 document.getElementById('save-password-btn')?.addEventListener('click', async () => {
-    const newPass = document.getElementById('new-password-input').value; if(!newPass) return showToast('กรุณากรอกรหัสผ่าน');
-    try { const fd = new FormData(); fd.append('user_id', passwordTargetId); fd.append('new_password', newPass); const res = await fetch(getApiUrl('update_password'), fetchOptions('POST', fd)); const result = await res.json(); showToast(result.message); } catch(error) {}
+    const newPass = document.getElementById('new-password-input').value; if (!newPass) return showToast('กรุณากรอกรหัสผ่าน');
+    try { const fd = new FormData(); fd.append('user_id', passwordTargetId); fd.append('new_password', newPass); const res = await fetch(getApiUrl('update_password'), fetchOptions('POST', fd)); const result = await res.json(); showToast(result.message); } catch (error) { }
     window.closePasswordModal();
 });
 
@@ -244,26 +244,26 @@ async function fetchEvents() {
         const res = await fetch(getApiUrl('get_all_events')); const result = await res.json();
         const tbody = document.getElementById('event-table-body'); tbody.innerHTML = ''; selectedEventId = null;
         document.getElementById('external-delete-btn')?.classList.add('hidden'); document.getElementById('external-edit-btn')?.classList.add('hidden');
-        if(result.status === 'success') {
-            if(result.data.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">ไม่มีข้อมูล Event</td></tr>'; return; }
+        if (result.status === 'success') {
+            if (result.data.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">ไม่มีข้อมูล Event</td></tr>'; return; }
             result.data.forEach(ev => {
                 const endStr = ev.end_date && ev.end_date !== '0000-00-00 00:00:00' ? ev.end_date : ev.start_date;
-                const endDate = new Date(endStr); const today = new Date(); today.setHours(0,0,0,0);
+                const endDate = new Date(endStr); const today = new Date(); today.setHours(0, 0, 0, 0);
                 let statusHtml = endDate >= today ? '<span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">Active</span>' : '<span class="px-2 py-1 bg-gray-200 text-gray-500 rounded text-xs font-bold">Ended</span>';
                 tbody.innerHTML += `<tr class="border-b hover:bg-gray-100 cursor-pointer transition-colors event-row" onclick="selectEventRow(${ev.id}, this)"><td class="p-4 text-gray-500">${ev.id}</td><td class="p-4 font-bold text-gray-800">${ev.title}</td><td class="p-4 text-sm text-gray-600">${ev.start_date ? ev.start_date.split(' ')[0] : ''}</td><td class="p-4">${statusHtml}</td></tr>`;
             });
         }
-    } catch (error) {}
+    } catch (error) { }
 }
 
-window.selectEventRow = function(id, rowElement) {
+window.selectEventRow = function (id, rowElement) {
     document.querySelectorAll('.event-row').forEach(row => { row.classList.remove('bg-blue-50'); row.classList.add('hover:bg-gray-100'); });
     rowElement.classList.remove('hover:bg-gray-100'); rowElement.classList.add('bg-blue-50');
     selectedEventId = id; document.getElementById('external-delete-btn')?.classList.remove('hidden'); document.getElementById('external-edit-btn')?.classList.remove('hidden');
 };
 
 window.editSelectedEvent = async () => {
-    if(!selectedEventId) return;
+    if (!selectedEventId) return;
     document.getElementById('form-section-title').textContent = 'กำลังแก้ไขข้อมูล Event ID: ' + selectedEventId;
     document.getElementById('form-section-title').classList.add('text-blue-600');
     document.getElementById('cancel-edit-btn').classList.remove('hidden');
@@ -280,7 +280,7 @@ window.editSelectedEvent = async () => {
             document.getElementById('venue-title').value = ev.venue_title || ''; document.getElementById('venue-title-th').value = ev.venue_title_th || '';
             document.getElementById('venue-details').value = ev.venue_details || ''; document.getElementById('venue-details-th').value = ev.venue_details_th || '';
             document.getElementById('ev-location').value = ev.location || ''; document.getElementById('venue-map').value = ev.venue_map || '';
-            if(window.previewMap) window.previewMap(ev.venue_map || '');
+            if (window.previewMap) window.previewMap(ev.venue_map || '');
 
             if (ev.start_date && ev.start_date !== '0000-00-00 00:00:00') { const parts = ev.start_date.split(' '); document.getElementById('ev-start-date').value = parts[0] || ''; document.getElementById('ev-start-time').value = parts[1] ? parts[1].substring(0, 5) : ''; }
             if (ev.end_date && ev.end_date !== '0000-00-00 00:00:00') { const parts = ev.end_date.split(' '); document.getElementById('ev-end-date').value = parts[0] || ''; document.getElementById('ev-end-time').value = parts[1] ? parts[1].substring(0, 5) : ''; }
@@ -290,9 +290,9 @@ window.editSelectedEvent = async () => {
             document.getElementById('venue-photo-img').src = ev.venue_image || 'https://placehold.co/800x450/e5e7eb/a3a3a3?text=Add+Venue+Photo';
 
             pendingTickets = []; if (ev.tickets) { ev.tickets.forEach(t => pendingTickets.push({ title: t.title || '', details: t.details || '', price: t.price || 0, amount: t.amount || 0, status: t.is_open })); } renderPendingTickets();
-            pendingLineups = []; if (ev.lineups) { ev.lineups.forEach(l => { pendingLineups.push({ date: l.lineup_date || '', time: l.lineup_time ? l.lineup_time.substring(0,5) : '', stage: l.lineup_stage || '', name: l.band_name || '' }); }); } renderPendingLineups();
+            pendingLineups = []; if (ev.lineups) { ev.lineups.forEach(l => { pendingLineups.push({ date: l.lineup_date || '', time: l.lineup_time ? l.lineup_time.substring(0, 5) : '', stage: l.lineup_stage || '', name: l.band_name || '' }); }); } renderPendingLineups();
 
-            const galleryWrapper = document.getElementById('gallery-previews-wrapper'); galleryWrapper.innerHTML = ''; globalGalleryFiles = new DataTransfer(); 
+            const galleryWrapper = document.getElementById('gallery-previews-wrapper'); galleryWrapper.innerHTML = ''; globalGalleryFiles = new DataTransfer();
             if (ev.gallery_images) {
                 try {
                     const images = JSON.parse(ev.gallery_images);
@@ -303,7 +303,7 @@ window.editSelectedEvent = async () => {
                             galleryWrapper.appendChild(previewDiv);
                         });
                     }
-                } catch(e) {}
+                } catch (e) { }
             }
             document.getElementById('form-section-title').scrollIntoView({ behavior: 'smooth' });
         }
@@ -317,21 +317,21 @@ window.cancelEditEvent = () => {
     document.getElementById('cancel-edit-btn').classList.add('hidden');
     const section = document.getElementById('section-festival');
     section.querySelectorAll('input:not([type="radio"]):not([type="checkbox"]), textarea').forEach(el => el.value = '');
-    
+
     document.getElementById('event-banner-img').src = 'https://placehold.co/1200x400/e5e7eb/a3a3a3?text=Add+Banner';
     document.getElementById('event-poster-img').src = 'https://placehold.co/600x800/e5e7eb/a3a3a3?text=Add+Poster';
     document.getElementById('venue-photo-img').src = 'https://placehold.co/800x450/e5e7eb/a3a3a3?text=Add+Venue+Photo';
 
-    pendingTickets = []; renderPendingTickets(); pendingLineups = []; renderPendingLineups(); 
+    pendingTickets = []; renderPendingTickets(); pendingLineups = []; renderPendingLineups();
     globalGalleryFiles = new DataTransfer(); renderGalleryPreviews(); window.croppedImagesData = {};
-    if(window.previewMap) window.previewMap('');
+    if (window.previewMap) window.previewMap('');
     showToast('ยกเลิกการแก้ไข');
 };
 
 window.deleteSelectedEvent = async () => {
-    if(!selectedEventId) return;
-    if(!confirm('คุณแน่ใจหรือไม่ที่จะลบข้อมูล Event นี้?')) return;
-    try { const fd = new FormData(); fd.append('event_id', selectedEventId); const res = await fetch(getApiUrl('delete_event'), fetchOptions('POST', fd)); const result = await res.json(); showToast(result.message); if(result.status === 'success') { fetchEvents(); cancelEditEvent(); } } catch(e) { }
+    if (!selectedEventId) return;
+    if (!confirm('คุณแน่ใจหรือไม่ที่จะลบข้อมูล Event นี้?')) return;
+    try { const fd = new FormData(); fd.append('event_id', selectedEventId); const res = await fetch(getApiUrl('delete_event'), fetchOptions('POST', fd)); const result = await res.json(); showToast(result.message); if (result.status === 'success') { fetchEvents(); cancelEditEvent(); } } catch (e) { }
 };
 
 window.saveEvent = async () => {
@@ -348,17 +348,17 @@ window.saveEvent = async () => {
         let sd = document.getElementById('ev-start-date').value; let st = document.getElementById('ev-start-time').value; formData.append('start_date', sd ? `${sd} ${st}:00` : '');
         let ed = document.getElementById('ev-end-date').value; let et = document.getElementById('ev-end-time').value; formData.append('end_date', ed ? `${ed} ${et}:00` : '');
 
-        if(pendingTickets.length > 0) { pendingTickets.forEach(t => { formData.append('ticket_titles[]', t.title); formData.append('ticket_details[]', t.details); formData.append('ticket_prices[]', t.price); formData.append('ticket_amounts[]', t.amount); formData.append('ticket_status[]', t.status); }); } 
-        else { const tempTitle = document.getElementById('temp_ticket_title').value.trim(); if(tempTitle) { formData.append('ticket_titles[]', tempTitle); formData.append('ticket_details[]', document.getElementById('temp_ticket_details').value); formData.append('ticket_prices[]', document.getElementById('temp_ticket_price').value || 0); formData.append('ticket_amounts[]', document.getElementById('temp_ticket_amount').value || 0); formData.append('ticket_status[]', document.querySelector('input[name="temp_ticket_status"]:checked').value); } }
-        
-        if(pendingLineups.length > 0) { pendingLineups.forEach(l => { formData.append('lineup_dates[]', l.date); formData.append('lineup_times[]', l.time); formData.append('lineup_stages[]', l.stage); formData.append('lineup_names[]', l.name); }); }
+        if (pendingTickets.length > 0) { pendingTickets.forEach(t => { formData.append('ticket_titles[]', t.title); formData.append('ticket_details[]', t.details); formData.append('ticket_prices[]', t.price); formData.append('ticket_amounts[]', t.amount); formData.append('ticket_status[]', t.status); }); }
+        else { const tempTitle = document.getElementById('temp_ticket_title').value.trim(); if (tempTitle) { formData.append('ticket_titles[]', tempTitle); formData.append('ticket_details[]', document.getElementById('temp_ticket_details').value); formData.append('ticket_prices[]', document.getElementById('temp_ticket_price').value || 0); formData.append('ticket_amounts[]', document.getElementById('temp_ticket_amount').value || 0); formData.append('ticket_status[]', document.querySelector('input[name="temp_ticket_status"]:checked').value); } }
+
+        if (pendingLineups.length > 0) { pendingLineups.forEach(l => { formData.append('lineup_dates[]', l.date); formData.append('lineup_times[]', l.time); formData.append('lineup_stages[]', l.stage); formData.append('lineup_names[]', l.name); }); }
 
         const bannerFile = (window.croppedImagesData && window.croppedImagesData['event-banner']) || document.getElementById('event-banner').files[0];
         const posterFile = (window.croppedImagesData && window.croppedImagesData['event-poster']) || document.getElementById('event-poster').files[0];
         const venueFile = (window.croppedImagesData && window.croppedImagesData['venue-photo']) || document.getElementById('venue-photo').files[0];
-        if(bannerFile) formData.append('banner_image', bannerFile, window.croppedImagesData && window.croppedImagesData['event-banner'] ? 'banner.jpg' : bannerFile.name);
-        if(posterFile) formData.append('poster_image', posterFile, window.croppedImagesData && window.croppedImagesData['event-poster'] ? 'poster.jpg' : posterFile.name);
-        if(venueFile) formData.append('venue_image', venueFile, window.croppedImagesData && window.croppedImagesData['venue-photo'] ? 'venue.jpg' : venueFile.name);
+        if (bannerFile) formData.append('banner_image', bannerFile, window.croppedImagesData && window.croppedImagesData['event-banner'] ? 'banner.jpg' : bannerFile.name);
+        if (posterFile) formData.append('poster_image', posterFile, window.croppedImagesData && window.croppedImagesData['event-poster'] ? 'poster.jpg' : posterFile.name);
+        if (venueFile) formData.append('venue_image', venueFile, window.croppedImagesData && window.croppedImagesData['venue-photo'] ? 'venue.jpg' : venueFile.name);
 
         Array.from(globalGalleryFiles.files).forEach(file => { formData.append('gallery_images[]', file); });
 
@@ -377,7 +377,7 @@ window.addTicketToList = () => {
 };
 function renderPendingTickets() {
     const c = document.getElementById('added-tickets-list'); c.innerHTML = '';
-    if(pendingTickets.length > 0) c.innerHTML = `<h4 class="text-sm font-bold text-gray-600 mb-2">รายการตั๋วที่เตรียมบันทึก:</h4>`;
+    if (pendingTickets.length > 0) c.innerHTML = `<h4 class="text-sm font-bold text-gray-600 mb-2">รายการตั๋วที่เตรียมบันทึก:</h4>`;
     pendingTickets.forEach((t, i) => { c.innerHTML += `<div class="bg-white border p-3 rounded flex justify-between items-center"><div><span class="font-bold text-blue-600">${t.title}</span> <span class="text-sm text-gray-500">(${t.price} THB / ${t.amount} ใบ)</span></div><button type="button" onclick="removePendingTicket(${i})" class="text-red-500 hover:text-red-700 bg-red-50 px-2 py-1 rounded font-bold">ลบ</button></div>`; });
 }
 window.removePendingTicket = (i) => { pendingTickets.splice(i, 1); renderPendingTickets(); };
@@ -390,18 +390,18 @@ window.addLineUpToList = () => {
 };
 function renderPendingLineups() {
     const c = document.getElementById('added-lineups-list'); c.innerHTML = '';
-    if(pendingLineups.length > 0) c.innerHTML = `<h4 class="text-sm font-bold text-gray-600 mb-2">รายการ Line Up ที่เตรียมบันทึก:</h4>`;
-    pendingLineups.forEach((l, i) => { c.innerHTML += `<div class="bg-white border p-3 rounded flex justify-between items-center"><div class="flex items-center gap-3"><div class="bg-black text-white text-xs px-2 py-1 rounded text-center"><div>${l.date}</div><div class="text-yellow-400 font-bold">${l.time||'??:??'}</div></div><div><span class="font-bold text-blue-900">${l.name}</span> <span class="bg-gray-200 text-xs px-2 rounded ml-2">${l.stage}</span></div></div><button type="button" onclick="removePendingLineup(${i})" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-2 py-1 rounded">ลบ</button></div>`; });
+    if (pendingLineups.length > 0) c.innerHTML = `<h4 class="text-sm font-bold text-gray-600 mb-2">รายการ Line Up ที่เตรียมบันทึก:</h4>`;
+    pendingLineups.forEach((l, i) => { c.innerHTML += `<div class="bg-white border p-3 rounded flex justify-between items-center"><div class="flex items-center gap-3"><div class="bg-black text-white text-xs px-2 py-1 rounded text-center"><div>${l.date}</div><div class="text-yellow-400 font-bold">${l.time || '??:??'}</div></div><div><span class="font-bold text-blue-900">${l.name}</span> <span class="bg-gray-200 text-xs px-2 rounded ml-2">${l.stage}</span></div></div><button type="button" onclick="removePendingLineup(${i})" class="text-red-500 hover:text-red-700 font-bold bg-red-50 px-2 py-1 rounded">ลบ</button></div>`; });
 }
 window.removePendingLineup = (i) => { pendingLineups.splice(i, 1); renderPendingLineups(); };
-window.previewMap = (val) => { const c = document.getElementById('map-preview-container'); if(!c) return; if (val && val.includes('<iframe')) { c.innerHTML = val.replace(/width="[^"]*"/, 'width="100%"').replace(/height="[^"]*"/, 'height="200"'); c.classList.remove('hidden'); } else { c.innerHTML = ''; c.classList.add('hidden'); } };
+window.previewMap = (val) => { const c = document.getElementById('map-preview-container'); if (!c) return; if (val && val.includes('<iframe')) { c.innerHTML = val.replace(/width="[^"]*"/, 'width="100%"').replace(/height="[^"]*"/, 'height="200"'); c.classList.remove('hidden'); } else { c.innerHTML = ''; c.classList.add('hidden'); } };
 
 // =====================================================================
 // --- 5. Musicians Network (Bilingual) ---
 // =====================================================================
 let allMusicians = [];
 
-window.switchMusicianTab = function(tabName) {
+window.switchMusicianTab = function (tabName) {
     document.getElementById('musician-artist-content').classList.toggle('hidden', tabName !== 'artist');
     document.getElementById('musician-jazz-content').classList.toggle('hidden', tabName !== 'jazz');
     document.getElementById('tab-btn-artist').className = tabName === 'artist' ? 'flex-1 bg-[#ffc107] text-black font-bold py-2 rounded-full shadow text-center transition' : 'flex-1 text-gray-500 font-bold py-2 rounded-full text-center hover:bg-gray-300 transition';
@@ -409,21 +409,21 @@ window.switchMusicianTab = function(tabName) {
 };
 
 async function fetchMusicians() {
-    try { const res = await fetch(getApiUrl('get_all_musicians')); const result = await res.json(); if(result.status === 'success') { allMusicians = result.data; } else { allMusicians = []; } } catch(e) { allMusicians = []; }
-    renderMusicianTable(); renderGrid('artist-grid-container', 'artist_library', 'art', 'artist'); renderGrid('jazz-grid-container', 'jazz_network', 'jazz', 'jazz'); 
+    try { const res = await fetch(getApiUrl('get_all_musicians')); const result = await res.json(); if (result.status === 'success') { allMusicians = result.data; } else { allMusicians = []; } } catch (e) { allMusicians = []; }
+    renderMusicianTable(); renderGrid('artist-grid-container', 'artist_library', 'art', 'artist'); renderGrid('jazz-grid-container', 'jazz_network', 'jazz', 'jazz');
 }
 
 function renderMusicianTable() {
-    const tbody = document.getElementById('musician-table-body'); if(!tbody) return; tbody.innerHTML = '';
-    if(allMusicians.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">ยังไม่มีข้อมูล</td></tr>'; return; }
+    const tbody = document.getElementById('musician-table-body'); if (!tbody) return; tbody.innerHTML = '';
+    if (allMusicians.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">ยังไม่มีข้อมูล</td></tr>'; return; }
     allMusicians.forEach((m) => {
         const typeText = m.network_type === 'artist_library' ? '<span class="text-yellow-600 bg-yellow-100 px-2 py-1 rounded text-xs font-bold shadow-sm">Artist Library</span>' : '<span class="text-blue-600 bg-blue-100 px-2 py-1 rounded text-xs font-bold shadow-sm">Jazz Network</span>';
         tbody.innerHTML += `<tr class="border-b hover:bg-gray-50 transition-colors musician-row"><td class="p-4 text-gray-500">ID: ${m.id} (ช่อง ${m.slot_number || '-'})</td><td class="p-4 font-bold text-gray-800">${m.title}</td><td class="p-4 text-sm text-gray-600">${m.genre || '-'}</td><td class="p-4">${typeText}</td></tr>`;
     });
 }
 
-window.renderGrid = function(containerId, networkType, prefix, typeName) {
-    const container = document.getElementById(containerId); if(!container) return; container.innerHTML = '';
+window.renderGrid = function (containerId, networkType, prefix, typeName) {
+    const container = document.getElementById(containerId); if (!container) return; container.innerHTML = '';
     let items = allMusicians.filter(m => m.network_type === networkType); items.sort((a, b) => parseInt(a.slot_number) - parseInt(b.slot_number));
     const emptyBoxClass = networkType === 'artist_library' ? 'border-[#ffc107] text-[#ffc107] bg-[#fffde7] hover:bg-[#fff9c4]' : 'border-blue-400 text-blue-500 bg-blue-50 hover:bg-blue-100';
 
@@ -431,19 +431,19 @@ window.renderGrid = function(containerId, networkType, prefix, typeName) {
         const slotNum = item.slot_number || (index + 1); const imgUrl = item.profile_image || `https://placehold.co/400x400/222/fff?text=No+Image`;
         container.innerHTML += `<div onclick="clickSlot(${slotNum}, ${item.id}, '${prefix}', '${typeName}')" class="cursor-pointer group relative rounded-[2rem] overflow-hidden aspect-square shadow-sm border hover:shadow-lg transition bg-black flex flex-col justify-end"><img src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover bg-gray-900 opacity-80 group-hover:opacity-100 transition-opacity"><div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div><div class="relative z-10 p-6 w-full pr-12"><h3 class="font-extrabold text-2xl leading-[1.2] text-white line-clamp-3">${item.title || 'Untitled'}</h3><p class="text-white/80 text-xs mt-1">Slot: ${slotNum}</p></div></div>`;
     });
-    const nextSlot = items.length > 0 ? Math.max(...items.map(i=>i.slot_number||0)) + 1 : 1;
+    const nextSlot = items.length > 0 ? Math.max(...items.map(i => i.slot_number || 0)) + 1 : 1;
     container.innerHTML += `<div onclick="clickSlot(${nextSlot}, null, '${prefix}', '${typeName}')" class="cursor-pointer rounded-[2rem] aspect-square border-2 border-dashed ${emptyBoxClass} flex flex-col items-center justify-center transition shadow-sm"><span class="text-5xl font-light mb-1">+</span><span class="font-bold text-sm">เพิ่มข้อมูลช่องที่ ${nextSlot}</span></div>`;
 };
 
 window.clickSlot = async (slotNum, id, prefix, typeName) => {
     const formTitle = document.getElementById(`${typeName}-form-title`); const formContainer = document.getElementById(`${typeName}-form-container`);
-    document.getElementById(`edit-${typeName}-slot`).value = slotNum; if(formContainer) formContainer.classList.remove('hidden');
-    
+    document.getElementById(`edit-${typeName}-slot`).value = slotNum; if (formContainer) formContainer.classList.remove('hidden');
+
     if (id) {
-        document.getElementById('edit-musician-id').value = id; if(formTitle) formTitle.textContent = `✏️ แก้ไขข้อมูล ช่องที่ ${slotNum}`;
+        document.getElementById('edit-musician-id').value = id; if (formTitle) formTitle.textContent = `✏️ แก้ไขข้อมูล ช่องที่ ${slotNum}`;
         showToast('กำลังดึงข้อมูล...');
         try {
-            const m = (await(await fetch(getApiUrl(`get_musician_details&id=${id}&t=${new Date().getTime()}`))).json()).data;
+            const m = (await (await fetch(getApiUrl(`get_musician_details&id=${id}&t=${new Date().getTime()}`))).json()).data;
             document.getElementById(`${prefix}-title`).value = m.title || ''; document.getElementById(`${prefix}-title-th`).value = m.title_th || '';
             document.getElementById(`${prefix}-genre`).value = m.genre || ''; document.getElementById(`${prefix}-genre-th`).value = m.genre_th || '';
             document.getElementById(`${prefix}-details`).value = m.details || ''; document.getElementById(`${prefix}-details-th`).value = m.details_th || '';
@@ -452,25 +452,25 @@ window.clickSlot = async (slotNum, id, prefix, typeName) => {
             document.getElementById(`${prefix}-tk`).value = m.tiktok || ''; document.getElementById(`${prefix}-email`).value = m.email || '';
 
             const bImg = document.getElementById(`${typeName}-banner-img`); const pImg = document.getElementById(`${typeName}-profile-img`);
-            if(bImg) bImg.src = m.banner_image || 'https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner';
-            if(pImg) pImg.src = m.profile_image || 'https://placehold.co/600x600/e5e7eb/a3a3a3?text=No+Profile';
+            if (bImg) bImg.src = m.banner_image || 'https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner';
+            if (pImg) pImg.src = m.profile_image || 'https://placehold.co/600x600/e5e7eb/a3a3a3?text=No+Profile';
 
             const vCont = document.getElementById(`${prefix}-video-container`); vCont.innerHTML = '';
-            let vids = []; try { vids = JSON.parse(m.video_link || '[]'); } catch(e){}
-            if(vids.length === 0) vCont.innerHTML = `<div class="flex gap-3 items-center mt-2"><input type="text" class="w-full border border-gray-400 rounded-full px-5 py-2 outline-none focus:border-yellow-500 font-semibold text-sm ${prefix}-video" placeholder="Video Link"><button type="button" onclick="addVideoRow('${prefix}-video-container', '${prefix}-video')" class="bg-[#ffc107] px-6 py-2 rounded-full font-extrabold shadow-sm">Add</button></div>`;
-            else { vids.forEach((v, i) => { vCont.innerHTML += `<div class="flex gap-3 items-center mt-2"><input type="text" class="w-full border border-gray-400 rounded-full px-5 py-2 outline-none focus:border-yellow-500 font-semibold text-sm ${prefix}-video" value="${v}">${i===0 ? `<button type="button" onclick="addVideoRow('${prefix}-video-container', '${prefix}-video')" class="bg-[#ffc107] px-6 py-2 rounded-full font-extrabold shadow-sm">Add</button>` : `<button type="button" onclick="this.parentElement.remove()" class="bg-red-500 text-white px-6 py-2 rounded-full font-bold shadow-sm">Del</button>`}</div>`; }); }
-        } catch(e) {}
-    } else { 
-        document.getElementById('edit-musician-id').value = ''; if(formTitle) formTitle.textContent = `✨ เพิ่มข้อมูลใหม่ ช่องที่ ${slotNum}`;
-        document.querySelectorAll(`#${typeName}-form-container input[type="text"], #${typeName}-form-container textarea`).forEach(e => e.value = ''); 
+            let vids = []; try { vids = JSON.parse(m.video_link || '[]'); } catch (e) { }
+            if (vids.length === 0) vCont.innerHTML = `<div class="flex gap-3 items-center mt-2"><input type="text" class="w-full border border-gray-400 rounded-full px-5 py-2 outline-none focus:border-yellow-500 font-semibold text-sm ${prefix}-video" placeholder="Video Link"><button type="button" onclick="addVideoRow('${prefix}-video-container', '${prefix}-video')" class="bg-[#ffc107] px-6 py-2 rounded-full font-extrabold shadow-sm">Add</button></div>`;
+            else { vids.forEach((v, i) => { vCont.innerHTML += `<div class="flex gap-3 items-center mt-2"><input type="text" class="w-full border border-gray-400 rounded-full px-5 py-2 outline-none focus:border-yellow-500 font-semibold text-sm ${prefix}-video" value="${v}">${i === 0 ? `<button type="button" onclick="addVideoRow('${prefix}-video-container', '${prefix}-video')" class="bg-[#ffc107] px-6 py-2 rounded-full font-extrabold shadow-sm">Add</button>` : `<button type="button" onclick="this.parentElement.remove()" class="bg-red-500 text-white px-6 py-2 rounded-full font-bold shadow-sm">Del</button>`}</div>`; }); }
+        } catch (e) { }
+    } else {
+        document.getElementById('edit-musician-id').value = ''; if (formTitle) formTitle.textContent = `✨ เพิ่มข้อมูลใหม่ ช่องที่ ${slotNum}`;
+        document.querySelectorAll(`#${typeName}-form-container input[type="text"], #${typeName}-form-container textarea`).forEach(e => e.value = '');
         const bImg = document.getElementById(`${typeName}-banner-img`); const pImg = document.getElementById(`${typeName}-profile-img`);
-        if(bImg) bImg.src = 'https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner';
-        if(pImg) pImg.src = 'https://placehold.co/600x600/e5e7eb/a3a3a3?text=No+Profile';
+        if (bImg) bImg.src = 'https://placehold.co/1200x400/e5e7eb/a3a3a3?text=No+Banner';
+        if (pImg) pImg.src = 'https://placehold.co/600x600/e5e7eb/a3a3a3?text=No+Profile';
         const vCont = document.getElementById(`${prefix}-video-container`);
-        if(vCont) vCont.innerHTML = `<div class="flex gap-3 items-center mt-2"><input type="text" class="w-full border border-gray-400 rounded-full px-5 py-2 outline-none focus:border-yellow-500 font-semibold text-sm ${prefix}-video" placeholder="Video Link"><button type="button" onclick="addVideoRow('${prefix}-video-container', '${prefix}-video')" class="bg-[#ffc107] px-6 py-2 rounded-full font-extrabold shadow-sm">Add</button></div>`;
+        if (vCont) vCont.innerHTML = `<div class="flex gap-3 items-center mt-2"><input type="text" class="w-full border border-gray-400 rounded-full px-5 py-2 outline-none focus:border-yellow-500 font-semibold text-sm ${prefix}-video" placeholder="Video Link"><button type="button" onclick="addVideoRow('${prefix}-video-container', '${prefix}-video')" class="bg-[#ffc107] px-6 py-2 rounded-full font-extrabold shadow-sm">Add</button></div>`;
     }
     window.croppedImagesData = {};
-    if(formContainer) formContainer.scrollIntoView({behavior: 'smooth', block: 'center'});
+    if (formContainer) formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
 };
 
 window.closeArtistForm = () => { document.getElementById('artist-form-container')?.classList.add('hidden'); };
@@ -487,32 +487,32 @@ window.saveMusician = async (type) => {
         fd.append('instagram', document.getElementById(`${p}-ig`).value); fd.append('website', document.getElementById(`${p}-web`).value);
         fd.append('tiktok', document.getElementById(`${p}-tk`).value); fd.append('email', document.getElementById(`${p}-email`).value);
 
-        let vids = []; document.querySelectorAll(`.${p}-video`).forEach(inp => { if(inp.value.trim()) vids.push(inp.value.trim()); });
+        let vids = []; document.querySelectorAll(`.${p}-video`).forEach(inp => { if (inp.value.trim()) vids.push(inp.value.trim()); });
         vids.forEach(v => fd.append('video_links[]', v));
 
         const bFile = window.croppedImagesData[`${tName}-banner`] || document.getElementById(`${tName}-banner`)?.files[0];
         const pFile = window.croppedImagesData[`${tName}-profile`] || document.getElementById(`${tName}-profile`)?.files[0];
-        if(bFile) fd.append('banner_image', bFile, window.croppedImagesData[`${tName}-banner`] ? 'banner.jpg' : bFile.name);
-        if(pFile) fd.append('profile_image', pFile, window.croppedImagesData[`${tName}-profile`] ? 'profile.jpg' : pFile.name);
+        if (bFile) fd.append('banner_image', bFile, window.croppedImagesData[`${tName}-banner`] ? 'banner.jpg' : bFile.name);
+        if (pFile) fd.append('profile_image', pFile, window.croppedImagesData[`${tName}-profile`] ? 'profile.jpg' : pFile.name);
 
         showToast('กำลังบันทึกข้อมูล...');
         const res = await fetch(getApiUrl('save_musician'), fetchOptions('POST', fd)); const result = await res.json();
-        if (result.status === 'success') { showToast(result.message); fetchMusicians(); if(type === 'artist_library') closeArtistForm(); else closeJazzForm(); } 
+        if (result.status === 'success') { showToast(result.message); fetchMusicians(); if (type === 'artist_library') closeArtistForm(); else closeJazzForm(); }
         else showToast('Error: ' + result.message);
-    } catch(e) { showToast('Connection Error'); }
+    } catch (e) { showToast('Connection Error'); }
 };
 
 window.deleteTargetMusician = async (id) => {
-    if(!id) return; if(!confirm('ลบข้อมูลนี้ถาวร?')) return;
+    if (!id) return; if (!confirm('ลบข้อมูลนี้ถาวร?')) return;
     const fd = new FormData(); fd.append('musician_id', id);
     try {
         const res = await fetch(getApiUrl('delete_musician'), fetchOptions('POST', fd)); const result = await res.json();
-        showToast(result.message); if(result.status === 'success') { fetchMusicians(); closeArtistForm(); closeJazzForm(); }
-    } catch(e) {}
+        showToast(result.message); if (result.status === 'success') { fetchMusicians(); closeArtistForm(); closeJazzForm(); }
+    } catch (e) { }
 };
 
 window.addVideoRow = (cId, iClass) => {
-    const c = document.getElementById(cId); if(!c) return;
+    const c = document.getElementById(cId); if (!c) return;
     const row = document.createElement('div'); row.className = 'flex gap-3 items-center mt-2';
     row.innerHTML = `<input type="text" class="w-full border border-gray-400 rounded-full px-5 py-2 outline-none focus:border-yellow-500 font-semibold text-sm ${iClass}" placeholder="Video Link"><button type="button" onclick="this.parentElement.remove()" class="bg-red-500 text-white px-6 py-2 rounded-full font-bold shadow-sm hover:bg-red-600 transition">Del</button>`;
     c.appendChild(row);
@@ -525,13 +525,13 @@ let allCourses = [];
 window.courseImgCounter = 0;
 
 async function fetchCourses() {
-    try { const res = await fetch(getApiUrl('get_all_courses')); const result = await res.json(); allCourses = Array.isArray(result.data) ? result.data : []; } catch(e) { allCourses = []; }
+    try { const res = await fetch(getApiUrl('get_all_courses')); const result = await res.json(); allCourses = Array.isArray(result.data) ? result.data : []; } catch (e) { allCourses = []; }
     renderCourseTable(); renderCourseGrid();
 }
 
 function renderCourseTable() {
-    const tbody = document.getElementById('course-table-body'); if(!tbody) return; tbody.innerHTML = '';
-    if(allCourses.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">ไม่มีข้อมูลคอร์สเรียน</td></tr>'; return; }
+    const tbody = document.getElementById('course-table-body'); if (!tbody) return; tbody.innerHTML = '';
+    if (allCourses.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-gray-500">ไม่มีข้อมูลคอร์สเรียน</td></tr>'; return; }
     let items = [...allCourses]; items.sort((a, b) => (parseInt(a.slot_number) || parseInt(a.id)) - (parseInt(b.slot_number) || parseInt(b.id)));
     items.forEach((c, index) => {
         const slotNum = c.slot_number || (index + 1);
@@ -539,19 +539,19 @@ function renderCourseTable() {
     });
 }
 
-window.renderCourseGrid = function() {
-    const container = document.getElementById('course-grid-container'); if(!container) return; container.innerHTML = '';
+window.renderCourseGrid = function () {
+    const container = document.getElementById('course-grid-container'); if (!container) return; container.innerHTML = '';
     let items = [...allCourses]; items.sort((a, b) => (parseInt(a.slot_number) || parseInt(a.id)) - (parseInt(b.slot_number) || parseInt(b.id)));
 
     items.forEach((item, index) => {
         const slotNum = item.slot_number || (index + 1); const imgUrl = item.banner_image || `https://placehold.co/1200x400/10a349/fff?text=Course`;
         const isMain = (slotNum == 1 || index === 0);
         const gridClass = isMain ? 'col-span-1 sm:col-span-2 md:col-span-3 md:aspect-[21/9]' : 'aspect-video';
-        container.innerHTML += `<div data-id="${item.id}" class="course-card ${gridClass} group relative rounded-[1.5rem] overflow-hidden shadow-sm border bg-black flex flex-col justify-end"><div class="drag-handle absolute top-3 left-3 bg-black/50 backdrop-blur-md p-2 rounded-full cursor-grab z-30 hover:bg-[#10a349] text-white">✋</div><span class="slot-badge absolute top-3 right-3 bg-white/20 text-white text-xs px-3 py-1 rounded-full z-20">ช่องที่ ${slotNum}</span><div onclick="clickCourseSlot(${slotNum}, ${item.id})" class="absolute inset-0 z-10 cursor-pointer"></div><img src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"><div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div><div class="relative z-10 p-5 pr-10 pointer-events-none"><h3 class="font-extrabold ${isMain?'text-3xl':'text-xl'} text-white line-clamp-2">${item.title||'Untitled'}</h3><p class="text-white/80 text-sm mt-1">By ${item.creator||'-'}</p></div></div>`;
+        container.innerHTML += `<div data-id="${item.id}" class="course-card ${gridClass} group relative rounded-[1.5rem] overflow-hidden shadow-sm border bg-black flex flex-col justify-end"><div class="drag-handle absolute top-3 left-3 bg-black/50 backdrop-blur-md p-2 rounded-full cursor-grab z-30 hover:bg-[#10a349] text-white">✋</div><span class="slot-badge absolute top-3 right-3 bg-white/20 text-white text-xs px-3 py-1 rounded-full z-20">ช่องที่ ${slotNum}</span><div onclick="clickCourseSlot(${slotNum}, ${item.id})" class="absolute inset-0 z-10 cursor-pointer"></div><img src="${imgUrl}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"><div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div><div class="relative z-10 p-5 pr-10 pointer-events-none"><h3 class="font-extrabold ${isMain ? 'text-3xl' : 'text-xl'} text-white line-clamp-2">${item.title || 'Untitled'}</h3><p class="text-white/80 text-sm mt-1">By ${item.creator || '-'}</p></div></div>`;
     });
 
     const nextSlot = items.length > 0 ? (Math.max(...items.map(i => parseInt(i.slot_number) || 0)) + 1) : 1;
-    container.innerHTML += `<div onclick="clickCourseSlot(${nextSlot}, null)" class="ignore-drag cursor-pointer ${nextSlot===1?'col-span-1 sm:col-span-2 md:col-span-3 md:aspect-[21/9]':'aspect-video'} rounded-[1.5rem] border-2 border-dashed border-green-400 text-green-600 bg-green-50 hover:bg-green-100 flex flex-col items-center justify-center transition shadow-sm"><span class="text-5xl">+</span><span class="font-bold">เพิ่มคอร์สใหม่</span></div>`;
+    container.innerHTML += `<div onclick="clickCourseSlot(${nextSlot}, null)" class="ignore-drag cursor-pointer ${nextSlot === 1 ? 'col-span-1 sm:col-span-2 md:col-span-3 md:aspect-[21/9]' : 'aspect-video'} rounded-[1.5rem] border-2 border-dashed border-green-400 text-green-600 bg-green-50 hover:bg-green-100 flex flex-col items-center justify-center transition shadow-sm"><span class="text-5xl">+</span><span class="font-bold">เพิ่มคอร์สใหม่</span></div>`;
 
     if (typeof Sortable !== 'undefined') {
         if (window.courseSortable) window.courseSortable.destroy();
@@ -559,44 +559,44 @@ window.renderCourseGrid = function() {
     }
 };
 
-window.updateCourseOrderUI = async function() {
+window.updateCourseOrderUI = async function () {
     const cards = document.querySelectorAll('#course-grid-container .course-card'); const newOrder = [];
-    cards.forEach((card, index) => { const newSlot = index + 1; newOrder.push({ id: card.getAttribute('data-id'), slot_number: newSlot }); const badge = card.querySelector('.slot-badge'); if(badge) badge.innerText = `ช่องที่ ${newSlot}`; });
-    try { const fd = new FormData(); fd.append('order_data', JSON.stringify(newOrder)); const res = await fetch(getApiUrl('update_course_order'), fetchOptions('POST', fd)); const result = await res.json(); if (result.status === 'success') { showToast('สลับตำแหน่งเรียบร้อย!'); fetchCourses(); } } catch(e) {}
+    cards.forEach((card, index) => { const newSlot = index + 1; newOrder.push({ id: card.getAttribute('data-id'), slot_number: newSlot }); const badge = card.querySelector('.slot-badge'); if (badge) badge.innerText = `ช่องที่ ${newSlot}`; });
+    try { const fd = new FormData(); fd.append('order_data', JSON.stringify(newOrder)); const res = await fetch(getApiUrl('update_course_order'), fetchOptions('POST', fd)); const result = await res.json(); if (result.status === 'success') { showToast('สลับตำแหน่งเรียบร้อย!'); fetchCourses(); } } catch (e) { }
 };
 
 window.clickCourseSlot = async (slotNum, id) => {
     const formTitle = document.getElementById('course-form-title'); const formContainer = document.getElementById('course-form-container');
-    document.getElementById('edit-course-slot').value = slotNum; if(formContainer) formContainer.classList.remove('hidden');
+    document.getElementById('edit-course-slot').value = slotNum; if (formContainer) formContainer.classList.remove('hidden');
     if (id) {
-        document.getElementById('edit-course-id').value = id; if(formTitle) formTitle.textContent = `✏️ แก้ไขคอร์สเรียน ช่องที่ ${slotNum}`;
+        document.getElementById('edit-course-id').value = id; if (formTitle) formTitle.textContent = `✏️ แก้ไขคอร์สเรียน ช่องที่ ${slotNum}`;
         showToast('กำลังดึงข้อมูล...');
         try {
-            const c = (await(await fetch(getApiUrl(`get_course_details&id=${id}&t=${new Date().getTime()}`))).json()).data;
+            const c = (await (await fetch(getApiUrl(`get_course_details&id=${id}&t=${new Date().getTime()}`))).json()).data;
             document.getElementById('course-title').value = c.title || ''; document.getElementById('course-title-th').value = c.title_th || '';
             document.getElementById('course-creator').value = c.creator || ''; document.getElementById('course-creator-th').value = c.creator_th || '';
-            const imgEl = document.getElementById('course-banner-img'); if(imgEl) imgEl.src = c.banner_image || 'https://placehold.co/1200x400/b2b2b2/000?text=No+Banner';
-            
+            const imgEl = document.getElementById('course-banner-img'); if (imgEl) imgEl.src = c.banner_image || 'https://placehold.co/1200x400/b2b2b2/000?text=No+Banner';
+
             const contentContainer = document.getElementById('course-content-container'); contentContainer.innerHTML = '';
-            if(c.details) {
+            if (c.details) {
                 try {
                     let dArrEn = typeof c.details === 'string' ? JSON.parse(c.details) : c.details;
                     let dArrTh = typeof c.details_th === 'string' ? JSON.parse(c.details_th) : [];
-                    if(Array.isArray(dArrEn) && dArrEn.length > 0) {
+                    if (Array.isArray(dArrEn) && dArrEn.length > 0) {
                         dArrEn.forEach((item, i) => { window.addCourseContent(item.type, item.value, dArrTh[i] ? dArrTh[i].value : '', item.layout); });
                     } else window.addCourseContent('text');
-                } catch(e) { window.addCourseContent('text'); }
+                } catch (e) { window.addCourseContent('text'); }
             } else window.addCourseContent('text');
-        } catch(e) {}
+        } catch (e) { }
     } else {
-        document.getElementById('edit-course-id').value = ''; if(formTitle) formTitle.textContent = `✨ เพิ่มคอร์สเรียนใหม่ ช่องที่ ${slotNum}`;
+        document.getElementById('edit-course-id').value = ''; if (formTitle) formTitle.textContent = `✨ เพิ่มคอร์สเรียนใหม่ ช่องที่ ${slotNum}`;
         document.getElementById('course-title').value = ''; document.getElementById('course-title-th').value = '';
         document.getElementById('course-creator').value = ''; document.getElementById('course-creator-th').value = '';
         document.getElementById('course-content-container').innerHTML = ''; window.addCourseContent('text');
-        const imgEl = document.getElementById('course-banner-img'); if(imgEl) imgEl.src = 'https://placehold.co/1200x400/b2b2b2/000?text=No+Banner';
+        const imgEl = document.getElementById('course-banner-img'); if (imgEl) imgEl.src = 'https://placehold.co/1200x400/b2b2b2/000?text=No+Banner';
     }
     window.croppedImagesData = {};
-    if(formContainer) formContainer.scrollIntoView({behavior: 'smooth', block: 'center'});
+    if (formContainer) formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
     setTimeout(() => {
         const contentContainer = document.getElementById('course-content-container');
         if (window.courseBuilderSortable) {
@@ -611,11 +611,11 @@ window.clickCourseSlot = async (slotNum, id) => {
         }
     }, 300);
     window.croppedImagesData = {};
-    if(formContainer) formContainer.scrollIntoView({behavior: 'smooth', block: 'center'});
+    if (formContainer) formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
 };
 
 window.closeCourseForm = () => { document.getElementById('course-form-container')?.classList.add('hidden'); };
-window.deleteTargetCourse = async (id) => { if(!id) return; if(confirm('แน่ใจหรือไม่ที่จะลบคอร์สนี้?')) { const fd = new FormData(); fd.append('course_id', id); const res = await fetch(getApiUrl('delete_course'), fetchOptions('POST', fd)); const result = await res.json(); showToast(result.message); if(result.status === 'success') { fetchCourses(); closeCourseForm(); } } };
+window.deleteTargetCourse = async (id) => { if (!id) return; if (confirm('แน่ใจหรือไม่ที่จะลบคอร์สนี้?')) { const fd = new FormData(); fd.append('course_id', id); const res = await fetch(getApiUrl('delete_course'), fetchOptions('POST', fd)); const result = await res.json(); showToast(result.message); if (result.status === 'success') { fetchCourses(); closeCourseForm(); } } };
 
 window.saveCourse = async () => {
     try {
@@ -624,21 +624,21 @@ window.saveCourse = async () => {
         fd.append('slot_number', document.getElementById('edit-course-slot').value);
         fd.append('title', document.getElementById('course-title').value); fd.append('title_th', document.getElementById('course-title-th').value);
         fd.append('creator', document.getElementById('course-creator').value); fd.append('creator_th', document.getElementById('course-creator-th').value);
-        
+
         const bFile = window.croppedImagesData['course-banner'] || document.getElementById('course-banner')?.files[0];
-        if(bFile) fd.append('banner_image', bFile, window.croppedImagesData['course-banner'] ? 'banner.jpg' : bFile.name);
+        if (bFile) fd.append('banner_image', bFile, window.croppedImagesData['course-banner'] ? 'banner.jpg' : bFile.name);
 
         document.querySelectorAll('.course-item').forEach((item, index) => {
             const type = item.getAttribute('data-type'); fd.append('content_types[]', type);
             fd.append('content_layouts[]', item.querySelector('.course-layout-select').value);
-           if (['text', 'h2', 'h3', 'h4'].includes(type)) { fd.append('content_values[]', item.querySelector('.course-text-input').value); fd.append('content_values_th[]', item.querySelector('.course-text-input-th').value); }
-            else if (type === 'video') { fd.append('content_values[]', item.querySelector('.course-video-input').value); fd.append('content_values_th[]', item.querySelector('.course-video-input').value); } 
+            if (['text', 'h2', 'h3', 'h4'].includes(type)) { fd.append('content_values[]', item.querySelector('.course-text-input').value); fd.append('content_values_th[]', item.querySelector('.course-text-input-th').value); }
+            else if (type === 'video') { fd.append('content_values[]', item.querySelector('.course-video-input').value); fd.append('content_values_th[]', item.querySelector('.course-video-input').value); }
             else if (type === 'embed') { fd.append('content_values[]', item.querySelector('.course-embed-input').value); fd.append('content_values_th[]', item.querySelector('.course-embed-input').value); }
             else if (type === 'iframe') { fd.append('content_values[]', item.querySelector('.course-iframe-input').value); fd.append('content_values_th[]', item.querySelector('.course-iframe-input').value); }
             else if (type === 'image') {
                 const fInput = item.querySelector('.course-img-input'); const oldInput = item.querySelector('.course-img-old');
-                if (fInput && fInput.id && window.croppedImagesData[fInput.id]) { fd.append(`content_images_${index}`, window.croppedImagesData[fInput.id], 'img.jpg'); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); } 
-                else if (fInput && fInput.files[0]) { fd.append(`content_images_${index}`, fInput.files[0]); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); } 
+                if (fInput && fInput.id && window.croppedImagesData[fInput.id]) { fd.append(`content_images_${index}`, window.croppedImagesData[fInput.id], 'img.jpg'); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); }
+                else if (fInput && fInput.files[0]) { fd.append(`content_images_${index}`, fInput.files[0]); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); }
                 else { fd.append('content_values[]', oldInput ? oldInput.value : ''); fd.append('content_values_th[]', oldInput ? oldInput.value : ''); }
             }
         });
@@ -646,7 +646,7 @@ window.saveCourse = async () => {
         showToast('กำลังบันทึกข้อมูล Course...');
         const res = await fetch(getApiUrl('save_course'), fetchOptions('POST', fd)); const result = await res.json();
         if (result.status === 'success') { showToast('บันทึกคอร์สเรียนสำเร็จ!'); fetchCourses(); closeCourseForm(); } else { showToast('ข้อผิดพลาด: ' + result.message); }
-    } catch (e) {}
+    } catch (e) { }
 };
 //
 // =====================================================================
@@ -676,16 +676,16 @@ async function fetchCourseReviews() {
             allCourseReviews = result.data;
             renderReviewTable(allCourseReviews); // ส่งข้อมูลไปวาดตาราง
         }
-    } catch(e) {}
+    } catch (e) { }
 }
 
 // 🌟 ฟังก์ชันวาดตารางใหม่ (อัปเดตตัวเลขข้อมูลแล้ว)
 function renderReviewTable(reviewsArray) {
     const tbody = document.getElementById('review-table-body');
     const countBadge = document.getElementById('review-count-badge'); // ดึง ID ของป้ายบอกจำนวน
-    
+
     if (!tbody) return;
-    
+
     // อัปเดตตัวเลขบอกจำนวน
     if (countBadge) {
         countBadge.textContent = `${reviewsArray.length} รายการ`;
@@ -695,7 +695,7 @@ function renderReviewTable(reviewsArray) {
     selectedReviewId = null; // รีเซ็ตการเลือกทุกครั้งที่วาดตารางใหม่
     updateReviewActionButtons();
 
-    if(reviewsArray.length === 0) {
+    if (reviewsArray.length === 0) {
         tbody.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-gray-500 font-medium">ไม่พบข้อมูลรีวิว</td></tr>';
         return;
     }
@@ -704,7 +704,7 @@ function renderReviewTable(reviewsArray) {
         const tr = document.createElement('tr');
         tr.className = 'border-b border-gray-100 hover:bg-green-50 transition-colors duration-200 review-row select-none';
         tr.setAttribute('data-id', r.id);
-        
+
         // เมื่อคลิกที่แถว
         tr.addEventListener('click', () => selectReviewRow(tr, r.id));
 
@@ -722,15 +722,15 @@ function renderReviewTable(reviewsArray) {
 // 🌟 ฟังก์ชันเมื่อกดเลือกแถว
 function selectReviewRow(rowElement, id) {
     // ล้างสีแถวอื่นๆ ออก
-    document.querySelectorAll('.review-row').forEach(row => { 
-        row.classList.remove('bg-green-100', 'border-l-4', 'border-[#10a349]'); 
+    document.querySelectorAll('.review-row').forEach(row => {
+        row.classList.remove('bg-green-100', 'border-l-4', 'border-[#10a349]');
         row.querySelector('input[type="radio"]').checked = false;
     });
-    
+
     // ใส่สีและติ๊กถูกให้แถวที่เลือก
     rowElement.classList.add('bg-green-100', 'border-l-4', 'border-[#10a349]');
     rowElement.querySelector('input[type="radio"]').checked = true;
-    
+
     selectedReviewId = id;
     updateReviewActionButtons();
 }
@@ -739,30 +739,30 @@ function selectReviewRow(rowElement, id) {
 function updateReviewActionButtons() {
     const btnEdit = document.getElementById('btn-action-edit-review');
     const btnDel = document.getElementById('btn-action-delete-review');
-    if(btnEdit && btnDel) {
-        if (selectedReviewId) { 
-            btnEdit.disabled = false; btnEdit.classList.remove('opacity-50', 'cursor-not-allowed'); 
-            btnDel.disabled = false; btnDel.classList.remove('opacity-50', 'cursor-not-allowed'); 
-        } else { 
-            btnEdit.disabled = true; btnEdit.classList.add('opacity-50', 'cursor-not-allowed'); 
-            btnDel.disabled = true; btnDel.classList.add('opacity-50', 'cursor-not-allowed'); 
+    if (btnEdit && btnDel) {
+        if (selectedReviewId) {
+            btnEdit.disabled = false; btnEdit.classList.remove('opacity-50', 'cursor-not-allowed');
+            btnDel.disabled = false; btnDel.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            btnEdit.disabled = true; btnEdit.classList.add('opacity-50', 'cursor-not-allowed');
+            btnDel.disabled = true; btnDel.classList.add('opacity-50', 'cursor-not-allowed');
         }
     }
 }
 
 // 🌟 ระบบค้นหา (Search)
-document.getElementById('review-search-input')?.addEventListener('input', (e) => { 
-    const searchTerm = e.target.value.toLowerCase().trim(); 
+document.getElementById('review-search-input')?.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase().trim();
     // กรองหาชื่อคนรีวิวที่มีตัวอักษรที่พิมพ์
     const filteredReviews = allCourseReviews.filter(r => r.reviewer_name.toLowerCase().includes(searchTerm));
-    renderReviewTable(filteredReviews); 
+    renderReviewTable(filteredReviews);
 });
 
 // 🌟 การกดปุ่มแก้ไข
 document.getElementById('btn-action-edit-review')?.addEventListener('click', () => {
-    if(!selectedReviewId) return;
+    if (!selectedReviewId) return;
     const r = allCourseReviews.find(x => x.id == selectedReviewId);
-    if(r) {
+    if (r) {
         document.getElementById('edit-review-id').value = r.id;
         document.getElementById('review-name').value = r.reviewer_name;
         document.getElementById('review-text').value = r.review_text;
@@ -774,10 +774,10 @@ document.getElementById('btn-action-edit-review')?.addEventListener('click', () 
 
 // 🌟 การกดปุ่มลบ
 document.getElementById('btn-action-delete-review')?.addEventListener('click', async () => {
-    if(!selectedReviewId) return;
-    if(!confirm('🚨 คุณแน่ใจหรือไม่ที่จะลบรีวิวนี้ทิ้ง?')) return;
-    
-    const fd = new FormData(); 
+    if (!selectedReviewId) return;
+    if (!confirm('🚨 คุณแน่ใจหรือไม่ที่จะลบรีวิวนี้ทิ้ง?')) return;
+
+    const fd = new FormData();
     fd.append('review_id', selectedReviewId);
     try {
         const res = await fetch(getApiUrl('delete_course_review'), fetchOptions('POST', fd));
@@ -788,7 +788,7 @@ document.getElementById('btn-action-delete-review')?.addEventListener('click', a
             fetchCourseReviews();
             cancelEditReview();
         }
-    } catch(e) {}
+    } catch (e) { }
 });
 
 window.cancelEditReview = () => {
@@ -802,7 +802,7 @@ window.cancelEditReview = () => {
 window.saveCourseReview = async () => {
     const reviewerName = document.getElementById('review-name').value.trim();
     const reviewText = document.getElementById('review-text').value.trim();
-    if(!reviewerName || !reviewText) {
+    if (!reviewerName || !reviewText) {
         showToast('กรุณากรอกชื่อและเนื้อหารีวิวให้ครบ');
         return;
     }
@@ -811,7 +811,7 @@ window.saveCourseReview = async () => {
     fd.append('review_id', document.getElementById('edit-review-id').value);
     fd.append('reviewer_name', reviewerName);
     fd.append('review_text', reviewText);
-    
+
     try {
         const res = await fetch(getApiUrl('save_course_review'), fetchOptions('POST', fd));
         const result = await res.json();
@@ -821,7 +821,7 @@ window.saveCourseReview = async () => {
             fetchCourseReviews();
             cancelEditReview();
         }
-    } catch(e) {}
+    } catch (e) { }
 };
 // =====================================================================
 // --- 7. CMBigband Logic ---
@@ -838,19 +838,19 @@ window.loadCmbData = async () => {
             document.getElementById('cmb-fb').value = c.facebook || ''; document.getElementById('cmb-wa').value = c.whatsapp || '';
             document.getElementById('cmb-ig').value = c.instagram || ''; document.getElementById('cmb-web').value = c.website || '';
             document.getElementById('cmb-tk').value = c.tiktok || ''; document.getElementById('cmb-email').value = c.email || '';
-            
-            const bImg = document.getElementById('cmbigband-banner-img'); if(bImg) bImg.src = c.banner_image || 'https://placehold.co/1200x400/e5e7eb/a3a3a3';
-            const pImg = document.getElementById('cmbigband-profile-img'); if(pImg) pImg.src = c.profile_image || 'https://placehold.co/600x600/e5e7eb/a3a3a3';
+
+            const bImg = document.getElementById('cmbigband-banner-img'); if (bImg) bImg.src = c.banner_image || 'https://placehold.co/1200x400/e5e7eb/a3a3a3';
+            const pImg = document.getElementById('cmbigband-profile-img'); if (pImg) pImg.src = c.profile_image || 'https://placehold.co/600x600/e5e7eb/a3a3a3';
 
             const container = document.getElementById('cmb-content-container'); container.innerHTML = '';
-            if(c.details) {
+            if (c.details) {
                 try {
                     let dArrEn = JSON.parse(c.details); let dArrTh = JSON.parse(c.details_th || '[]');
-                    if(Array.isArray(dArrEn)) { dArrEn.forEach((item, i) => window.addCmbContent(item.type, item.value, dArrTh[i]?dArrTh[i].value:'', item.layout)); }
-                } catch(e) {}
+                    if (Array.isArray(dArrEn)) { dArrEn.forEach((item, i) => window.addCmbContent(item.type, item.value, dArrTh[i] ? dArrTh[i].value : '', item.layout)); }
+                } catch (e) { }
             }
         }
-    } catch(e) {}
+    } catch (e) { }
 };
 
 window.saveCMBigband = async () => {
@@ -864,18 +864,18 @@ window.saveCMBigband = async () => {
 
         const bFile = window.croppedImagesData['cmb-banner'] || document.getElementById('cmb-banner')?.files[0];
         const pFile = window.croppedImagesData['cmb-profile'] || document.getElementById('cmb-profile')?.files[0];
-        if(bFile) fd.append('banner_image', bFile, window.croppedImagesData['cmb-banner'] ? 'banner.jpg' : bFile.name);
-        if(pFile) fd.append('profile_image', pFile, window.croppedImagesData['cmb-profile'] ? 'profile.jpg' : pFile.name);
+        if (bFile) fd.append('banner_image', bFile, window.croppedImagesData['cmb-banner'] ? 'banner.jpg' : bFile.name);
+        if (pFile) fd.append('profile_image', pFile, window.croppedImagesData['cmb-profile'] ? 'profile.jpg' : pFile.name);
 
         document.querySelectorAll('.cmb-item').forEach((item, index) => {
             const type = item.getAttribute('data-type'); fd.append('content_types[]', type);
             fd.append('content_layouts[]', item.querySelector('.cmb-layout-select').value);
-           if (['text', 'h2', 'h3', 'h4'].includes(type)) { fd.append('content_values[]', item.querySelector('.cmb-text-input').value); fd.append('content_values_th[]', item.querySelector('.cmb-text-input-th').value); }
-            else if (type === 'video') { fd.append('content_values[]', item.querySelector('.cmb-video-input').value); fd.append('content_values_th[]', item.querySelector('.cmb-video-input').value); } 
+            if (['text', 'h2', 'h3', 'h4'].includes(type)) { fd.append('content_values[]', item.querySelector('.cmb-text-input').value); fd.append('content_values_th[]', item.querySelector('.cmb-text-input-th').value); }
+            else if (type === 'video') { fd.append('content_values[]', item.querySelector('.cmb-video-input').value); fd.append('content_values_th[]', item.querySelector('.cmb-video-input').value); }
             else if (type === 'image') {
                 const fInput = item.querySelector('.cmb-img-input'); const oldInput = item.querySelector('.cmb-img-old');
-                if (fInput && fInput.id && window.croppedImagesData[fInput.id]) { fd.append(`content_images_${index}`, window.croppedImagesData[fInput.id], 'img.jpg'); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); } 
-                else if (fInput && fInput.files[0]) { fd.append(`content_images_${index}`, fInput.files[0]); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); } 
+                if (fInput && fInput.id && window.croppedImagesData[fInput.id]) { fd.append(`content_images_${index}`, window.croppedImagesData[fInput.id], 'img.jpg'); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); }
+                else if (fInput && fInput.files[0]) { fd.append(`content_images_${index}`, fInput.files[0]); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); }
                 else { fd.append('content_values[]', oldInput ? oldInput.value : ''); fd.append('content_values_th[]', oldInput ? oldInput.value : ''); }
             }
         });
@@ -883,7 +883,7 @@ window.saveCMBigband = async () => {
         showToast('กำลังบันทึกข้อมูล...');
         const res = await fetch(getApiUrl('save_cmbigband'), fetchOptions('POST', fd)); const result = await res.json();
         if (result.status === 'success') { showToast('บันทึกข้อมูลสำเร็จ!'); window.croppedImagesData = {}; } else showToast('ข้อผิดพลาด: ' + result.message);
-    } catch(e) {}
+    } catch (e) { }
 };
 // =====================================================================
 // --- 8. Forum Q&A Management (Bulk Delete) ---
@@ -896,24 +896,24 @@ async function fetchAdminForumTopics() {
         const result = await res.json();
         const tbody = document.getElementById('admin-forum-table-body');
         if (!tbody) return;
-        
+
         tbody.innerHTML = '';
         selectedForumTopics = []; // รีเซ็ตการเลือกทุกครั้งที่โหลดตารางใหม่
         updateForumActionButtons();
-        
-        if(result.status === 'success') {
-            if(result.data.length === 0) {
+
+        if (result.status === 'success') {
+            if (result.data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500 font-medium">ยังไม่มีกระทู้ในระบบ</td></tr>';
                 return;
             }
             result.data.forEach(topic => {
                 const d = new Date(topic.created_at);
                 const dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                
+
                 const tr = document.createElement('tr');
                 tr.className = 'border-b hover:bg-orange-50 transition-colors select-none';
                 tr.setAttribute('data-id', topic.id);
-                
+
                 tr.innerHTML = `
                     <td class="p-4 text-center font-bold">
                         <div class="flex items-center justify-center gap-2">
@@ -929,7 +929,7 @@ async function fetchAdminForumTopics() {
                         <span class="bg-blue-100 px-2 py-1 rounded text-blue-700 ml-1 shadow-sm">💬 ${topic.comment_count}</span>
                     </td>
                 `;
-                
+
                 // ดักจับการคลิกที่แถวเพื่อเลือก
                 tr.addEventListener('click', () => toggleForumRow(tr, topic.id));
                 tbody.appendChild(tr);
@@ -943,7 +943,7 @@ async function fetchAdminForumTopics() {
 function toggleForumRow(row, id) {
     const checkbox = row.querySelector('input[type="checkbox"]');
     const index = selectedForumTopics.indexOf(id);
-    
+
     // ถ้าเลือกอยู่แล้ว ให้เอาออก
     if (index > -1) {
         selectedForumTopics.splice(index, 1);
@@ -961,7 +961,7 @@ function toggleForumRow(row, id) {
 function updateForumActionButtons() {
     const btnDel = document.getElementById('btn-delete-forum');
     const statusEl = document.getElementById('forum-selection-status');
-    
+
     if (btnDel && statusEl) {
         if (selectedForumTopics.length > 0) {
             // ปลดล็อคปุ่มลบ
@@ -979,26 +979,26 @@ function updateForumActionButtons() {
 
 // สั่งการปุ่ม "ลบที่เลือก" ด้านบน
 document.getElementById('btn-delete-forum')?.addEventListener('click', async () => {
-    if(selectedForumTopics.length === 0) return;
-    
-    if(!confirm(`🚨 คุณแน่ใจหรือไม่ที่จะลบกระทู้ที่เลือกจำนวน ${selectedForumTopics.length} รายการ? \n(คอมเมนต์ทั้งหมดในกระทู้จะถูกลบถาวร!)`)) return;
-    
+    if (selectedForumTopics.length === 0) return;
+
+    if (!confirm(`🚨 คุณแน่ใจหรือไม่ที่จะลบกระทู้ที่เลือกจำนวน ${selectedForumTopics.length} รายการ? \n(คอมเมนต์ทั้งหมดในกระทู้จะถูกลบถาวร!)`)) return;
+
     try {
         const fd = new FormData();
         // ส่งข้อมูลเป็น String ของ JSON
-        fd.append('topic_ids', JSON.stringify(selectedForumTopics)); 
-        
+        fd.append('topic_ids', JSON.stringify(selectedForumTopics));
+
         showToast('กำลังลบข้อมูล...');
         const res = await fetch(getApiUrl('delete_forum_topic'), fetchOptions('POST', fd));
         const result = await res.json();
-        
-        if(result.status === 'success') {
+
+        if (result.status === 'success') {
             showToast(result.message);
             fetchAdminForumTopics(); // โหลดตารางใหม่
         } else {
             showToast('เกิดข้อผิดพลาด: ' + result.message);
         }
-    } catch(e) {
+    } catch (e) {
         showToast('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
     }
 });
@@ -1008,10 +1008,10 @@ document.getElementById('btn-delete-forum')?.addEventListener('click', async () 
 // =====================================================================
 
 // สลับ Tab ย่อยภายในหน้า Store และ Ticket
-window.switchInnerTab = function(tabName) {
+window.switchInnerTab = function (tabName) {
     // ปิดทั้งหมดก่อน
     document.querySelectorAll('.inner-tab-content').forEach(el => el.classList.add('hidden'));
-    
+
     // รีเซ็ตปุ่ม Store
     document.querySelectorAll('#btn-inner-product, #btn-inner-stock, #btn-inner-order').forEach(btn => {
         btn.classList.remove('bg-pink-500', 'text-white'); btn.classList.add('bg-gray-100', 'text-gray-600');
@@ -1023,16 +1023,16 @@ window.switchInnerTab = function(tabName) {
 
     const targetTab = document.getElementById('tab-inner-' + tabName);
     const targetBtn = document.getElementById('btn-inner-' + tabName);
-    if(targetTab) targetTab.classList.remove('hidden');
-    
-    if(tabName.includes('ticket')) {
-        if(targetBtn) { targetBtn.classList.remove('bg-gray-100', 'text-gray-600'); targetBtn.classList.add('bg-blue-600', 'text-white'); }
-        if(tabName === 'ticket-dashboard') loadTicketEventsData();
-        if(tabName === 'ticket-order') loadTicketOrderData();
+    if (targetTab) targetTab.classList.remove('hidden');
+
+    if (tabName.includes('ticket')) {
+        if (targetBtn) { targetBtn.classList.remove('bg-gray-100', 'text-gray-600'); targetBtn.classList.add('bg-blue-600', 'text-white'); }
+        if (tabName === 'ticket-dashboard') loadTicketEventsData();
+        if (tabName === 'ticket-order') loadTicketOrderData();
     } else {
-        if(targetBtn) { targetBtn.classList.remove('bg-gray-100', 'text-gray-600'); targetBtn.classList.add('bg-pink-500', 'text-white'); }
-        if(tabName === 'stock') loadStockData();
-        if(tabName === 'order') loadOrderData();
+        if (targetBtn) { targetBtn.classList.remove('bg-gray-100', 'text-gray-600'); targetBtn.classList.add('bg-pink-500', 'text-white'); }
+        if (tabName === 'stock') loadStockData();
+        if (tabName === 'order') loadOrderData();
     }
 };
 
@@ -1040,8 +1040,8 @@ window.switchInnerTab = function(tabName) {
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', (e) => {
         const target = link.getAttribute('data-target');
-        if(target === 'section-store') switchInnerTab('product');
-        if(target === 'section-ticket') switchInnerTab('ticket-dashboard');
+        if (target === 'section-store') switchInnerTab('product');
+        if (target === 'section-ticket') switchInnerTab('ticket-dashboard');
     });
 });
 
@@ -1066,103 +1066,265 @@ window.uploadSlipFile = async (input) => {
     try {
         showToast('กำลังอัปโหลดสลิป...');
         const res = await fetch(getApiUrl('upload_payment_slip'), fetchOptions('POST', fd)); const result = await res.json();
-        if(result.status === 'success') {
+        if (result.status === 'success') {
             showToast('อัปโหลดสำเร็จ');
-            if(uploadSlipOrderType === 'store') loadOrderData(); else loadTicketOrderData();
+            if (uploadSlipOrderType === 'store') loadOrderData(); else loadTicketOrderData();
         } else { showToast('Error: ' + result.message); }
-    } catch(e) { showToast('Connection Error'); } finally { input.value = ''; }
+    } catch (e) { showToast('Connection Error'); } finally { input.value = ''; }
 };
 
 window.updateOrderStatus = async (orderId, orderType, field, newValue, selectElement) => {
     const fd = new FormData(); fd.append('order_id', orderId); fd.append('order_type', orderType); fd.append('field', field); fd.append('value', newValue);
     try {
         const res = await fetch(getApiUrl('update_order_status'), fetchOptions('POST', fd)); const result = await res.json();
-        if(result.status === 'success') {
+        if (result.status === 'success') {
             const colorClass = newValue === 'success' ? 'bg-green-500 text-white' : (newValue === 'canceled' ? 'bg-red-500 text-white' : 'bg-yellow-400 text-black');
             selectElement.className = `p-1 rounded text-xs font-bold outline-none cursor-pointer ${colorClass}`;
             showToast('อัปเดตสถานะสำเร็จ');
         } else showToast('Error: ' + result.message);
-    } catch(e) {}
+    } catch (e) { }
 };
 
-// ====== ฟังก์ชัน Load ข้อมูล ตาราง Order (Store & Ticket) ======
+// ==========================================
+// 🌟 ตัวแปรเก็บสถานะการค้นหาและข้อมูล
+// ==========================================
+let allStoreOrders = [];
+let currentStoreStatus = 'all';
+let currentStoreSearch = '';
+
+let allTicketOrders = [];
+let currentTicketStatus = 'all';
+let currentTicketSearch = '';
+
+// ==========================================
+// 🌟 1. ระบบแสดงผล Store Orders
+// ==========================================
 window.loadOrderData = async () => {
-    const tbody = document.getElementById('store-order-tbody'); tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-gray-500">กำลังโหลดข้อมูล...</td></tr>';
+    const tbody = document.getElementById('store-order-tbody');
+    tbody.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-gray-500">กำลังโหลดข้อมูล...</td></tr>';
     try {
-        const res = await fetch(getApiUrl('get_orders')); const r = await res.json();
-        if(r.status === 'success') {
-            tbody.innerHTML = '';
-            if(r.data.length === 0) return tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-gray-500">ไม่มีข้อมูลคำสั่งซื้อ</td></tr>';
-            r.data.forEach(o => {
-                const dStr = new Date(o.created_at).toLocaleString('th-TH', {dateStyle:'short', timeStyle:'short'});
-                let slipHtml = (o.payment_status && o.payment_status.includes('/')) ? `<img src="${o.payment_status}" onclick="viewSlip('${o.payment_status}')" class="w-12 h-16 object-cover mx-auto rounded border cursor-zoom-in hover:opacity-80 mb-1">` : `<div class="text-[10px] text-gray-400 mb-1">ไม่มีสลิป</div>`;
-                const statColor = o.order_status === 'success' ? 'bg-green-500 text-white' : (o.order_status === 'canceled' ? 'bg-red-500 text-white' : 'bg-yellow-400 text-black');
-                
-                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50">
-                    <td class="p-2">${dStr}</td><td class="p-2 font-bold">${o.order_code}</td><td class="p-2">${o.product_code}</td>
-                    <td class="p-2">${o.customer_name}</td><td class="p-2 max-w-[100px] truncate" title="${o.address}">${o.address}</td>
-                    <td class="p-2">${o.phone}</td><td class="p-2 text-center font-bold text-pink-600">${o.amount}</td>
-                    <td class="p-2 text-center">${slipHtml}<button onclick="triggerSlipUpload(${o.order_id}, 'store')" class="text-[10px] bg-gray-200 px-2 py-1 rounded w-full">+ สลิป</button></td>
-                    <td class="p-2 text-center"><select onchange="updateOrderStatus(${o.order_id}, 'store', 'order_status', this.value, this)" class="p-1 rounded text-xs font-bold w-full outline-none cursor-pointer ${statColor}"><option value="pending" ${o.order_status==='pending'?'selected':''} class="bg-white text-black">Pending</option><option value="success" ${o.order_status==='success'?'selected':''} class="bg-white text-black">Success</option><option value="canceled" ${o.order_status==='canceled'?'selected':''} class="bg-white text-black">Cancel</option></select></td>
-                </tr>`;
-            });
+        const res = await fetch(getApiUrl('get_orders'));
+        const r = await res.json();
+        if (r.status === 'success') {
+            allStoreOrders = r.data;
+            renderStoreOrders(); // เรียกฟังก์ชันวาดตาราง
         }
-    } catch(e) {}
+    } catch (e) { }
 };
 
-window.loadTicketOrderData = async () => {
-    const tbody = document.getElementById('ticket-order-tbody'); tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-gray-500">กำลังโหลดข้อมูล...</td></tr>';
-    try {
-        const res = await fetch(getApiUrl('get_ticket_orders')); const r = await res.json();
-        if(r.status === 'success') {
-            tbody.innerHTML = '';
-            if(r.data.length === 0) return tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-gray-500">ไม่มีข้อมูลการจองตั๋ว</td></tr>';
-            r.data.forEach(o => {
-                const dStr = new Date(o.created_at).toLocaleString('th-TH', {dateStyle:'short', timeStyle:'short'});
-                let slipHtml = (o.payment_status && o.payment_status.includes('/')) ? `<img src="${o.payment_status}" onclick="viewSlip('${o.payment_status}')" class="w-12 h-16 object-cover mx-auto rounded border cursor-zoom-in hover:opacity-80 mb-1">` : `<div class="text-[10px] text-gray-400 mb-1">ไม่มีสลิป</div>`;
-                const statColor = o.order_status === 'success' ? 'bg-green-500 text-white' : (o.order_status === 'canceled' ? 'bg-red-500 text-white' : 'bg-yellow-400 text-black');
-                
-                tbody.innerHTML += `<tr class="border-b hover:bg-gray-50">
-                    <td class="p-2">${dStr}</td><td class="p-2 font-bold">${o.order_code}</td>
-                    <td class="p-2 text-left leading-tight"><div class="font-bold text-blue-600">${o.event_name||'-'}</div><div class="text-[10px] text-gray-500">${o.ticket_name}</div></td>
-                    <td class="p-2">${o.customer_name}</td><td class="p-2 max-w-[100px] truncate" title="${o.address}">${o.address}</td>
-                    <td class="p-2">${o.phone}</td><td class="p-2 text-center font-bold text-blue-600">${o.amount}</td>
-                    <td class="p-2 text-center">${slipHtml}<button onclick="triggerSlipUpload(${o.order_id}, 'ticket')" class="text-[10px] bg-gray-200 px-2 py-1 rounded w-full">+ สลิป</button></td>
-                    <td class="p-2 text-center"><select onchange="updateOrderStatus(${o.order_id}, 'ticket', 'order_status', this.value, this)" class="p-1 rounded text-xs font-bold w-full outline-none cursor-pointer ${statColor}"><option value="pending" ${o.order_status==='pending'?'selected':''} class="bg-white text-black">Pending</option><option value="success" ${o.order_status==='success'?'selected':''} class="bg-white text-black">Success</option><option value="canceled" ${o.order_status==='canceled'?'selected':''} class="bg-white text-black">Cancel</option></select></td>
-                </tr>`;
-            });
-        }
-    } catch(e) {}
+window.renderStoreOrders = () => {
+    const tbody = document.getElementById('store-order-tbody');
+    tbody.innerHTML = '';
+
+    const filteredOrders = allStoreOrders.filter(o => {
+        const matchStatus = (currentStoreStatus === 'all') || (o.order_status === currentStoreStatus);
+        const searchTxt = currentStoreSearch.toLowerCase();
+        const matchSearch = searchTxt === '' ||
+            (o.order_code && o.order_code.toLowerCase().includes(searchTxt)) ||
+            (o.customer_name && o.customer_name.toLowerCase().includes(searchTxt)) ||
+            (o.phone && o.phone.includes(searchTxt));
+        return matchStatus && matchSearch;
+    });
+
+    if (filteredOrders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-gray-500 font-bold bg-gray-50">ไม่พบออเดอร์ที่ค้นหา</td></tr>';
+        return;
+    }
+
+    filteredOrders.forEach(o => {
+        const dStr = new Date(o.created_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' });
+        let slipHtml = (o.payment_status && o.payment_status.includes('/')) ? `<img src="${o.payment_status}" onclick="viewSlip('${o.payment_status}')" class="w-10 h-14 object-cover mx-auto rounded border cursor-zoom-in hover:opacity-80 mb-1">` : `<div class="text-[10px] text-gray-400 mb-1">ไม่มีสลิป</div>`;
+        const statColor = o.order_status === 'success' ? 'bg-green-500 text-white' : (o.order_status === 'canceled' ? 'bg-red-500 text-white' : 'bg-yellow-400 text-black');
+
+        tbody.innerHTML += `<tr class="border-b hover:bg-gray-50 align-middle cursor-pointer" onclick="viewOrderDetails('store', ${o.order_id}, event)">
+            <td class="p-3 whitespace-nowrap">${dStr}</td>
+            <td class="p-3 font-bold text-gray-700 whitespace-nowrap">${o.order_code}</td>
+            <td class="p-3 text-left line-clamp-2 min-w-[120px]">${o.product_code}</td>
+            <td class="p-3 whitespace-nowrap">${o.customer_name}</td>
+            <td class="p-3 text-left text-[11px] leading-tight min-w-[150px]"><div class="line-clamp-2" title="${o.address}">${o.address}</div></td>
+            <td class="p-3 whitespace-nowrap">${o.phone}</td>
+            <td class="p-3 whitespace-nowrap">${o.email || '-'}</td>
+            <td class="p-3 text-center font-bold text-pink-600 text-sm">${o.amount}</td>
+            <td class="p-3 text-center">${slipHtml}<button onclick="triggerSlipUpload(${o.order_id}, 'store')" class="text-[10px] bg-gray-200 px-2 py-1 rounded hover:bg-gray-300 transition whitespace-nowrap">+ สลิป</button></td>
+            <td class="p-3 text-center"><select onchange="updateOrderStatus(${o.order_id}, 'store', 'order_status', this.value)" class="p-1.5 rounded text-xs font-bold w-full outline-none cursor-pointer shadow-sm transition ${statColor}"><option value="pending" ${o.order_status === 'pending' ? 'selected' : ''} class="bg-white text-black">Pending</option><option value="success" ${o.order_status === 'success' ? 'selected' : ''} class="bg-white text-black">Success</option><option value="canceled" ${o.order_status === 'canceled' ? 'selected' : ''} class="bg-white text-black">Cancel</option></select></td>
+        </tr>`;
+    });
 };
 
+// Event Listener สำหรับ Store Filter
+window.setStoreOrderFilter = (status) => {
+    currentStoreStatus = status;
+    document.querySelectorAll('.store-filter-btn').forEach(btn => {
+        if (btn.dataset.status === status) {
+            btn.className = 'store-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-800 text-white';
+        } else {
+            btn.className = 'store-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-200 text-gray-700 hover:bg-gray-300';
+        }
+    });
+    renderStoreOrders();
+};
+document.getElementById('store-order-search')?.addEventListener('input', (e) => {
+    currentStoreSearch = e.target.value;
+    renderStoreOrders();
+});
+
+
+// ==========================================
+// 🌟 2. ระบบแสดงผล Ticket Orders
+// ==========================================
+window.loadTicketOrderData = async (ticketId = null) => {
+    const tbody = document.getElementById('ticket-order-tbody');
+    tbody.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-gray-500">กำลังโหลดข้อมูล...</td></tr>';
+    try {
+        let url = getApiUrl('get_ticket_orders');
+        if (ticketId) url += `&ticket_id=${ticketId}`;
+
+        const res = await fetch(url);
+        const r = await res.json();
+
+        if (r.status === 'success') {
+            allTicketOrders = r.data;
+            renderTicketOrders(); // เรียกฟังก์ชันวาดตาราง
+        }
+    } catch (e) { }
+};
+
+window.renderTicketOrders = () => {
+    const tbody = document.getElementById('ticket-order-tbody');
+    tbody.innerHTML = '';
+
+    const filteredOrders = allTicketOrders.filter(o => {
+        const matchStatus = (currentTicketStatus === 'all') || (o.order_status === currentTicketStatus);
+        const searchTxt = currentTicketSearch.toLowerCase();
+        const matchSearch = searchTxt === '' ||
+            (o.order_code && o.order_code.toLowerCase().includes(searchTxt)) ||
+            (o.customer_name && o.customer_name.toLowerCase().includes(searchTxt)) ||
+            (o.phone && o.phone.includes(searchTxt));
+        return matchStatus && matchSearch;
+    });
+
+    if (filteredOrders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-gray-500 font-bold bg-gray-50">ไม่พบออเดอร์ที่ค้นหา</td></tr>';
+        return;
+    }
+
+    filteredOrders.forEach(o => {
+        const dStr = new Date(o.created_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' });
+        let slipHtml = (o.payment_status && o.payment_status.includes('/')) ? `<img src="${o.payment_status}" onclick="viewSlip('${o.payment_status}')" class="w-10 h-14 object-cover mx-auto rounded border cursor-zoom-in hover:opacity-80 mb-1">` : `<div class="text-[10px] text-gray-400 mb-1">ไม่มีสลิป</div>`;
+        const statColor = o.order_status === 'success' ? 'bg-green-500 text-white' : (o.order_status === 'canceled' ? 'bg-red-500 text-white' : 'bg-yellow-400 text-black');
+
+        tbody.innerHTML += `<tr class="border-b hover:bg-gray-50 align-middle cursor-pointer" onclick="viewOrderDetails('ticket', ${o.order_id}, event)">
+            <td class="p-3 whitespace-nowrap">${dStr}</td>
+            <td class="p-3 font-bold text-gray-700 whitespace-nowrap">${o.order_code}</td>
+            <td class="p-3 text-left leading-tight min-w-[150px]"><div class="font-bold text-blue-600 line-clamp-1">${o.event_name || '-'}</div><div class="text-[10px] text-gray-500 line-clamp-1">${o.ticket_name}</div></td>
+            <td class="p-3 whitespace-nowrap">${o.customer_name}</td>
+            <td class="p-3 text-left text-[11px] leading-tight min-w-[120px]"><div class="line-clamp-2" title="${o.address}">${o.address || '-'}</div></td>
+            <td class="p-3 whitespace-nowrap">${o.phone}</td>
+            <td class="p-3 whitespace-nowrap">${o.email || '-'}</td>
+            <td class="p-3 text-center font-bold text-blue-600 text-sm">${o.amount}</td>
+            <td class="p-3 text-center">${slipHtml}<button onclick="triggerSlipUpload(${o.order_id}, 'ticket')" class="text-[10px] bg-gray-200 px-2 py-1 rounded hover:bg-gray-300 transition whitespace-nowrap">+ สลิป</button></td>
+            <td class="p-3 text-center"><select onchange="updateOrderStatus(${o.order_id}, 'ticket', 'order_status', this.value)" class="p-1.5 rounded text-xs font-bold w-full outline-none cursor-pointer shadow-sm transition ${statColor}"><option value="pending" ${o.order_status === 'pending' ? 'selected' : ''} class="bg-white text-black">Pending</option><option value="success" ${o.order_status === 'success' ? 'selected' : ''} class="bg-white text-black">Success</option><option value="canceled" ${o.order_status === 'canceled' ? 'selected' : ''} class="bg-white text-black">Cancel</option></select></td>
+        </tr>`;
+    });
+};
+
+// Event Listener สำหรับ Ticket Filter
+window.setTicketOrderFilter = (status) => {
+    currentTicketStatus = status;
+    document.querySelectorAll('.ticket-filter-btn').forEach(btn => {
+        if (btn.dataset.status === status) {
+            btn.className = 'ticket-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-800 text-white';
+        } else {
+            btn.className = 'ticket-filter-btn px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm transition bg-gray-200 text-gray-700 hover:bg-gray-300';
+        }
+    });
+    renderTicketOrders();
+};
+document.getElementById('ticket-order-search')?.addEventListener('input', (e) => {
+    currentTicketSearch = e.target.value;
+    renderTicketOrders();
+});
+
+// ==========================================
+// 🌟 3. อัปเดตฟังก์ชันเปลี่ยนสถานะ (ให้ตารางขยับอัตโนมัติ)
+// ==========================================
+window.updateOrderStatus = async (orderId, orderType, field, newValue) => {
+    const fd = new FormData();
+    fd.append('order_id', orderId);
+    fd.append('order_type', orderType);
+    fd.append('field', field);
+    fd.append('value', newValue);
+
+    try {
+        const res = await fetch(getApiUrl('update_order_status'), fetchOptions('POST', fd));
+        const result = await res.json();
+
+        if (result.status === 'success') {
+            showToast('อัปเดตสถานะสำเร็จ');
+
+            // อัปเดตข้อมูลใน Array ทันที แล้วสั่งวาดตารางใหม่
+            if (orderType === 'store') {
+                const targetOrder = allStoreOrders.find(o => o.order_id == orderId);
+                if (targetOrder) targetOrder[field] = newValue;
+                renderStoreOrders();
+            } else {
+                const targetOrder = allTicketOrders.find(o => o.order_id == orderId);
+                if (targetOrder) targetOrder[field] = newValue;
+                renderTicketOrders();
+            }
+        } else {
+            showToast('Error: ' + result.message);
+        }
+    } catch (e) { }
+};
+
+// ==========================================
+// 🌟 4. ระบบ Event Dashboard ที่แสดงปุ่ม "ดูรายการสั่งซื้อ"
+// ==========================================
 window.loadTicketEventsData = async () => {
-    const list = document.getElementById('ticket-events-list'); list.innerHTML = '<div class="text-center py-8 text-gray-500">กำลังโหลด...</div>';
+    const list = document.getElementById('ticket-events-list');
+    list.innerHTML = '<div class="text-center py-8 text-gray-500">กำลังโหลด...</div>';
+
     try {
-        const res = await fetch(getApiUrl('get_ticket_events')); const r = await res.json();
-        if(r.status === 'success') {
+        const res = await fetch(getApiUrl('get_ticket_events'));
+        const r = await res.json();
+
+        if (r.status === 'success') {
             list.innerHTML = '';
-            if(r.data.length === 0) return list.innerHTML = '<div class="text-center py-8 text-gray-500">ไม่มี Event ในระบบ</div>';
+            if (r.data.length === 0) return list.innerHTML = '<div class="text-center py-8 text-gray-500">ไม่มี Event ในระบบ</div>';
+
             r.data.forEach((item, idx) => {
                 const statStr = parseInt(item.is_open) === 1 ? '<span class="text-green-600 font-bold">Sale Open</span>' : '<span class="text-red-500 font-bold">Closed</span>';
                 list.innerHTML += `
-                    <div class="border border-gray-200 rounded-xl p-4 flex justify-between items-center bg-gray-50 shadow-sm">
-                        <div class="font-medium text-gray-800"><span class="font-bold mr-2 text-blue-600">${idx+1}.</span> ${item.event_title||'-'} : ${item.ticket_title}</div>
-                        <div class="flex items-center gap-6">
-                            <span id="ticket-order-count-${item.ticket_id}" onclick="fetchTicketCount(${item.ticket_id})" class="cursor-pointer hover:underline text-sm font-bold text-gray-500 hover:text-blue-600">กดดูยอดขาย</span>
-                            <span class="text-sm">${statStr}</span>
+                    <div class="border border-gray-200 rounded-xl p-4 flex flex-col md:flex-row justify-between md:items-center gap-4 bg-gray-50 shadow-sm hover:bg-white transition">
+                        <div class="font-medium text-gray-800">
+                            <span class="font-bold mr-2 text-blue-600">${idx + 1}.</span> ${item.event_title || '-'} : ${item.ticket_title}
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span id="ticket-order-count-${item.ticket_id}" onclick="fetchTicketCount(${item.ticket_id})" class="cursor-pointer hover:underline text-sm font-bold text-gray-500 hover:text-blue-600">แสดงยอดขาย</span>
+                            <span class="text-sm border-r border-gray-300 pr-4">${statStr}</span>
+                            <button onclick="filterTicketOrders(${item.ticket_id})" class="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm hover:bg-blue-600 hover:text-white transition">ดูรายการสั่งซื้อ</button>
                         </div>
                     </div>`;
             });
         }
-    } catch(e) {}
+    } catch (e) { }
+};
+
+// ฟังก์ชันสลับหน้าต่างและ Filter ตั๋ว
+window.filterTicketOrders = function (ticketId) {
+    // สลับไปยัง Tab Ticket Order
+    switchInnerTab('ticket-order');
+    // โหลดข้อมูลออเดอร์โดยส่ง ticketId ไปกรอง
+    loadTicketOrderData(ticketId);
 };
 
 window.fetchTicketCount = async (ticketId) => {
     const el = document.getElementById(`ticket-order-count-${ticketId}`);
     try {
         const res = await fetch(getApiUrl(`get_ticket_order_count&ticket_id=${ticketId}`)); const r = await res.json();
-        if(r.status === 'success') { el.innerHTML = `ยอดขาย: <span class="text-blue-600">${r.count}</span> ใบ`; el.onclick = null; el.classList.remove('cursor-pointer', 'hover:underline'); }
-    } catch(e) {}
+        if (r.status === 'success') { el.innerHTML = `ยอดขาย: <span class="text-blue-600">${r.count}</span> ใบ`; el.onclick = null; el.classList.remove('cursor-pointer', 'hover:underline'); }
+    } catch (e) { }
 };
 
 // ==========================================
@@ -1173,22 +1335,22 @@ let storeProductImages = [];
 let storeBannerImage = null;
 
 // สลับแท็บ เพิ่มสินค้า / สต๊อก / ออเดอร์
-window.switchStoreTab = function(tabName) {
+window.switchStoreTab = function (tabName) {
     document.querySelectorAll('.store-tab-content').forEach(el => el.classList.add('hidden'));
     document.getElementById(`tab-store-${tabName}`).classList.remove('hidden');
 
     document.getElementById('btn-store-product').className = 'flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200';
     document.getElementById('btn-store-stock').className = 'flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200';
     document.getElementById('btn-store-order').className = 'flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200';
-    
-    const activeBtn = document.getElementById(`btn-store-${tabName}`);
-    if(activeBtn) activeBtn.className = 'flex-1 py-3 bg-pink-500 text-white font-bold transition shadow-inner';
 
-    if(tabName === 'stock') loadStockData();
+    const activeBtn = document.getElementById(`btn-store-${tabName}`);
+    if (activeBtn) activeBtn.className = 'flex-1 py-3 bg-pink-500 text-white font-bold transition shadow-inner';
+
+    if (tabName === 'stock') loadStockData();
 };
 
 // Preview รูป Banner
-window.previewStoreBanner = function(input) {
+window.previewStoreBanner = function (input) {
     if (input.files && input.files[0]) {
         storeBannerImage = input.files[0];
         const reader = new FileReader();
@@ -1202,7 +1364,7 @@ window.previewStoreBanner = function(input) {
 };
 
 // จัดการรูปภาพสินค้าย่อย (สูงสุด 5 รูป)
-window.handleStoreImages = function(input) {
+window.handleStoreImages = function (input) {
     if (input.files) {
         const remainingSlots = 5 - storeProductImages.length;
         const filesToAdd = Array.from(input.files).slice(0, remainingSlots);
@@ -1211,13 +1373,13 @@ window.handleStoreImages = function(input) {
             renderStoreImagePreviews();
         });
     }
-    input.value = ''; 
+    input.value = '';
 };
 
-window.renderStoreImagePreviews = function() {
+window.renderStoreImagePreviews = function () {
     const container = document.getElementById('store-images-container');
     container.innerHTML = `<div class="w-32 h-32 border-2 border-dashed border-gray-400 rounded-xl flex flex-col items-center justify-center text-center text-sm font-bold text-gray-500 cursor-pointer hover:bg-gray-50 transition p-2 flex-shrink-0" onclick="document.getElementById('store-upload-images').click()"><span>+ Add</span><span>Images</span><span class="text-xs font-normal">(Max 5)</span></div>`;
-    
+
     storeProductImages.forEach((file, index) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -1231,32 +1393,32 @@ window.renderStoreImagePreviews = function() {
     });
 };
 
-window.removeStoreImage = function(index) {
+window.removeStoreImage = function (index) {
     storeProductImages.splice(index, 1);
     renderStoreImagePreviews();
 };
 
 // ดึงข้อมูลสินค้ามาแสดงในตาราง Stock
-window.loadStockData = async function() {
+window.loadStockData = async function () {
     const tbody = document.getElementById('store-stock-tbody');
-    if(!tbody) return;
+    if (!tbody) return;
     try {
-        const res = await fetch('backend.php?action=get_store_products'); 
+        const res = await fetch('backend.php?action=get_store_products');
         const result = await res.json();
-        if(result.status === 'success') {
+        if (result.status === 'success') {
             tbody.innerHTML = '';
-            if(result.data.length === 0) {
+            if (result.data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-500 font-bold">ยังไม่มีสินค้าในระบบ</td></tr>`;
                 return;
             }
             result.data.forEach((p, idx) => {
                 let imgUrl = 'https://placehold.co/100x100/efefef/000?text=No+Img';
-                if(p.image_products) { try { imgUrl = JSON.parse(p.image_products)[0] || imgUrl; }catch(e){} }
+                if (p.image_products) { try { imgUrl = JSON.parse(p.image_products)[0] || imgUrl; } catch (e) { } }
                 const badge = p.sale_status === 'open' ? `<span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">OPEN</span>` : `<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">CLOSE</span>`;
-                
+
                 tbody.innerHTML += `
                     <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                        <td class="p-4 text-center font-bold text-gray-500">${idx+1}</td>
+                        <td class="p-4 text-center font-bold text-gray-500">${idx + 1}</td>
                         <td class="p-4 flex items-center gap-4">
                             <img src="${imgUrl}" class="w-16 h-16 object-cover rounded-xl border border-gray-200 bg-white shadow-sm">
                             <div><h4 class="font-bold text-gray-800 text-base">${p.name}</h4><p class="text-sm text-gray-500 font-medium">${parseFloat(p.price).toLocaleString()} ฿</p></div>
@@ -1269,21 +1431,21 @@ window.loadStockData = async function() {
                     </tr>`;
             });
         }
-    } catch(e) {}
+    } catch (e) { }
 };
 
 // บันทึกสินค้าใหม่
-window.saveNewProduct = async function() {
+window.saveNewProduct = async function () {
     const name = document.getElementById('store_p_name').value;
     const price = document.getElementById('store_p_price').value;
     const stock = document.getElementById('store_p_stock').value;
     const details = document.getElementById('store_p_details').value;
     const status = document.querySelector('input[name="store_sale_status"]:checked').value;
 
-    if(!name || !price || !stock) return alert("กรุณากรอกชื่อสินค้า ราคา และสต๊อกให้ครบถ้วน");
+    if (!name || !price || !stock) return alert("กรุณากรอกชื่อสินค้า ราคา และสต๊อกให้ครบถ้วน");
 
     const btn = document.querySelector('button[onclick="saveNewProduct()"]');
-    if(btn) { btn.innerText = 'กำลังบันทึก...'; btn.disabled = true; }
+    if (btn) { btn.innerText = 'กำลังบันทึก...'; btn.disabled = true; }
 
     const fd = new FormData();
     fd.append('product_name', name);
@@ -1291,14 +1453,14 @@ window.saveNewProduct = async function() {
     fd.append('product_stock', stock);
     fd.append('product_details', details);
     fd.append('sale_status', status);
-    
-    if(storeBannerImage) fd.append('image_banner', storeBannerImage);
+
+    if (storeBannerImage) fd.append('image_banner', storeBannerImage);
     storeProductImages.forEach(file => fd.append('product_images[]', file));
 
     try {
         const res = await fetch('backend.php?action=add_store_product', { method: 'POST', body: fd });
         const result = await res.json();
-        if(result.status === 'success') {
+        if (result.status === 'success') {
             alert('บันทึกสินค้าใหม่สำเร็จ! 🎉');
             // เคลียร์ค่าฟอร์ม
             document.getElementById('store_p_name').value = '';
@@ -1312,25 +1474,125 @@ window.saveNewProduct = async function() {
             // ย้ายไปหน้าสต๊อก
             switchStoreTab('stock');
         } else alert("Error: " + result.message);
-    } catch(e) { alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์"); }
-    finally { if(btn) { btn.innerText = 'บันทึกสินค้าใหม่'; btn.disabled = false; } }
+    } catch (e) { alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์"); }
+    finally { if (btn) { btn.innerText = 'บันทึกสินค้าใหม่'; btn.disabled = false; } }
 };
 
 // ลบสินค้า
-window.deleteStoreProduct = async function(id) {
-    if(!confirm("ยืนยันการลบสินค้านี้?")) return;
+window.deleteStoreProduct = async function (id) {
+    if (!confirm("ยืนยันการลบสินค้านี้?")) return;
     const fd = new FormData(); fd.append('product_id', id);
     try {
         const res = await fetch('backend.php?action=delete_store_product', { method: 'POST', body: fd });
         const result = await res.json();
-        if(result.status === 'success') loadStockData();
-    } catch(e) {}
+        if (result.status === 'success') loadStockData();
+    } catch (e) { }
 };
 
 // สั่งให้โหลดข้อมูลอัตโนมัติ เมื่อกดเมนู Store & Merch ทางซ้ายมือ
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const navLink = e.target.closest('.nav-link');
     if (navLink && navLink.getAttribute('data-target') === 'section-store') {
         loadStockData();
     }
 });
+
+// ==========================================
+// 🌟 10. ระบบแสดงรายละเอียดออเดอร์ (Modal)
+// ==========================================
+window.viewOrderDetails = function (type, orderId, event) {
+    if (event && (event.target.tagName.toLowerCase() === 'select' || event.target.tagName.toLowerCase() === 'button' || event.target.tagName.toLowerCase() === 'img')) {
+        return; // ไม่เปิด modal ถ้าคลิกที่ dropdown หรือปุ่ม หรือรูปภาพสลิปในแถว
+    }
+
+    const modal = document.getElementById('order-detail-modal');
+    const content = document.getElementById('order-detail-content');
+    if (!modal || !content) return;
+
+    let order = null;
+    let titleHtml = '';
+    let itemsHtml = '';
+    let slipHtml = '';
+
+    if (type === 'store') {
+        order = allStoreOrders.find(o => o.order_id == orderId);
+        if (!order) return;
+
+        let imgUrl = 'https://placehold.co/100x100/efefef/000?text=No+Img';
+        if (order.image_products) {
+            try {
+                imgUrl = JSON.parse(order.image_products)[0] || imgUrl;
+            } catch (e) { }
+        }
+
+        titleHtml = `Store Order #${order.order_code}`;
+        itemsHtml = `
+            <div class="mb-2 font-bold text-gray-800">สินค้าที่สั่งซื้อ:</div>
+            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <div class="flex items-center gap-4">
+                    <img src="${imgUrl}" class="w-16 h-16 object-cover rounded-xl border border-gray-200 bg-white shadow-sm">
+                    <div>
+                        <div class="font-bold text-base text-gray-800">${order.product_code}</div>
+                        <div class="text-sm text-gray-600">จำนวน: <span class="font-bold text-pink-600">${order.amount}</span> ชิ้น</div>
+                    </div>
+                </div>
+            </div>`;
+
+        if (order.payment_status && order.payment_status.includes('/')) {
+            slipHtml = `
+            <div class="mt-4 border-t pt-4">
+               <div class="mb-2 font-bold text-gray-800">สลิปการโอนเงิน:</div>
+               <img src="${order.payment_status}" onclick="viewSlip('${order.payment_status}')" class="max-w-full h-auto max-h-64 object-contain rounded-lg border shadow-sm cursor-zoom-in hover:opacity-90">
+            </div>`;
+        }
+
+    } else if (type === 'ticket') {
+        order = allTicketOrders.find(o => o.order_id == orderId);
+        if (!order) return;
+        titleHtml = `Ticket Order #${order.order_code}`;
+        itemsHtml = `
+            <div class="mb-2 font-bold text-gray-800">รายการบัตร:</div>
+            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <div class="font-bold text-blue-600">${order.event_name || '-'}</div>
+                <div class="text-sm text-gray-700">${order.ticket_name}</div>
+                <div class="text-sm text-gray-600 mt-1">จำนวน: <span class="font-bold text-blue-600">${order.amount}</span> ใบ</div>
+            </div>`;
+
+        if (order.payment_status && order.payment_status.includes('/')) {
+            slipHtml = `
+            <div class="mt-4 border-t pt-4">
+               <div class="mb-2 font-bold text-gray-800">สลิปการโอนเงิน:</div>
+               <img src="${order.payment_status}" onclick="viewSlip('${order.payment_status}')" class="max-w-full h-auto max-h-64 object-contain rounded-lg border shadow-sm cursor-zoom-in hover:opacity-90">
+            </div>`;
+        }
+    }
+
+    if (!order) return;
+
+    const dt = new Date(order.created_at).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' });
+
+    content.innerHTML = `
+        <div class="flex justify-between items-center mb-4">
+            <h4 class="text-lg font-bold text-gray-800">${titleHtml}</h4>
+            <span class="text-xs text-gray-500">${dt}</span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <div class="text-xs text-gray-500 mb-1">ข้อมูลลูกค้า</div>
+                <div class="font-bold text-gray-800">${order.customer_name}</div>
+                <div class="text-gray-600"><i class="fas fa-phone mr-1"></i>${order.phone || '-'}</div>
+                 <div class="text-gray-600"><i class="fas fa-envelope mr-1"></i>${order.email || '-'}</div>
+            </div>
+            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <div class="text-xs text-gray-500 mb-1">ที่อยู่จัดส่ง</div>
+                <div class="text-sm text-gray-700">${order.address || '-'}</div>
+            </div>
+        </div>
+        
+        ${itemsHtml}
+        ${slipHtml}
+    `;
+
+    modal.classList.remove('hidden');
+};

@@ -743,7 +743,8 @@ switch($action) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         break;
-// ==========================================
+
+    // ==========================================
     // API สำหรับให้เจ้าของกระทู้แก้ไขข้อความ รูปภาพ และ วิดีโอ
     // ==========================================
     case 'edit_forum_topic':
@@ -826,7 +827,7 @@ switch($action) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         break;
-        //api FORUM Q&A end
+
     // ==========================================
     // โหลดกระทู้ทั้งหมด (เพิ่มการดึงยอดคอมเมนต์และยอดวิว)
     // ==========================================
@@ -845,7 +846,8 @@ switch($action) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         break;
-        case 'get_forum_topic_detail':
+
+    case 'get_forum_topic_detail':
         $topic_id = $_GET['topic_id'] ?? 0;
         try {
             // 1. ดึงรายละเอียดกระทู้หลัก
@@ -871,7 +873,7 @@ switch($action) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         break;
-//api ของ  case 'get_forum_topics':
+
     case 'save_forum_comment':
         if(!isset($_SESSION['user_id'])) {
             echo json_encode(['status' => 'error', 'message' => 'Please login to comment']);
@@ -894,9 +896,9 @@ switch($action) {
         } catch (Exception $e) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
-            break;
-        // ระบบกดไลก์คอมเมนต์
-   // ==========================================
+        break;
+
+    // ==========================================
     // ระบบกดไลก์ / ยกเลิกไลก์ คอมเมนต์
     // ==========================================
     case 'like_forum_comment':
@@ -928,8 +930,7 @@ switch($action) {
         }
         break;
         
-      
-        // สำหรับแอดมิน: ดึงรายการกระทู้ทั้งหมด พร้อมนับจำนวนคอมเมนต์
+    // สำหรับแอดมิน: ดึงรายการกระทู้ทั้งหมด พร้อมนับจำนวนคอมเมนต์
     case 'get_admin_forum_topics':
         if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
@@ -948,7 +949,7 @@ switch($action) {
         }
         break;
 
-   // สำหรับแอดมิน: ลบกระทู้ทีละหลายอัน (Bulk Delete)
+    // สำหรับแอดมิน: ลบกระทู้ทีละหลายอัน (Bulk Delete)
     case 'delete_forum_topic':
         if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
@@ -980,7 +981,7 @@ switch($action) {
         }
         break;
 
-        // ==========================================
+    // ==========================================
     // ระบบ FEEDBACK & REVIEW (หน้าคอร์สเรียน)
     // ==========================================
     case 'get_course_reviews':
@@ -1031,7 +1032,8 @@ switch($action) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         break;
-// ==========================================
+
+    // ==========================================
     // 9. ระบบ STORE & TICKET
     // ==========================================
     
@@ -1057,7 +1059,7 @@ switch($action) {
         if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
         try {
             // ใช้ p.name แสดงชื่อสินค้าแทน product_code ป้องกัน Database Error
-            $sql = "SELECT o.order_id, o.created_at, o.order_code, p.name AS product_code, o.customer_name, o.address, o.phone, o.email, oi.quantity AS amount, o.payment_status, o.order_status
+            $sql = "SELECT o.order_id, o.created_at, o.order_code, p.name AS product_code, p.image_products, o.customer_name, o.address, o.phone, o.email, oi.quantity AS amount, o.payment_status, o.order_status
                     FROM orders o
                     JOIN order_items oi ON o.order_id = oi.order_id
                     JOIN products p ON oi.product_id = p.product_id
@@ -1068,9 +1070,9 @@ switch($action) {
         break;
 
     // ==========================================
-    // API สำหรับสร้างคำสั่งซื้อและรับสลิป (Frontend)
+    // API สำหรับสร้างคำสั่งซื้อและรับสลิป (Store)
     // ==========================================
-    case 'submit_order': // เปลี่ยนชื่อให้ตรงกับที่ JS ส่งมา
+    case 'submit_order': 
         try {
             // 1. รับค่าจาก FormData ที่หน้าเว็บส่งมา
             $fname = $_POST['fname'] ?? '';
@@ -1149,6 +1151,61 @@ switch($action) {
         }
         break;
 
+    // ==========================================
+    // API สำหรับสร้างคำสั่งซื้อตั๋วเข้างาน (Frontend Ticket)
+    // ==========================================
+    case 'create_ticket_order':
+        try {
+            $event_id = $_POST['event_id'] ?? 0;
+            $customer_name = $_POST['customer_name'] ?? '';
+            $phone = $_POST['phone'] ?? '';
+            $tickets_json = $_POST['tickets'] ?? '[]';
+            $tickets = json_decode($tickets_json, true);
+
+            if (empty($event_id) || empty($customer_name) || empty($phone) || empty($tickets)) {
+                echo json_encode(['status' => 'error', 'message' => 'ข้อมูลไม่ครบถ้วน หรือไม่ได้เลือกตั๋ว']);
+                break;
+            }
+
+            // จัดการอัปโหลดสลิป
+            $slip_path = '';
+            if (isset($_FILES['slip_file']) && $_FILES['slip_file']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = 'uploads/slips/'; 
+                if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+                $ext = strtolower(pathinfo($_FILES['slip_file']['name'], PATHINFO_EXTENSION));
+                $slip_path = $uploadDir . 'slip_ticket_' . time() . '_' . uniqid() . '.' . $ext;
+                move_uploaded_file($_FILES['slip_file']['tmp_name'], $slip_path);
+            } else {
+                throw new Exception("ไม่พบไฟล์สลิป หรือขนาดไฟล์รูปอาจจะใหญ่เกินไป");
+            }
+
+            $base_order_code = 'TK-' . date('Ymd') . '-' . rand(1000, 9999);
+
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("INSERT INTO ticket_orders (order_code, event_id, ticket_id, customer_name, address, phone, email, amount, total_price, payment_status, order_status) VALUES (?, ?, ?, ?, '', ?, '', ?, ?, ?, 'pending')");
+
+            // ลูปบันทึกข้อมูลตั๋วทีละประเภทที่เลือกซื้อ
+            foreach ($tickets as $t) {
+                $t_id = $t['ticket_id'];
+                $qty = $t['qty'];
+                $total_price = $t['price'] * $qty;
+                
+                // แก้ปัญหา order_code ซ้ำกันกรณีซื้อหลายประเภทบัตรในบิลเดียว
+                $unique_order_code = $base_order_code . '-' . $t_id; 
+
+                $stmt->execute([$unique_order_code, $event_id, $t_id, $customer_name, $phone, $qty, $total_price, $slip_path]);
+            }
+
+            $pdo->commit();
+            echo json_encode(["status" => "success", "message" => "บันทึกการจองตั๋วเรียบร้อย"]);
+        } catch (Exception $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            echo json_encode(["status" => "error", "message" => "เกิดข้อผิดพลาด: " . $e->getMessage()]);
+        }
+        break;
+
     case 'get_ticket_events':
         if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
         try {
@@ -1171,14 +1228,27 @@ switch($action) {
 
     case 'get_ticket_orders':
         if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
+        
+        // รับค่า ticket_id เพื่อทำ Filter
+        $filter_ticket_id = $_GET['ticket_id'] ?? '';
+        $whereClause = "";
+        $params = [];
+        
+        if (!empty($filter_ticket_id)) {
+            $whereClause = " WHERE t_order.ticket_id = ? ";
+            $params[] = $filter_ticket_id;
+        }
+
         try {
             $sql = "SELECT t_order.order_id, t_order.created_at, t_order.order_code, t_ticket.title AS ticket_name, e.title AS event_name,
                     t_order.customer_name, t_order.address, t_order.phone, t_order.email, t_order.amount, t_order.payment_status, t_order.order_status
                     FROM ticket_orders t_order
                     LEFT JOIN event_tickets t_ticket ON t_order.ticket_id = t_ticket.id
                     LEFT JOIN events e ON t_order.event_id = e.id
+                    $whereClause
                     ORDER BY t_order.created_at DESC";
-            $stmt = $pdo->query($sql);
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
             echo json_encode(["status" => "success", "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
         } catch (Exception $e) { echo json_encode(["status" => "error", "message" => $e->getMessage()]); }
         break;
@@ -1269,5 +1339,4 @@ switch($action) {
     default:
         echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
 }
-
 ?>
