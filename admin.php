@@ -54,6 +54,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 
                 <li><a href="#" data-target="section-forum" class="nav-link block px-6 py-3 font-semibold hover:bg-orange-100 text-gray-800">Forum Q&A</a></li>
                 <li><a href="#" data-target="section-store" class="nav-link block px-6 py-3 font-semibold hover:bg-pink-100 text-gray-800">Store & Merch</a></li>
+                
+                
+               <li>
+                    <a href="#" data-target="section-ticket" class="nav-link block px-6 py-3 font-semibold hover:bg-blue-100 text-gray-800 flex justify-between items-center">Ticket Mgt.</a>
+                    <ul class="pl-10 space-y-1 mt-1 text-sm text-gray-600">
+                        <li><a href="#" onclick="switchTab('section-ticket'); switchInnerTab('ticket-dashboard');" class="block py-1 hover:text-black">Event Dashboard</a></li>
+                        <li><a href="#" onclick="switchTab('section-ticket'); switchInnerTab('ticket-order');" class="block py-1 hover:text-black">Ticket Orders</a></li>
+                    </ul>
+                </li>
             </ul>
         </nav>
         <div class="p-4 border-t border-gray-200">
@@ -689,18 +698,20 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             <p id="forum-selection-status" class="text-sm font-medium text-gray-500 mt-4 text-right">ยังไม่ได้เลือกกระทู้</p>
         </section>
 
-       <section id="section-store" class="content-section hidden p-8 max-w-6xl mx-auto">
-            <div class="bg-pink-500 text-white p-6 flex justify-between items-center rounded-2xl shadow-sm mb-6">
-                <h2 id="store-page-title" class="text-3xl font-bold">เพิ่มสินค้า (Add Product)</h2>
+      <section id="section-store" class="content-section hidden p-8 max-w-6xl mx-auto relative">
+            <input type="file" id="global-slip-upload" class="hidden" accept="image/*" onchange="uploadSlipFile(this)">
+
+            <div class="bg-pink-500 text-white text-3xl font-bold p-6 rounded-2xl mb-6 shadow-sm flex justify-between items-center">
+                <span id="store-page-title">Store & Merch</span>
             </div>
 
             <div class="flex w-full rounded-xl overflow-hidden border border-gray-300 mb-6 shadow-sm">
-                <button id="btn-store-product" onclick="switchStoreTab('product')" class="flex-1 py-3 bg-pink-500 text-white font-bold transition">เพิ่มสินค้า</button>
-                <button id="btn-store-stock" onclick="switchStoreTab('stock')" class="flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200">จัดการสต๊อก (Stock)</button>
-                <button id="btn-store-order" onclick="switchStoreTab('order')" class="flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200">รายการสั่งซื้อ (Order)</button>
+                <button id="btn-inner-product" onclick="switchInnerTab('product')" class="flex-1 py-3 bg-pink-500 text-white font-bold transition">เพิ่มสินค้า</button>
+                <button id="btn-inner-stock" onclick="switchInnerTab('stock')" class="flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200">จัดการสต๊อก (Stock)</button>
+                <button id="btn-inner-order" onclick="switchInnerTab('order')" class="flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200">รายการสั่งซื้อ (Order)</button>
             </div>
 
-            <div id="tab-store-product" class="store-tab-content bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+            <div id="tab-inner-product" class="inner-tab-content bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
                 <input type="file" id="store-upload-banner" accept="image/*" class="hidden" onchange="previewStoreBanner(this)">
                 <input type="file" id="store-upload-images" accept="image/*" multiple class="hidden" onchange="handleStoreImages(this)">
 
@@ -733,7 +744,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 </div>
             </div>
 
-            <div id="tab-store-stock" class="store-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div id="tab-inner-stock" class="inner-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-gray-100 border-b border-gray-200">
                         <tr><th class="p-4 w-16 text-center">No.</th><th class="p-4">สินค้า (Product)</th><th class="p-4 text-center">คงเหลือ (Balance)</th><th class="p-4 text-center">จัดการ</th></tr>
@@ -742,12 +753,44 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 </table>
             </div>
 
-            <div id="tab-store-order" class="store-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                <table class="w-full text-left border-collapse text-sm">
+            <div id="tab-inner-order" class="inner-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-center text-xs">
                     <thead class="bg-gray-100 border-b border-gray-200">
-                        <tr><th class="p-4">วันที่ / เวลา</th><th class="p-4">รหัส Order</th><th class="p-4">ลูกค้า</th><th class="p-4 text-center">จำนวน</th><th class="p-4 text-center">Payment</th><th class="p-4 text-center">Status</th></tr>
+                        <tr class="font-bold">
+                            <th class="px-2 py-3">Time</th><th class="px-2 py-3">Order Code</th><th class="px-2 py-3">Product</th>
+                            <th class="px-2 py-3">Customer</th><th class="px-2 py-3 max-w-[100px]">Address</th><th class="px-2 py-3">Phone</th>
+                            <th class="px-2 py-3">Amount</th><th class="px-2 py-3 w-28">Payment Slip</th><th class="px-2 py-3 w-24">Status</th>
+                        </tr>
                     </thead>
                     <tbody id="store-order-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="section-ticket" class="content-section hidden p-8 max-w-6xl mx-auto">
+            <div class="bg-blue-600 text-white text-3xl font-bold p-6 rounded-2xl mb-6 shadow-sm flex justify-between items-center">
+                <span id="ticket-page-title">Event Dashboard</span>
+            </div>
+
+            <div class="flex w-full rounded-xl overflow-hidden border border-gray-300 mb-6 shadow-sm">
+                <button id="btn-inner-ticket-dashboard" onclick="switchInnerTab('ticket-dashboard')" class="flex-1 py-3 bg-blue-600 text-white font-bold transition">Event Dashboard</button>
+                <button id="btn-inner-ticket-order" onclick="switchInnerTab('ticket-order')" class="flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200">Ticket Orders</button>
+            </div>
+
+            <div id="tab-inner-ticket-dashboard" class="inner-tab-content">
+                <div id="ticket-events-list" class="space-y-4"></div>
+            </div>
+
+            <div id="tab-inner-ticket-order" class="inner-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-center text-xs">
+                    <thead class="bg-gray-100 border-b border-gray-200">
+                        <tr class="font-bold">
+                            <th class="px-2 py-3">Time</th><th class="px-2 py-3">Order Code</th><th class="px-2 py-3">Event / Ticket</th>
+                            <th class="px-2 py-3">Customer</th><th class="px-2 py-3 max-w-[100px]">Address</th><th class="px-2 py-3">Phone</th>
+                            <th class="px-2 py-3">Amount</th><th class="px-2 py-3 w-28">Payment Slip</th><th class="px-2 py-3 w-24">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ticket-order-tbody"></tbody>
                 </table>
             </div>
         </section>
@@ -949,6 +992,8 @@ window.changeLayout = (selectEl) => {
     };
 
 </script>
-
+<div id="slip-modal" class="hidden fixed inset-0 bg-black/80 z-[200] flex justify-center items-center py-4 backdrop-blur-sm" onclick="closeSlipModal()">
+        <img id="slip-full-image" src="" class="max-w-[90%] max-h-[90vh] object-contain rounded-lg shadow-2xl cursor-zoom-out bg-white p-2">
+    </div>
 </body>
 </html>
