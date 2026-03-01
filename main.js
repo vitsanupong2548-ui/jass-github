@@ -85,11 +85,9 @@ async function loadFrontendMusicians() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // รอจนกว่าไฟล์ HTML ย่อยทั้งหมดโหลดเสร็จสมบูรณ์
     await initFrontend();
     loadFrontendMusicians();
 
-    // 🌟 เปลี่ยนสีปุ่มภาษา
     const langBtns = document.querySelectorAll('.front-lang-btn');
     langBtns.forEach(b => {
         const btnLang = b.textContent.trim().toLowerCase();
@@ -483,9 +481,8 @@ window.applyDataToDOM = async function(container) {
                         e.stopPropagation();
 
                         if (!window.isUserLoggedIn) {
-                            document.getElementById('login-form-container')?.classList.remove('hidden');
-                            document.getElementById('register-form-container')?.classList.add('hidden');
-                            document.getElementById('auth-modal')?.classList.remove('hidden');
+                            // ใช้ระบบ Alert แบบใหม่ที่มี Callback ป้องกัน Modal ซ้อนกัน
+                            window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนดูรายละเอียดคอร์สครับ!' : 'Please login to view course details!');
                             return; 
                         }
 
@@ -559,20 +556,7 @@ window.applyDataToDOM = async function(container) {
                                             }
                                             detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${rawCode}</div>`;
                                         
-                                        } else if (item.type === 'embed') {
-                                            // Embed ของโซเชียลอื่นๆ
-                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${item.value}</div>`;
-                                        } else if (item.type === 'iframe') {
-                                            // iFrame 
-                                            let rawCode = item.value;
-                                            if(rawCode.includes('<iframe')) {
-                                                rawCode = rawCode.replace(/width="[^"]*"/, 'width="100%"');
-                                                // ให้ความสูงปรับตามอัตโนมัติ (min-height) แทน
-                                                if (!rawCode.includes('height=')) rawCode = rawCode.replace('<iframe', '<iframe style="min-height: 500px;"');
-                                            }
-                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${rawCode}</div>`;
-                                        }
-                                        else if (item.type === 'embed' || item.type === 'iframe') {
+                                        } else if (item.type === 'embed' || item.type === 'iframe') {
                                             let rawCode = item.value;
                                             // ปรับขนาด iframe ให้อัตโนมัติและไม่ล้นจอ
                                             if(rawCode.includes('<iframe')) {
@@ -706,7 +690,7 @@ window.applyDataToDOM = async function(container) {
 
         let html = '';
         if(window.courseReviewsData.length === 0) {
-            html = '<p class="text-white/60 italic">ยังไม่มีรีวิว</p>';
+            html = window.currentLang === 'th' ? '<p class="text-white/60 italic">ยังไม่มีรีวิว</p>' : '<p class="text-white/60 italic">No reviews yet</p>';
             if(pageContainer) pageContainer.innerHTML = '';
         } else {
             const startIndex = (window.courseReviewCurrentPage - 1) * COURSE_REVIEWS_PER_PAGE;
@@ -847,11 +831,11 @@ window.applyDataToDOM = async function(container) {
                                         }
                                     });
                                 } else {
-                                     detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">ยังไม่มีรายละเอียด (คุณสามารถเพิ่มได้ที่หน้า Admin -> Page Builder)</div>`;
+                                     detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">${window.currentLang === 'th' ? 'ยังไม่มีรายละเอียด' : 'No details available'}</div>`;
                                 }
                             } catch(e) {}
                         } else {
-                            detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">ยังไม่มีรายละเอียด (คุณสามารถเพิ่มได้ที่หน้า Admin -> Page Builder)</div>`;
+                            detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">${window.currentLang === 'th' ? 'ยังไม่มีรายละเอียด' : 'No details available'}</div>`;
                         }
                         detailsHtml += '</div>';
 
@@ -915,7 +899,7 @@ window.applyDataToDOM = async function(container) {
     }
 
     // --------------------------------------------------
-    // D. 🌟 ส่วนของ Forum Q&A (ดึงข้อมูลทันทีที่เปิดการ์ด)
+    // D. 🌟 ส่วนของ Forum Q&A
     // --------------------------------------------------
     const isForum = container.querySelector('#forum-questions-list');
     if (isForum) {
@@ -930,7 +914,7 @@ window.applyDataToDOM = async function(container) {
     const isStore = container.querySelector('#dynamic-store-grid');
     if (isStore) {
         if(typeof window.loadFrontendStoreProducts === 'function') {
-            window.loadFrontendStoreProducts();
+            window.loadFrontendStoreProducts(container); // ส่ง container เข้าไปเพื่อแก้บั๊กคลิกไม่ติด
         }
     }
 };
@@ -991,7 +975,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const submitBtn = loginForm.querySelector('button[type="submit"]');
             
             errorMsg.classList.add('hidden');
-            submitBtn.textContent = 'Logging in...'; 
+            submitBtn.textContent = window.currentLang === 'th' ? 'กำลังเข้าสู่ระบบ...' : 'Logging in...'; 
             submitBtn.disabled = true;
             
             const formData = new FormData();
@@ -1018,10 +1002,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     errorMsg.classList.remove('hidden');
                 }
             } catch(err) {
-                errorMsg.textContent = "Cannot connect to server.";
+                errorMsg.textContent = window.currentLang === 'th' ? "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้" : "Cannot connect to server.";
                 errorMsg.classList.remove('hidden');
             } finally {
-                submitBtn.textContent = 'Log In';
+                submitBtn.textContent = window.currentLang === 'th' ? 'เข้าสู่ระบบ' : 'Log In';
                 submitBtn.disabled = false;
             }
         });
@@ -1036,7 +1020,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const submitBtn = regForm.querySelector('button[type="submit"]');
             
             msgEl.classList.remove('hidden', 'text-red-500', 'text-green-500');
-            submitBtn.textContent = 'Signing up...';
+            submitBtn.textContent = window.currentLang === 'th' ? 'กำลังสมัครสมาชิก...' : 'Signing up...';
             submitBtn.disabled = true;
             
             const formData = new FormData();
@@ -1049,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const result = await res.json();
                 
                 if (result.status === 'success') {
-                    msgEl.textContent = result.message || "สมัครสมาชิกสำเร็จ! กำลังพาท่านไปหน้าเข้าสู่ระบบ...";
+                    msgEl.textContent = result.message || (window.currentLang === 'th' ? "สมัครสมาชิกสำเร็จ! กำลังพาท่านไปหน้าเข้าสู่ระบบ..." : "Registration successful! Redirecting to login...");
                     msgEl.classList.add('text-green-500');
                     regForm.reset();
                     setTimeout(() => showLoginBtn.click(), 2000);
@@ -1058,10 +1042,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     msgEl.classList.add('text-red-500');
                 }
             } catch(err) {
-                msgEl.textContent = "Cannot connect to server.";
+                msgEl.textContent = window.currentLang === 'th' ? "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้" : "Cannot connect to server.";
                 msgEl.classList.add('text-red-500');
             } finally {
-                submitBtn.textContent = 'Sign Up';
+                submitBtn.textContent = window.currentLang === 'th' ? 'สมัครสมาชิก' : 'Sign Up';
                 submitBtn.disabled = false;
             }
         });
@@ -1072,14 +1056,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 // 8. ระบบ Forum Q&A (สมบูรณ์แบบ + แปลภาษา 100%)
 // ==========================================
 
-window.showCustomAlert = function(message) {
+// 🌟 อัปเดต: เพิ่ม onClose Callback เพื่อแก้ปัญหาหน้าต่างซ้อนทับกัน
+window.showCustomAlert = function(message, onClose = null) {
     const existing = document.getElementById('custom-alert-modal');
     if (existing) existing.remove();
     const modal = document.createElement('div');
     modal.id = 'custom-alert-modal';
     modal.className = 'fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4';
-    modal.innerHTML = `<div class="bg-[#1a1a1a] border border-white/20 p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center"><div class="text-3xl mb-4">🔔</div><p class="text-white text-base font-medium mb-8 whitespace-pre-line">${message}</p><button class="bg-[#EF5F4D] hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full transition w-full shadow-lg" onclick="this.closest('#custom-alert-modal').remove()">OK</button></div>`;
+    modal.innerHTML = `
+        <div class="bg-[#1a1a1a] border border-white/20 p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center">
+            <div class="text-3xl mb-4">🔔</div>
+            <p class="text-white text-base font-medium mb-8 whitespace-pre-line">${message}</p>
+            <button class="btn-ok-alert bg-[#EF5F4D] hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full transition w-full shadow-lg">OK</button>
+        </div>`;
     document.body.appendChild(modal);
+
+    modal.querySelector('.btn-ok-alert').addEventListener('click', () => {
+        modal.remove();
+        if (typeof onClose === 'function') onClose();
+    });
 }
 
 window.showCustomConfirm = function(message, onConfirm) {
@@ -1093,6 +1088,18 @@ window.showCustomConfirm = function(message, onConfirm) {
     modal.querySelector('.btn-cancel').addEventListener('click', () => modal.remove());
     modal.querySelector('.btn-confirm').addEventListener('click', () => { modal.remove(); if (onConfirm) onConfirm(); });
 }
+
+// 🌟 ฟังก์ชันรวมสำหรับเช็ค Login (ลดความซ้ำซ้อน)
+window.requireLogin = function(message) {
+    if (window.isUserLoggedIn) return true;
+    
+    window.showCustomAlert(message, () => {
+        document.getElementById('login-form-container')?.classList.remove('hidden');
+        document.getElementById('register-form-container')?.classList.add('hidden');
+        document.getElementById('auth-modal')?.classList.remove('hidden');
+    });
+    return false;
+};
 
 window.forumTopicsData = [];
 window.topicCurrentPage = 1;
@@ -1271,7 +1278,9 @@ window.loadForumTopicDetail = async function(topicId) {
 
             renderForumComments();
             if(typeof window.translateUI === 'function') window.translateUI();
-        } else { showCustomAlert('ไม่พบกระทู้นี้ หรืออาจจะถูกลบไปแล้ว'); }
+        } else { 
+            window.showCustomAlert(window.currentLang === 'th' ? 'ไม่พบกระทู้นี้ หรืออาจจะถูกลบไปแล้ว' : 'Topic not found or has been deleted.'); 
+        }
     } catch(e) {}
 }
 
@@ -1331,10 +1340,8 @@ if (!window.forumClickListenerActive) {
         const likeBtn = e.target.closest('.btn-like-comment');
         if (likeBtn && !likeBtn.disabled) {
             e.preventDefault();
-            if (!window.isUserLoggedIn || !window.currentUserId) {
-                showCustomAlert(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนกดถูกใจความคิดเห็นครับ!' : 'Please login to like comments!');
-                return;
-            }
+            if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนกดถูกใจความคิดเห็นครับ!' : 'Please login to like comments!')) return;
+            
             const commentId = likeBtn.getAttribute('data-id');
             const countSpan = likeBtn.querySelector('.like-count');
             const storageKey = `liked_comment_${commentId}_user_${window.currentUserId}`;
@@ -1368,13 +1375,8 @@ if (!window.forumClickListenerActive) {
 
         if (e.target.closest('#dyn-forum_btn_write_comment')) {
             e.preventDefault();
-            if (!window.isUserLoggedIn) {
-                showCustomAlert(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็นครับ!' : 'Please login first!');
-                document.getElementById('login-form-container')?.classList.remove('hidden');
-                document.getElementById('register-form-container')?.classList.add('hidden');
-                document.getElementById('auth-modal')?.classList.remove('hidden');
-                return;
-            }
+            if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็นครับ!' : 'Please login first!')) return;
+            
             document.getElementById('forum-comment-box-container').classList.remove('hidden');
             e.target.closest('#dyn-forum_btn_write_comment').classList.add('hidden');
             document.getElementById('dyn-forum_input_comment').focus();
@@ -1410,10 +1412,10 @@ if (!window.forumClickListenerActive) {
             const newImg = document.getElementById('edit-forum-image');
             const newVid = document.getElementById('edit-forum-video');
 
-            if (!newTitle || !newContent) { showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : 'Please fill all fields'); return; }
+            if (!newTitle || !newContent) { window.showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : 'Please fill all fields.'); return; }
 
             const originalText = saveEditBtn.textContent;
-            saveEditBtn.textContent = 'Saving...';
+            saveEditBtn.textContent = window.currentLang === 'th' ? 'กำลังบันทึก...' : 'Saving...';
             saveEditBtn.disabled = true;
 
             const fd = new FormData();
@@ -1427,16 +1429,16 @@ if (!window.forumClickListenerActive) {
                 const res = await fetch('backend.php?action=edit_forum_topic', { method: 'POST', body: fd });
                 const result = await res.json();
                 if (result.status === 'success') loadForumTopicDetail(topicId); 
-                else showCustomAlert('Error: ' + result.message);
-            } catch (err) { showCustomAlert('อัปโหลดล้มเหลว ตรวจสอบขนาดไฟล์'); } 
+                else window.showCustomAlert('Error: ' + result.message);
+            } catch (err) { window.showCustomAlert(window.currentLang === 'th' ? 'อัปโหลดล้มเหลว ตรวจสอบขนาดไฟล์' : 'Upload failed. Please check file size.'); } 
             finally { saveEditBtn.textContent = originalText; saveEditBtn.disabled = false; }
         }
 
         const deleteTopicBtn = e.target.closest('#btn-delete-topic');
         if (deleteTopicBtn) {
             e.preventDefault();
-            const msg = window.currentLang === 'th' ? 'คุณแน่ใจหรือไม่ที่จะลบกระทู้นี้?\n(คอมเมนต์ทั้งหมดจะถูกลบถาวร)' : 'Are you sure you want to delete this topic?';
-            showCustomConfirm(msg, async () => {
+            const msg = window.currentLang === 'th' ? 'คุณแน่ใจหรือไม่ที่จะลบกระทู้นี้?\n(คอมเมนต์ทั้งหมดจะถูกลบถาวร)' : 'Are you sure you want to delete this topic?\n(All comments will be permanently deleted)';
+            window.showCustomConfirm(msg, async () => {
                 const topicId = deleteTopicBtn.getAttribute('data-topic-id');
                 const fd = new FormData();
                 fd.append('topic_id', topicId);
@@ -1445,12 +1447,12 @@ if (!window.forumClickListenerActive) {
                     const res = await fetch('backend.php?action=delete_own_forum_topic', { method: 'POST', body: fd });
                     const result = await res.json();
                     if (result.status === 'success') {
-                        showCustomAlert(window.currentLang === 'th' ? 'ลบกระทู้เรียบร้อยแล้ว' : 'Topic deleted');
+                        window.showCustomAlert(window.currentLang === 'th' ? 'ลบกระทู้เรียบร้อยแล้ว' : 'Topic deleted successfully.');
                         document.getElementById('forum-detail-view').classList.add('hidden');
                         document.getElementById('forum-main-view').classList.remove('hidden');
                         loadForumTopics(); 
-                    } else { showCustomAlert('Error: ' + result.message); }
-                } catch (err) { showCustomAlert('Connection Error'); }
+                    } else { window.showCustomAlert('Error: ' + result.message); }
+                } catch (err) { window.showCustomAlert(window.currentLang === 'th' ? 'ข้อผิดพลาดในการเชื่อมต่อ' : 'Connection Error'); }
             });
         }
 
@@ -1461,7 +1463,7 @@ if (!window.forumClickListenerActive) {
         if (postBtn) {
             e.preventDefault();
             if (window.isPostingTopic) return; 
-            if (!window.isUserLoggedIn) { showCustomAlert(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนตั้งคำถามครับ!' : 'Please login first!'); return; }
+            if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนตั้งคำถามครับ!' : 'Please login before posting a topic!')) return;
 
             const container = postBtn.closest('.bg-white\\/20');
             const titleInput = container.querySelector('#dyn-forum_input_title'); 
@@ -1469,11 +1471,11 @@ if (!window.forumClickListenerActive) {
             const imgInput = container.querySelector('#forum-image-input'); 
             const vidInput = container.querySelector('#forum-video-input');
 
-            if (!titleInput.value.trim() || !contentInput.value.trim()) { showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกหัวข้อและรายละเอียดให้ครบถ้วน' : 'Please fill all fields'); return; }
+            if (!titleInput.value.trim() || !contentInput.value.trim()) { window.showCustomAlert(window.currentLang === 'th' ? 'กรุณากรอกหัวข้อและรายละเอียดให้ครบถ้วน' : 'Please fill all fields.'); return; }
 
             window.isPostingTopic = true;
             const originalText = postBtn.textContent;
-            postBtn.textContent = 'Posting...'; postBtn.disabled = true;
+            postBtn.textContent = window.currentLang === 'th' ? 'กำลังโพสต์...' : 'Posting...'; postBtn.disabled = true;
 
             const fd = new FormData();
             fd.append('title', titleInput.value); fd.append('content', contentInput.value);
@@ -1488,8 +1490,8 @@ if (!window.forumClickListenerActive) {
                     if(imgInput) imgInput.value = ''; if(vidInput) vidInput.value = '';
                     const preview = document.getElementById('forum-media-preview'); if(preview) preview.classList.add('hidden');
                     loadForumTopics(); 
-                } else { showCustomAlert('เกิดข้อผิดพลาด: ' + result.message); }
-            } catch(err) { showCustomAlert('อัปโหลดล้มเหลว ลองตรวจสอบขนาดไฟล์'); } 
+                } else { window.showCustomAlert((window.currentLang === 'th' ? 'เกิดข้อผิดพลาด: ' : 'Error: ') + result.message); }
+            } catch(err) { window.showCustomAlert(window.currentLang === 'th' ? 'อัปโหลดล้มเหลว ลองตรวจสอบขนาดไฟล์' : 'Upload failed. Please check file size.'); } 
             finally { postBtn.textContent = originalText; postBtn.disabled = false; window.isPostingTopic = false; }
         }
 
@@ -1509,7 +1511,7 @@ if (!window.forumClickListenerActive) {
         if (replyBtn) {
             e.preventDefault();
             if (window.isPostingReply) return; 
-            if (!window.isUserLoggedIn) { showCustomAlert(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อน!' : 'Please login!'); return; }
+            if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อน!' : 'Please login first!')) return;
             
             const commentInput = document.getElementById('dyn-forum_input_comment');
             const commentText = commentInput.value.trim();
@@ -1519,7 +1521,7 @@ if (!window.forumClickListenerActive) {
 
             window.isPostingReply = true;
             const originalText = replyBtn.textContent;
-            replyBtn.textContent = 'Sending...'; replyBtn.disabled = true;
+            replyBtn.textContent = window.currentLang === 'th' ? 'กำลังส่ง...' : 'Sending...'; replyBtn.disabled = true;
 
             const fd = new FormData();
             fd.append('topic_id', topicId); fd.append('comment_text', commentText);
@@ -1564,14 +1566,14 @@ if (!window.forumClickListenerActive) {
         if (e.target && e.target.id === 'edit-forum-image') {
             const nameSpan = document.getElementById('edit-img-name');
             if(e.target.files.length > 0) {
-                nameSpan.textContent = "✔ เลือก: " + e.target.files[0].name;
+                nameSpan.textContent = (window.currentLang === 'th' ? "✔ เลือก: " : "✔ Selected: ") + e.target.files[0].name;
                 nameSpan.classList.replace('text-white/70', 'text-green-300');
             }
         }
         if (e.target && e.target.id === 'edit-forum-video') {
             const nameSpan = document.getElementById('edit-vid-name');
             if(e.target.files.length > 0) {
-                nameSpan.textContent = "✔ เลือก: " + e.target.files[0].name;
+                nameSpan.textContent = (window.currentLang === 'th' ? "✔ เลือก: " : "✔ Selected: ") + e.target.files[0].name;
                 nameSpan.classList.replace('text-white/70', 'text-green-300');
             }
         }
@@ -1581,34 +1583,39 @@ if (!window.forumClickListenerActive) {
 }
 
 // ==========================================
-// 9. ระบบ Store & Merch (ดึงสินค้าหน้าบ้าน)
+// 9. ระบบ Store & Merch (Cart + Wishlist)
 // ==========================================
-window.loadFrontendStoreProducts = async function() {
-    const grid = document.getElementById('dynamic-store-grid');
+
+window.frontendStoreProductsData = []; 
+window.currentViewingProductId = null; 
+
+// ฟังก์ชันโหลดข้อมูลและวาดการ์ด
+window.loadFrontendStoreProducts = async function(container = document) {
+    const grid = container.querySelector('#dynamic-store-grid');
     if (!grid) return;
 
     try {
-        grid.innerHTML = '<div class="col-span-full text-center py-20 font-bold text-black/50">กำลังโหลดสินค้า...</div>';
+        grid.innerHTML = `<div class="col-span-full text-center py-20 font-bold text-black/50">${window.currentLang === 'th' ? 'กำลังโหลดสินค้า...' : 'Loading products...'}</div>`;
         
-        // ดึงข้อมูลจาก backend
         const response = await fetch('backend.php?action=get_store_stock');
         const result = await response.json();
 
         if (result.status === 'success') {
             const products = result.data;
-            grid.innerHTML = ''; // เคลียร์ข้อความโหลด
+            window.frontendStoreProductsData = products; 
+            grid.innerHTML = ''; 
 
-            // กรองเฉพาะสินค้าที่ยังเปิดขายและมีสต๊อก
             const availableProducts = products.filter(p => p.sale_status === 'open' && p.stock_balance > 0);
 
             if (availableProducts.length === 0) {
-                grid.innerHTML = '<div class="col-span-full text-center py-20 font-bold text-black/50">ยังไม่มีสินค้าจำหน่ายในขณะนี้</div>';
+                grid.innerHTML = `<div class="col-span-full text-center py-20 font-bold text-black/50">${window.currentLang === 'th' ? 'ยังไม่มีสินค้าจำหน่ายในขณะนี้' : 'No products available at the moment.'}</div>`;
                 return;
             }
 
-            // วนลูปสร้างการ์ดสินค้า
+            // ดึงข้อมูล Wishlist ปัจจุบันจาก Storage
+            const wishlist = JSON.parse(localStorage.getItem('jazz_store_wishlist')) || [];
+
             availableProducts.forEach(p => {
-                // ดึงรูปแรกออกมาจาก JSON
                 let imageUrl = 'https://placehold.co/300x300/efefef/000?text=No+Image';
                 if (p.image_products) {
                     try {
@@ -1617,18 +1624,27 @@ window.loadFrontendStoreProducts = async function() {
                     } catch (e) {}
                 }
 
-                // แปลงราคาให้เป็นฟอร์แมต 450.-
                 const formattedPrice = parseFloat(p.price).toLocaleString() + '.-';
+                
+                // เช็คว่าสินค้านี้อยู่ใน Wishlist หรือไม่ (เปลี่ยนสีหัวใจ)
+                const isWished = wishlist.includes(p.product_id.toString());
+                const heartColorClass = isWished ? 'text-red-500' : 'text-gray-300 hover:text-red-400';
+                const heartFill = isWished ? 'currentColor' : 'none';
 
-                // สร้าง HTML ของการ์ด 1 ใบ
                 const card = document.createElement('div');
-                card.className = 'bg-black text-white rounded-2xl overflow-hidden shadow-lg relative flex flex-col group h-[280px]'; 
+                card.className = 'bg-black text-white rounded-2xl overflow-hidden shadow-lg relative flex flex-col group h-[280px] cursor-pointer hover:shadow-2xl transition transform hover:-translate-y-1'; 
+                
+                card.onclick = function(e) {
+                    // ถ้าคลิกโดนปุ่มหัวใจ ให้ข้ามการเปิด Detail View
+                    if(e.target.closest('.btn-wishlist-toggle')) return;
+                    window.showStoreProductDetail(p.product_id, this);
+                };
                 
                 card.innerHTML = `
                     <div class="relative bg-white h-2/3 flex items-center justify-center overflow-hidden p-4">
                         <img src="${imageUrl}" alt="${p.name}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
-                        <button class="absolute top-3 right-3 text-gray-300 hover:text-red-500 transition z-10">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        <button class="btn-wishlist-toggle absolute top-3 right-3 transition z-10 ${heartColorClass}" data-id="${p.product_id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 heart-icon" fill="${heartFill}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                         </button>
                     </div>
                     <div class="p-4 h-1/3 flex flex-col justify-between relative">
@@ -1637,10 +1653,7 @@ window.loadFrontendStoreProducts = async function() {
                             <span class="font-bold text-[15px] whitespace-nowrap text-[#fa87ce]">${formattedPrice}</span>
                         </div>
                         <div class="flex justify-between items-end mt-1">
-                            <p class="text-[10px] text-gray-400 line-clamp-1 w-3/4">${p.description || 'Exclusive merchandise'}</p>
-                            <button class="text-white hover:text-[#fa87ce] transition shrink-0 cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
-                            </button>
+                            <p class="text-[10px] text-gray-400 line-clamp-1 w-3/4">${p.description || ''}</p>
                         </div>
                     </div>
                 `;
@@ -1649,6 +1662,389 @@ window.loadFrontendStoreProducts = async function() {
         }
     } catch (error) {
         console.error('Error fetching store products:', error);
-        grid.innerHTML = '<div class="col-span-full text-center py-20 font-bold text-red-600">เกิดข้อผิดพลาดในการโหลดข้อมูล กรุณาลองใหม่</div>';
+        grid.innerHTML = `<div class="col-span-full text-center py-20 font-bold text-red-600">${window.currentLang === 'th' ? 'เกิดข้อผิดพลาดในการโหลดข้อมูล' : 'Error loading data.'}</div>`;
     }
-}
+};
+
+window.showStoreProductDetail = function(productId, clickedCardElement) {
+    const activeContainer = window.activeClone || document;
+    
+    const mainView = activeContainer.querySelector('#store-main-view');
+    const detailView = activeContainer.querySelector('#store-detail-view');
+    
+    if (!mainView || !detailView) return;
+    
+    const product = window.frontendStoreProductsData.find(p => p.product_id == productId);
+    if (!product) return;
+
+    window.currentViewingProductId = productId;
+
+    let imageUrl = 'https://placehold.co/600x800/efefef/000?text=No+Image';
+    if (product.image_products) {
+        try {
+            const images = JSON.parse(product.image_products);
+            if (images.length > 0) imageUrl = images[0]; 
+        } catch (e) {}
+    }
+    const bannerUrl = product.image_banner || 'https://placehold.co/1200x400/e06f64/fff?text=Store+Banner';
+
+    activeContainer.querySelector('#detail-banner-img').src = bannerUrl;
+    activeContainer.querySelector('#detail-product-img').src = imageUrl;
+    activeContainer.querySelector('#detail-product-name').textContent = product.name;
+    activeContainer.querySelector('#detail-product-price').innerHTML = `${parseFloat(product.price).toLocaleString()}.- <span class="text-lg font-medium text-gray-600">${window.currentLang === 'th' ? '/ 1 ชิ้น' : '/ 1 Item'}</span>`;
+    activeContainer.querySelector('#detail-product-desc').innerHTML = product.description ? product.description.replace(/\n/g, '<br>') : (window.currentLang === 'th' ? 'ไม่มีรายละเอียดสินค้า' : 'No description available.');
+
+    // อัปเดตสถานะปุ่มหัวใจในหน้า Detail
+    const wishlistBtn = activeContainer.querySelector('#detail-wishlist-btn');
+    if (wishlistBtn) {
+        wishlistBtn.setAttribute('data-id', productId);
+        const wishlist = JSON.parse(localStorage.getItem('jazz_store_wishlist')) || [];
+        const isWished = wishlist.includes(productId.toString());
+        const svg = wishlistBtn.querySelector('.heart-icon');
+        if(isWished) {
+            wishlistBtn.classList.replace('text-gray-400', 'text-red-500');
+            svg.setAttribute('fill', 'currentColor');
+        } else {
+            wishlistBtn.classList.replace('text-red-500', 'text-gray-400');
+            svg.setAttribute('fill', 'none');
+        }
+    }
+
+    const qtyInput = activeContainer.querySelector('#detail-qty-input');
+    if(qtyInput) qtyInput.value = 1;
+
+    // ซ่อนปุ่มระบบ
+    const sysNavBtns = activeContainer.querySelectorAll('.nav-btn, .close-btn');
+    sysNavBtns.forEach(btn => btn.style.display = 'none');
+
+    mainView.classList.add('hidden');
+    detailView.classList.remove('hidden');
+    detailView.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.hideStoreProductDetail = function() {
+    const activeContainer = window.activeClone || document;
+    const mainView = activeContainer.querySelector('#store-main-view');
+    const detailView = activeContainer.querySelector('#store-detail-view');
+    
+    if (mainView && detailView) {
+        detailView.classList.add('hidden');
+        mainView.classList.remove('hidden');
+        window.currentViewingProductId = null; 
+        
+        // เปิดปุ่มระบบกลับมา
+        const sysNavBtns = activeContainer.querySelectorAll('.nav-btn, .close-btn');
+        sysNavBtns.forEach(btn => btn.style.display = '');
+    }
+};
+
+// ==========================================
+// 🌟 ระบบวาดข้อมูลลงตะกร้า (Render Cart)
+// ==========================================
+window.renderCartItems = function() {
+    const activeContainer = window.activeClone || document;
+    const cartContainer = activeContainer.querySelector('#cart-items-container');
+    const totalEl = activeContainer.querySelector('#cart-total-price');
+    if(!cartContainer || !totalEl) return;
+
+    let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
+    cartContainer.innerHTML = '';
+    let totalPrice = 0;
+
+    if (cart.length === 0) {
+        cartContainer.innerHTML = `<div class="text-center py-12 text-gray-400 font-bold text-xl border-2 border-dashed border-gray-200 rounded-2xl">${window.currentLang === 'th' ? 'ไม่มีสินค้าในตะกร้า' : 'Your cart is empty.'}</div>`;
+        totalEl.textContent = '0.-';
+        return;
+    }
+
+    cart.forEach((item, index) => {
+        const itemTotal = parseFloat(item.price) * parseInt(item.qty);
+        totalPrice += itemTotal;
+
+        const img = item.image || 'https://placehold.co/100x100/efefef/000?text=No+Img';
+        const itemLabel = window.currentLang === 'th' ? '/ ชิ้น' : '/ Item';
+        
+        cartContainer.innerHTML += `
+            <div class="flex flex-col sm:flex-row items-center gap-6 p-4 bg-white border border-gray-200 shadow-sm rounded-2xl relative">
+                <img src="${img}" class="w-24 h-24 object-cover rounded-xl bg-gray-100">
+                <div class="flex-1 text-center sm:text-left">
+                    <h3 class="text-xl font-bold text-black uppercase mb-1">${item.name}</h3>
+                    <p class="text-gray-500 font-medium">${parseFloat(item.price).toLocaleString()}.- ${itemLabel}</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center bg-gray-100 rounded-lg text-black font-bold h-10 overflow-hidden border border-gray-300">
+                        <button class="w-10 h-full hover:bg-gray-200 transition btn-cart-qty-change" data-index="${index}" data-change="-1">-</button>
+                        <span class="w-10 text-center">${item.qty}</span>
+                        <button class="w-10 h-full hover:bg-gray-200 transition btn-cart-qty-change" data-index="${index}" data-change="1">+</button>
+                    </div>
+                    <div class="w-24 text-right text-xl font-bold text-[#fa87ce]">${itemTotal.toLocaleString()}.-</div>
+                </div>
+                <button class="absolute top-2 right-2 sm:relative sm:top-0 sm:right-0 text-gray-400 hover:text-red-500 transition btn-cart-remove" data-index="${index}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+            </div>
+        `;
+    });
+
+    totalEl.textContent = `${totalPrice.toLocaleString()}.-`;
+};
+
+// ==========================================
+// 🌟 ระบบวาดข้อมูลลง Wishlist
+// ==========================================
+window.renderWishlistItems = function() {
+    const activeContainer = window.activeClone || document;
+    const wishlistContainer = activeContainer.querySelector('#wishlist-items-grid');
+    if(!wishlistContainer || window.frontendStoreProductsData.length === 0) return;
+
+    const wishlistIds = JSON.parse(localStorage.getItem('jazz_store_wishlist')) || [];
+    wishlistContainer.innerHTML = '';
+
+    if (wishlistIds.length === 0) {
+        wishlistContainer.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400 font-bold text-xl border-2 border-dashed border-gray-200 rounded-2xl">${window.currentLang === 'th' ? 'ไม่มีรายการโปรดในขณะนี้' : 'No items in your wishlist.'}</div>`;
+        return;
+    }
+
+    wishlistIds.forEach(id => {
+        const p = window.frontendStoreProductsData.find(prod => prod.product_id == id);
+        if (!p) return;
+
+        let imageUrl = 'https://placehold.co/300x300/efefef/000?text=No+Image';
+        if (p.image_products) { try { const images = JSON.parse(p.image_products); if (images.length > 0) imageUrl = images[0]; } catch (e) {} }
+
+        const formattedPrice = parseFloat(p.price).toLocaleString() + '.-';
+
+        const card = document.createElement('div');
+        card.className = 'bg-black text-white rounded-2xl overflow-hidden shadow-lg relative flex flex-col group h-[280px] cursor-pointer hover:shadow-2xl transition transform hover:-translate-y-1'; 
+        
+        card.onclick = function(e) {
+            if(e.target.closest('.btn-wishlist-toggle')) return;
+            // ปิด Wishlist แล้วไปเปิด Detail
+            activeContainer.querySelector('#store-wishlist-view').classList.add('hidden');
+            window.showStoreProductDetail(p.product_id, this);
+        };
+        
+        card.innerHTML = `
+            <div class="relative bg-white h-2/3 flex items-center justify-center overflow-hidden p-4">
+                <img src="${imageUrl}" alt="${p.name}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                <button class="btn-wishlist-toggle absolute top-3 right-3 transition z-10 text-red-500" data-id="${p.product_id}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 heart-icon" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                </button>
+            </div>
+            <div class="p-4 h-1/3 flex flex-col justify-between relative">
+                <div class="flex justify-between items-start gap-2">
+                    <h3 class="font-bold text-[15px] leading-tight uppercase line-clamp-1 flex-1">${p.name}</h3>
+                    <span class="font-bold text-[15px] whitespace-nowrap text-[#fa87ce]">${formattedPrice}</span>
+                </div>
+                <div class="flex justify-between items-end mt-1">
+                    <p class="text-[10px] text-gray-400 line-clamp-1 w-3/4">${p.description || ''}</p>
+                </div>
+            </div>
+        `;
+        wishlistContainer.appendChild(card);
+    });
+};
+
+// ==========================================
+// 🌟 Event Delegation ศูนย์รวม (ดักทุกการคลิกใน Store)
+// ==========================================
+document.addEventListener('click', function(e) {
+    const activeContainer = window.activeClone || document;
+    
+    // -------------------------
+    // ปุ่มลดจำนวน (-)
+    // -------------------------
+    if (e.target.closest('.btn-qty-minus')) {
+        e.preventDefault();
+        const container = e.target.closest('#store-detail-view');
+        if(!container) return;
+        const qtyInput = container.querySelector('.store-qty-input');
+        if(qtyInput && parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
+    }
+
+    // -------------------------
+    // ปุ่มเพิ่มจำนวน (+)
+    // -------------------------
+    if (e.target.closest('.btn-qty-plus')) {
+        e.preventDefault();
+        const container = e.target.closest('#store-detail-view');
+        if(!container) return;
+        const qtyInput = container.querySelector('.store-qty-input');
+        if(!qtyInput) return;
+        
+        let currentQty = parseInt(qtyInput.value) || 1;
+        const product = window.frontendStoreProductsData.find(p => p.product_id == window.currentViewingProductId);
+        const maxStock = product ? parseInt(product.stock_balance) : 1;
+
+        if (currentQty < maxStock) {
+            qtyInput.value = currentQty + 1;
+        } else {
+            window.showCustomAlert(window.currentLang === 'th' ? `ขออภัย สินค้านี้มีสต๊อกสูงสุดเพียง ${maxStock} ชิ้นครับ` : `Sorry, maximum stock available is ${maxStock} items.`);
+        }
+    }
+
+    // -------------------------
+    // 🌟 ปุ่ม Add to Cart (บังคับ Login)
+    // -------------------------
+    if (e.target.closest('.btn-add-cart')) {
+        e.preventDefault();
+        
+        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าลงตะกร้าครับ!' : 'Please login before adding items to your cart!')) return; 
+
+        if (!window.currentViewingProductId) return;
+
+        const container = e.target.closest('#store-detail-view');
+        const qtyInput = container.querySelector('.store-qty-input');
+        const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+        const product = window.frontendStoreProductsData.find(p => p.product_id == window.currentViewingProductId);
+        if (!product) return;
+
+        let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
+        const existingItemIndex = cart.findIndex(item => item.product_id == product.product_id);
+        
+        if (existingItemIndex > -1) {
+            if (cart[existingItemIndex].qty + qty <= parseInt(product.stock_balance)) {
+                cart[existingItemIndex].qty += qty;
+            } else {
+                window.showCustomAlert(window.currentLang === 'th' ? `สต๊อกไม่พอ! คุณมีสินค้านี้ในตะกร้าแล้ว` : `Not enough stock! You already have this item in your cart.`);
+                return;
+            }
+        } else {
+            cart.push({ product_id: product.product_id, name: product.name, price: product.price, qty: qty, image: product.image_products ? JSON.parse(product.image_products)[0] : '' });
+        }
+
+        localStorage.setItem('jazz_store_cart', JSON.stringify(cart));
+        window.showCustomAlert(window.currentLang === 'th' ? `เพิ่ม "${product.name}" จำนวน ${qty} ชิ้น ลงตะกร้าเรียบร้อย! 🛒` : `Added ${qty} x "${product.name}" to cart! 🛒`);
+        
+        if(qtyInput) qtyInput.value = 1;
+    }
+
+    // -------------------------
+    // 🌟 ปุ่ม Checkout (บังคับ Login)
+    // -------------------------
+    if (e.target.closest('.btn-checkout')) {
+        e.preventDefault();
+        
+        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนดำเนินการชำระเงินครับ!' : 'Please login before proceeding to checkout!')) return; 
+
+        let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
+        if (cart.length === 0) {
+            window.showCustomAlert(window.currentLang === 'th' ? 'ไม่มีสินค้าในตะกร้า กรุณาเลือกซื้อสินค้าก่อนครับ' : 'Your cart is empty. Please add items first.');
+            return;
+        }
+
+        window.showCustomAlert(window.currentLang === 'th' ? 'กำลังพาท่านไปสู่หน้าจอชำระเงินและกรอกที่อยู่จัดส่ง...\n(ระบบจะพัฒนาในเฟสถัดไป 🚀)' : 'Redirecting to payment and shipping details...\n(To be developed in the next phase 🚀)');
+    }
+
+    // -------------------------
+    // ระบบ เปิด-ปิด Modal (Cart / Wishlist)
+    // -------------------------
+    if (e.target.closest('.btn-open-cart')) {
+        e.preventDefault();
+        window.renderCartItems();
+        activeContainer.querySelectorAll('.nav-btn, .close-btn').forEach(btn => btn.style.display = 'none');
+        activeContainer.querySelector('#store-main-view')?.classList.add('hidden');
+        activeContainer.querySelector('#store-detail-view')?.classList.add('hidden');
+        activeContainer.querySelector('#store-cart-view')?.classList.remove('hidden');
+    }
+
+    if (e.target.closest('.btn-open-wishlist')) {
+        e.preventDefault();
+        
+        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนดูรายการโปรดครับ!' : 'Please login to view your wishlist!')) return; 
+
+        window.renderWishlistItems();
+        activeContainer.querySelectorAll('.nav-btn, .close-btn').forEach(btn => btn.style.display = 'none');
+        activeContainer.querySelector('#store-main-view')?.classList.add('hidden');
+        activeContainer.querySelector('#store-detail-view')?.classList.add('hidden');
+        activeContainer.querySelector('#store-wishlist-view')?.classList.remove('hidden');
+    }
+
+    if (e.target.closest('.btn-close-subview')) {
+        e.preventDefault();
+        activeContainer.querySelector('#store-cart-view')?.classList.add('hidden');
+        activeContainer.querySelector('#store-wishlist-view')?.classList.add('hidden');
+        
+        if (window.currentViewingProductId) {
+            activeContainer.querySelector('#store-detail-view')?.classList.remove('hidden');
+        } else {
+            activeContainer.querySelector('#store-main-view')?.classList.remove('hidden');
+            activeContainer.querySelectorAll('.nav-btn, .close-btn').forEach(btn => btn.style.display = '');
+            window.loadFrontendStoreProducts(activeContainer); 
+        }
+    }
+
+    // -------------------------
+    // ระบบ Wishlist (ปุ่มหัวใจ)
+    // -------------------------
+    const wishlistBtn = e.target.closest('.btn-wishlist-toggle');
+    if (wishlistBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!window.requireLogin(window.currentLang === 'th' ? 'กรุณาเข้าสู่ระบบก่อนบันทึกรายการโปรดครับ!' : 'Please login to save to your wishlist!')) return; 
+
+        const productId = wishlistBtn.getAttribute('data-id');
+        if(!productId) return;
+
+        let wishlist = JSON.parse(localStorage.getItem('jazz_store_wishlist')) || [];
+        const index = wishlist.indexOf(productId);
+        const svg = wishlistBtn.querySelector('.heart-icon');
+
+        if (index > -1) {
+            wishlist.splice(index, 1);
+            wishlistBtn.classList.replace('text-red-500', 'text-gray-300');
+            if(wishlistBtn.classList.contains('text-gray-400')) wishlistBtn.classList.replace('text-gray-400', 'text-gray-300');
+            svg.setAttribute('fill', 'none');
+        } else {
+            wishlist.push(productId);
+            wishlistBtn.classList.replace('text-gray-300', 'text-red-500');
+            wishlistBtn.classList.replace('text-gray-400', 'text-red-500');
+            svg.setAttribute('fill', 'currentColor');
+        }
+        localStorage.setItem('jazz_store_wishlist', JSON.stringify(wishlist));
+
+        wishlistBtn.classList.add('scale-125');
+        setTimeout(() => wishlistBtn.classList.remove('scale-125'), 200);
+
+        if (!activeContainer.querySelector('#store-wishlist-view').classList.contains('hidden')) {
+            window.renderWishlistItems();
+        }
+    }
+
+    // -------------------------
+    // ระบบตะกร้า (เพิ่ม/ลด/ลบ ในหน้า Cart)
+    // -------------------------
+    const cartQtyBtn = e.target.closest('.btn-cart-qty-change');
+    if (cartQtyBtn) {
+        const index = cartQtyBtn.getAttribute('data-index');
+        const change = parseInt(cartQtyBtn.getAttribute('data-change'));
+        let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
+        
+        if(cart[index]) {
+            const product = window.frontendStoreProductsData.find(p => p.product_id == cart[index].product_id);
+            const maxStock = product ? parseInt(product.stock_balance) : 1;
+
+            let newQty = parseInt(cart[index].qty) + change;
+            if (newQty < 1) newQty = 1;
+            
+            if (newQty > maxStock) {
+                window.showCustomAlert(window.currentLang === 'th' ? `ขออภัย มีสต๊อกเพียง ${maxStock} ชิ้น` : `Sorry, only ${maxStock} items left in stock.`);
+                newQty = maxStock;
+            }
+            
+            cart[index].qty = newQty;
+            localStorage.setItem('jazz_store_cart', JSON.stringify(cart));
+            window.renderCartItems(); 
+        }
+    }
+
+    const cartRemoveBtn = e.target.closest('.btn-cart-remove');
+    if (cartRemoveBtn) {
+        const index = cartRemoveBtn.getAttribute('data-index');
+        let cart = JSON.parse(localStorage.getItem('jazz_store_cart')) || [];
+        cart.splice(index, 1);
+        localStorage.setItem('jazz_store_cart', JSON.stringify(cart));
+        window.renderCartItems(); 
+    }
+});

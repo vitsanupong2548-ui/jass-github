@@ -1,31 +1,124 @@
-<div class="clone-content overflow-y-auto hide-scrollbar h-full bg-[#fa87ce] text-black p-8 md:p-12 md:px-20 relative rounded-2xl flex flex-col md:flex-row gap-8">
+<div class="clone-content overflow-y-auto hide-scrollbar h-full w-full relative">
     
-    <div class="md:w-1/3 flex flex-col justify-start sticky top-0 h-full">
-        <div class="mb-6">
-            <img src="icon/6.webp" class="w-24 h-24 mb-6 object-contain filter brightness-0" alt="Logo">
-            <h2 class="text-5xl lg:text-6xl font-header font-bold mb-4 leading-tight text-black uppercase">Store<br>& Merch</h2>
-            <p class="text-sm lg:text-base text-black font-medium leading-relaxed">
-                Join the conversation in our online community. This is a space for artists, students, and music lovers to ask questions, share knowledge, and build connections within the Lanna-Jazz ecosystem.
-            </p>
-        </div>
-    </div>
+    <div id="store-main-view" class="w-full min-h-full p-8 md:p-12 md:px-20 flex flex-col md:flex-row gap-8 transition-opacity duration-300">
 
-    <div class="md:w-2/3 flex flex-col h-full">
-        <div class="flex justify-end gap-3 mb-6 relative z-20 pr-12">
-            <button class="bg-black text-white px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-gray-800 transition shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
-                Your Cart
-            </button>
-            <button class="bg-black text-white px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-gray-800 transition shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                Wish List
-            </button>
+        <div class="md:w-1/3 flex flex-col justify-start sticky top-0 h-full z-10">
+            <div class="mb-6">
+                <img src="icon/6.webp" class="w-24 h-24 mb-6 object-contain filter brightness-0" alt="Logo">
+                <h2 class="text-5xl lg:text-[4rem] font-header font-bold mb-4 leading-tight text-black uppercase tracking-tight">Store<br>& Merch</h2>
+                <p class="text-sm lg:text-base text-black font-medium leading-relaxed pr-4">
+                    Join the conversation in our online community. This is a space for artists, students, and music lovers to ask questions, share knowledge, and build connections within the Lanna-Jazz ecosystem.
+                </p>
+            </div>
         </div>
 
-        <div id="dynamic-store-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-12 overflow-y-auto pr-2 hide-scrollbar">
-            <div class="col-span-full text-center py-20 font-bold text-black/40 italic">
-                กำลังโหลดสินค้า...
+        <div class="md:w-2/3 flex flex-col h-full">
+            <div class="flex justify-end gap-3 mb-6 relative z-20 pr-12">
+                <button class="btn-open-cart bg-black text-white px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-gray-800 transition shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg> Your Cart
+                </button>
+                <button class="btn-open-wishlist bg-black text-white px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-gray-800 transition shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> Wish List
+                </button>
+            </div>
+            
+            <div id="dynamic-store-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-12 pr-2">
+                <div class="col-span-full text-center py-20 font-bold text-black/40 italic">กำลังโหลดสินค้า...</div>
             </div>
         </div>
     </div>
+
+    <div id="store-detail-view" class="hidden absolute inset-0 bg-white text-black w-full min-h-full overflow-y-auto pb-20 z-50 transition-opacity duration-300">
+        
+        <button id="store-back-btn" class="absolute top-6 left-6 z-[60] bg-black/60 hover:bg-black text-white px-5 py-2.5 rounded-full font-bold flex items-center gap-2 transition-colors shadow-lg backdrop-blur-sm" onclick="window.hideStoreProductDetail()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg> Back to Store
+        </button>
+
+        <div class="w-full h-48 md:h-64 overflow-hidden bg-gray-200 relative">
+            <img id="detail-banner-img" src="" class="w-full h-full object-cover">
+        </div>
+
+        <div class="max-w-5xl mx-auto flex justify-end gap-3 mt-6 px-6 relative z-20">
+            <button class="btn-open-cart bg-black text-white px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-gray-800 transition shadow">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg> Your Cart
+            </button>
+            <button class="btn-open-wishlist bg-black text-white px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 hover:bg-gray-800 transition shadow">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> Wish List
+            </button>
+        </div>
+
+        <main class="max-w-5xl mx-auto px-6 mt-6">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-16">
+                
+                <div class="md:col-span-5 lg:col-span-4 flex flex-col gap-4">
+                    <img id="detail-product-img" src="" class="w-full rounded-2xl shadow-lg border border-gray-200 aspect-[4/5] object-cover">
+                </div>
+
+                <div class="md:col-span-7 lg:col-span-8 flex flex-col pt-2">
+                    <div class="flex justify-between items-start mb-2">
+                        <h1 id="detail-product-name" class="text-3xl md:text-5xl font-header font-bold text-black tracking-tight leading-none">Product Name</h1>
+                        <div class="flex gap-4 text-gray-400 mt-1">
+                            <button class="hover:text-black transition"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg></button>
+                            <button id="detail-wishlist-btn" class="btn-wishlist-toggle hover:text-red-500 transition" data-id="">
+                                <svg class="w-7 h-7 heart-icon" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <p id="detail-product-price" class="text-xl md:text-2xl font-bold text-black mb-6">0.- / <span class="text-lg">1 ชิ้น</span></p>
+
+                    <div id="detail-product-desc" class="text-sm font-medium text-black leading-relaxed mb-8 whitespace-pre-line border-t border-gray-300 pt-6 font-body">
+                        รายละเอียดสินค้า...
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-6 pt-2 mt-auto">
+                        <span class="font-bold text-lg text-black font-header">Amount</span>
+                        <div class="flex items-center bg-black rounded-lg text-white font-bold h-10 overflow-hidden shadow-md">
+                            <button class="w-10 h-full hover:bg-gray-800 transition btn-qty-minus">-</button>
+                            <input type="text" id="detail-qty-input" value="1" class="w-12 h-full text-center text-black bg-gray-100 outline-none pointer-events-none font-bold text-lg store-qty-input">
+                            <button class="w-10 h-full hover:bg-gray-800 transition btn-qty-plus">+</button>
+                        </div>
+                        <button class="bg-black hover:bg-gray-800 text-white font-bold px-8 py-2.5 rounded-full shadow-lg transition font-header btn-add-cart">Add to Cart</button>
+                    </div>
+
+                    <div class="mt-12 border-t border-gray-300 pt-6">
+                        <h3 class="text-2xl font-bold text-black mb-4 font-header">Review</h3>
+                        <div class="text-gray-500 text-sm italic">ยังไม่มีรีวิวสำหรับสินค้านี้...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="store-cart-view" class="hidden absolute inset-0 bg-white text-black w-full min-h-full overflow-y-auto pb-20 z-[60] transition-opacity duration-300">
+        <div class="max-w-4xl mx-auto p-6 md:p-12 pt-20 relative">
+            <button class="btn-close-subview absolute top-6 right-6 text-black hover:scale-110 transition bg-gray-100 p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <h2 class="text-4xl md:text-5xl font-header font-bold mb-8 uppercase border-b-2 border-black pb-4">Your Cart</h2>
+            
+            <div id="cart-items-container" class="flex flex-col gap-6 mb-8">
+                </div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center bg-gray-100 p-6 rounded-2xl">
+                <div class="text-xl font-bold mb-4 md:mb-0">Total: <span id="cart-total-price" class="text-3xl ml-2 text-[#fa87ce]">0.-</span></div>
+                <button class="btn-checkout bg-black text-white px-10 py-3 rounded-full font-header font-bold text-xl hover:bg-gray-800 transition w-full md:w-auto shadow-lg">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="store-wishlist-view" class="hidden absolute inset-0 bg-white text-black w-full min-h-full overflow-y-auto pb-20 z-[60] transition-opacity duration-300">
+        <div class="max-w-6xl mx-auto p-6 md:p-12 pt-20 relative">
+            <button class="btn-close-subview absolute top-6 right-6 text-black hover:scale-110 transition bg-gray-100 p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <h2 class="text-4xl md:text-5xl font-header font-bold mb-8 uppercase border-b-2 border-black pb-4 flex items-center gap-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> Wish List
+            </h2>
+            
+            <div id="wishlist-items-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                </div>
+        </div>
+    </div>
+
 </div>
