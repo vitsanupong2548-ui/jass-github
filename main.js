@@ -2045,14 +2045,17 @@ document.addEventListener('click', function(e) {
         }
 
         // 4. ดึงข้อมูลตะกร้า
-        let cart = localStorage.getItem('jazz_store_cart');
-        if (!cart || JSON.parse(cart).length === 0) {
+        let cartStr = localStorage.getItem('jazz_store_cart');
+        if (!cartStr || JSON.parse(cartStr).length === 0) {
             window.showCustomAlert(window.currentLang === 'th' ? 'ไม่พบสินค้าในตะกร้า' : 'No items in cart.');
             return;
         }
+        let cartArray = JSON.parse(cartStr);
+        let totalPrice = cartArray.reduce((sum, item) => sum + (parseFloat(item.price) * parseInt(item.qty)), 0);
 
         // วิธีชำระเงินที่เลือก (promptpay หรือ bank)
         const paymentMethod = checkoutView.querySelector('input[name="payment_method"]:checked')?.value || 'promptpay';
+        const paymentMethodText = paymentMethod === 'bank' ? 'โอนผ่านบัญชีธนาคาร' : 'QR PromptPay';
 
         // บันทึกข้อมูลที่อยู่ (ถ้าลูกค้าติ๊ก)
         if (saveInfoChecked) {
@@ -2072,16 +2075,19 @@ document.addEventListener('click', function(e) {
 
         // เตรียมข้อมูลส่งไป Backend
         const fd = new FormData();
-        fd.append('customer_name', fullName);
+        fd.append('fname', fname);
+        fd.append('lname', lname);
         fd.append('phone', phone);
         fd.append('email', email);
-        fd.append('address', fullAddress);
-        fd.append('cart_data', cart);
-        fd.append('payment_method', paymentMethod); // ส่งวิธีชำระเงิน
-        fd.append('slip', slipInput.files[0]); // ส่งไฟล์สลิปรูปภาพ 🌟
+        fd.append('address', address + ` (ชำระผ่าน: ${paymentMethodText})`);
+        fd.append('province', province);
+        fd.append('zipcode', zip);
+        fd.append('cart_items', cartStr);
+        fd.append('total_price', totalPrice);
+        fd.append('slip', slipInput.files[0]);
 
         // ยิง API บันทึกข้อมูล
-        fetch('backend.php?action=create_store_order', {
+        fetch('backend.php?action=submit_order', {
             method: 'POST',
             body: fd
         })
@@ -2111,6 +2117,7 @@ document.addEventListener('click', function(e) {
             btn.disabled = false;
         });
     }
+
     // -------------------------
     // ระบบ เปิด-ปิด Modal (Cart / Wishlist)
     // -------------------------
@@ -2222,8 +2229,11 @@ document.addEventListener('click', function(e) {
         localStorage.setItem('jazz_store_cart', JSON.stringify(cart));
         window.renderCartItems(); 
     }
-    // ==========================================
-// 🌟 ระบบวาดข้อมูลสรุปออเดอร์หน้า Checkout
+}); // 🌟 ปิดวงเล็บ Store Event ตรงนี้! 🌟
+
+
+// ==========================================
+// 🌟 ระบบวาดข้อมูลสรุปออเดอร์หน้า Checkout (Global Scope)
 // ==========================================
 window.renderCheckoutSummary = function() {
     const activeContainer = window.activeClone || document;
@@ -2257,7 +2267,8 @@ window.renderCheckoutSummary = function() {
     subtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
     grandtotalEl.textContent = `${totalPrice.toLocaleString()}.-`;
 };
-});
+
+
 // ==========================================
 // 10. ระบบจัดการตั๋ว Event (Tickets)
 // ==========================================
@@ -2378,9 +2389,11 @@ document.addEventListener('click', function(e) {
             if (closeBtn) closeBtn.click();
         }, 1500);
     }
-    
-  // ==========================================
-// 🌟 ฟังก์ชันเสริมสำหรับหน้า Checkout
+}); // 🌟 ปิดวงเล็บ Ticket Event ตรงนี้! 🌟
+
+
+// ==========================================
+// 🌟 ฟังก์ชันเสริมสำหรับหน้า Checkout (Global Scope)
 // ==========================================
 
 // สลับหน้าต่างชำระเงิน (PromptPay / Bank Transfer)
@@ -2412,8 +2425,11 @@ window.copyBankAccount = function(text, btnElement) {
                 btnElement.classList.replace('hover:bg-green-200', 'hover:bg-gray-200');
             }, 2000);
         }).catch(err => {
-            window.showCustomAlert('ไม่สามารถคัดลอกได้ กรุณาลองใหม่อีกครั้ง');
+            if (window.showCustomAlert) {
+                window.showCustomAlert('ไม่สามารถคัดลอกได้ กรุณาลองใหม่อีกครั้ง');
+            } else {
+                alert('ไม่สามารถคัดลอกได้ กรุณาลองใหม่อีกครั้ง');
+            }
         });
     }
 };
-});

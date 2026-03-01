@@ -1068,32 +1068,65 @@ switch($action) {
         break;
 
     // ==========================================
-    // API สำหรับสร้างคำสั่งซื้อจากหน้าบ้าน (Frontend)
+    // API สำหรับสร้างคำสั่งซื้อและรับสลิป (Frontend)
     // ==========================================
-    case 'create_store_order':
+    case 'submit_order': // เปลี่ยนชื่อให้ตรงกับที่ JS ส่งมา
         try {
-            $customer_name = $_POST['customer_name'] ?? '';
+            // 1. รับค่าจาก FormData ที่หน้าเว็บส่งมา
+            $fname = $_POST['fname'] ?? '';
+            $lname = $_POST['lname'] ?? '';
             $phone = $_POST['phone'] ?? '';
-            $address = $_POST['address'] ?? '';
             $email = $_POST['email'] ?? '';
-            $cart_data = isset($_POST['cart_data']) ? json_decode($_POST['cart_data'], true) : [];
+            $address = $_POST['address'] ?? '';
+            $province = $_POST['province'] ?? '';
+            $zipcode = $_POST['zipcode'] ?? '';
+            
+            // รวมชื่อและที่อยู่ให้ตรงกับโครงสร้าง Database ของคุณ
+            $customer_name = trim($fname . ' ' . $lname);
+            $full_address = trim($address . ' จ.' . $province . ' รหัสไปรษณีย์ ' . $zipcode);
+
+            $cart_data = isset($_POST['cart_items']) ? json_decode($_POST['cart_items'], true) : [];
 
             if (empty($customer_name) || empty($phone) || empty($cart_data)) {
                 echo json_encode(['status' => 'error', 'message' => 'ข้อมูลไม่ครบถ้วน']);
                 break;
             }
 
-            // สร้างรหัสออเดอร์ เช่น ST-20260301-XXXX
+            // 🌟 2. ระบบรับไฟล์สลิป 🌟
+            $slip_path = '';
+            if (isset($_FILES['slip']) && $_FILES['slip']['error'] === UPLOAD_ERR_OK) {
+                
+                $upload_dir = 'uploads/slips/';
+                // สร้างโฟลเดอร์ถ้ายังไม่มี
+                if (!file_exists($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                }
+
+                // สุ่มชื่อไฟล์กันซ้ำ
+                $ext = strtolower(pathinfo($_FILES['slip']['name'], PATHINFO_EXTENSION));
+                $new_name = 'slip_store_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
+                $target_file = $upload_dir . $new_name;
+
+                if (move_uploaded_file($_FILES['slip']['tmp_name'], $target_file)) {
+                    $slip_path = $target_file; // ได้ที่อยู่ไฟล์แล้ว
+                } else {
+                    throw new Exception("อัปโหลดสลิปไม่สำเร็จ กรุณาเช็ค Permission โฟลเดอร์");
+                }
+            } else {
+                throw new Exception("ไม่พบไฟล์สลิป หรือขนาดไฟล์รูปอาจจะใหญ่เกินไป");
+            }
+
+            // สร้างรหัสออเดอร์
             $order_code = 'ST-' . date('Ymd') . '-' . rand(1000, 9999);
 
             $pdo->beginTransaction();
 
-            // 1. บันทึกข้อมูลลงตาราง orders
-            $stmt = $pdo->prepare("INSERT INTO orders (order_code, customer_name, address, phone, email, order_status, payment_status) VALUES (?, ?, ?, ?, ?, 'pending', '')");
-            $stmt->execute([$order_code, $customer_name, $address, $phone, $email]);
+            // 3. บันทึกข้อมูลลงตาราง orders (เอา $slip_path ไปเก็บใน payment_status)
+            $stmt = $pdo->prepare("INSERT INTO orders (order_code, customer_name, address, phone, email, order_status, payment_status) VALUES (?, ?, ?, ?, ?, 'pending', ?)");
+            $stmt->execute([$order_code, $customer_name, $full_address, $phone, $email, $slip_path]);
             $order_id = $pdo->lastInsertId();
 
-            // 2. บันทึกข้อมูลสินค้าลงตาราง order_items และตัดสต๊อก (🌟 แก้ไข: ลบ price ออกจากการ Insert)
+            // 4. บันทึกข้อมูลสินค้าลงตาราง order_items และตัดสต๊อก
             $stmtItem = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)");
             $stmtStock = $pdo->prepare("UPDATE products SET stock_balance = stock_balance - ? WHERE product_id = ?");
 
@@ -1101,17 +1134,17 @@ switch($action) {
                 $p_id = $item['product_id'];
                 $qty = $item['qty'];
 
-                // บันทึกรายการ (ใส่แค่ออเดอร์, สินค้า, จำนวน)
                 $stmtItem->execute([$order_id, $p_id, $qty]);
-                
-                // ตัดสต๊อก
                 $stmtStock->execute([$qty, $p_id]);
             }
 
             $pdo->commit();
-            echo json_encode(["status" => "success", "message" => "สั่งซื้อสำเร็จ"]);
+            echo json_encode(["status" => "success", "message" => "สั่งซื้อและแนบสลิปสำเร็จ"]);
+
         } catch (Exception $e) {
-            $pdo->rollBack();
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             echo json_encode(["status" => "error", "message" => "เกิดข้อผิดพลาด: " . $e->getMessage()]);
         }
         break;
