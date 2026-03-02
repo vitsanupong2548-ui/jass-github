@@ -1129,14 +1129,19 @@ switch($action) {
             $order_id = $pdo->lastInsertId();
 
             // 4. บันทึกข้อมูลสินค้าลงตาราง order_items และตัดสต๊อก
-            $stmtItem = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity) VALUES (?, ?, ?)");
+            $stmtItem = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity, price_per_unit) VALUES (?, ?, ?, ?)");
             $stmtStock = $pdo->prepare("UPDATE products SET stock_balance = stock_balance - ? WHERE product_id = ?");
+            $stmtPrice = $pdo->prepare("SELECT price FROM products WHERE product_id = ?");
 
             foreach ($cart_data as $item) {
                 $p_id = $item['product_id'];
                 $qty = $item['qty'];
 
-                $stmtItem->execute([$order_id, $p_id, $qty]);
+                $stmtPrice->execute([$p_id]);
+                $product = $stmtPrice->fetch(PDO::FETCH_ASSOC);
+                $price_per_unit = $product ? $product['price'] : 0;
+
+                $stmtItem->execute([$order_id, $p_id, $qty, $price_per_unit]);
                 $stmtStock->execute([$qty, $p_id]);
             }
 
@@ -1144,8 +1149,10 @@ switch($action) {
             echo json_encode(["status" => "success", "message" => "สั่งซื้อและแนบสลิปสำเร็จ"]);
 
         } catch (Exception $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
+            $pdo->rollBack();
+            // 🌟 5. ถ้ามี error ให้ลบรูปสลิปทิ้ง (ป้องกันไฟล์ขยะ)
+            if (!empty($slip_path) && file_exists($slip_path)) {
+                unlink($slip_path);
             }
             echo json_encode(["status" => "error", "message" => "เกิดข้อผิดพลาด: " . $e->getMessage()]);
         }
@@ -1289,6 +1296,53 @@ switch($action) {
                 echo json_encode(["status" => "success", "message" => "อัปโหลดสลิปสำเร็จ"]);
             } else { echo json_encode(["status" => "error", "message" => "อัปโหลดไฟล์ไม่สำเร็จ"]); }
         } else { echo json_encode(["status" => "error", "message" => "ข้อมูลไม่ถูกต้อง หรือไม่ได้เลือกไฟล์"]); }
+        break;
+    case 'add_store_product':
+        if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') { die(json_encode(['status' => 'error', 'message' => 'Unauthorized'])); }
+        try {
+            $name = $_POST['product_name'] ?? '';
+            $price = floatval($_POST['product_price'] ?? 0);
+            $stock = intval($_POST['product_stock'] ?? 0);
+            $desc = $_POST['product_details'] ?? '';
+            $status = $_POST['sale_status'] ?? 'open';
+            
+            if(empty($name) || $price <= 0) {
+                echo json_encode(["status" => "error", "message" => "กรุณากรอกข้อมูลชื่อสินค้าและราคาให้ถูกต้อง"]);
+                break;
+            }
+
+            $product_code = 'PRD-' . date('YmdHis') . '-' . rand(100,999);
+            $dir = 'uploads/store/'; 
+            if(!is_dir($dir)) mkdir($dir, 0777, true);
+            
+            $finalImages = [];
+            if(isset($_FILES['product_images']) && !empty($_FILES['product_images']['name'][0])){
+                for($i=0; $i<count($_FILES['product_images']['name']); $i++){
+                    if(count($finalImages) >= 5) break; 
+                    if($_FILES['product_images']['tmp_name'][$i] && $_FILES['product_images']['error'][$i] === UPLOAD_ERR_OK){
+                        $ext = pathinfo($_FILES['product_images']['name'][$i], PATHINFO_EXTENSION);
+                        $path = $dir . $product_code . '_' . uniqid() . '.' . $ext;
+                        if(move_uploaded_file($_FILES['product_images']['tmp_name'][$i], $path)) {
+                            $finalImages[] = $path;
+                        }
+                    }
+                }
+            }
+            
+            $bannerPath = '';
+            if(isset($_FILES['image_banner']) && $_FILES['image_banner']['error'] === UPLOAD_ERR_OK){
+                $ext = pathinfo($_FILES['image_banner']['name'], PATHINFO_EXTENSION);
+                $bannerPath = $dir . 'banner_' . $product_code . '_' . uniqid() . '.' . $ext;
+                move_uploaded_file($_FILES['image_banner']['tmp_name'], $bannerPath);
+            }
+            
+            $stmt = $pdo->prepare("INSERT INTO products (product_code, name, description, price, stock_balance, sale_status, image_products, image_banner) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$product_code, $name, $desc, $price, $stock, $status, json_encode($finalImages, JSON_UNESCAPED_UNICODE), $bannerPath]);
+            
+            echo json_encode(["status" => "success", "message" => "เพิ่มสินค้าใหม่เรียบร้อย"]);
+        } catch (Exception $e) { 
+            echo json_encode(["status" => "error", "message" => $e->getMessage()]); 
+        }
         break;
 
     case 'update_store_product':

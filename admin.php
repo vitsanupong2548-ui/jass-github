@@ -745,6 +745,69 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 </div>
             </div>
 
+            <!-- Edit Product Modal (Hidden by default) -->
+            <div id="modal-edit-store-product" class="hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+                <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto mt-10 relative animation-fade-in">
+                    
+                    <button onclick="closeEditStoreProductModal()" class="absolute top-6 right-6 text-gray-400 hover:text-black hover:bg-gray-100 p-2 rounded-full transition z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+
+                    <div class="p-8 pb-4 border-b border-gray-100 sticky top-0 bg-white/90 backdrop-blur-md z-0">
+                        <h2 class="text-2xl font-black text-black">แก้ไขข้อมูลสินค้า (Edit Product)</h2>
+                        <p class="text-sm text-gray-500 font-medium">แก้ไขรายละเอียด, ราคา, จำนวนสต๊อก หรือรูปภาพ</p>
+                    </div>
+
+                    <div class="p-8">
+                        <input type="hidden" id="edit_store_p_id">
+                        
+                        <!-- banner -->
+                        <div class="mb-6 group relative rounded-2xl overflow-hidden bg-gray-50 border-2 border-dashed border-gray-200 hover:border-pink-300 transition cursor-pointer min-h-[160px] flex items-center justify-center" onclick="document.getElementById('edit_store_banner').click()">
+                            <img id="edit-store-banner-preview" class="absolute inset-0 w-full h-full object-cover z-10 hidden">
+                            <div class="text-center z-0" id="edit-store-banner-text">
+                                <span class="bg-white text-gray-600 px-4 py-2 rounded-full font-bold shadow-sm text-sm">อัปโหลดรูปแบนเนอร์ใหม่</span>
+                                <p class="text-xs text-gray-400 mt-2">1200 x 400px (ไม่บังคับ)</p>
+                            </div>
+                            <input type="file" id="edit_store_banner" accept="image/*" class="hidden" onchange="previewEditStoreBanner(this)">
+                        </div>
+
+                        <!-- gallery -->
+                        <div class="mb-6">
+                            <div class="flex justify-between items-end mb-3">
+                                <label class="font-bold text-black block">รูปภาพสินค้า (Gallery)</label>
+                                <button onclick="document.getElementById('edit_store_images').click()" class="text-xs font-bold bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 transition">อัปโหลดเพิ่ม / เปลี่ยนรูปภาพ</button>
+                                <input type="file" id="edit_store_images" accept="image/*" multiple class="hidden" onchange="handleAddEditStoreImages(this)">
+                            </div>
+                            <div id="edit-store-image-container" class="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x">
+                                <!-- Existing images will be loaded here -->
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">สูงสุด 5 รูป (1000 x 1000px)</p>
+                        </div>
+
+                        <!-- form -->
+                        <div class="flex flex-col gap-4 mb-6">
+                            <input type="text" id="edit_store_p_name" placeholder="ชื่อสินค้า (Product Name)" class="w-full border border-gray-300 rounded-full px-5 py-3 outline-none focus:border-pink-500">
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="number" id="edit_store_p_price" placeholder="ราคา (Price)" class="border border-gray-300 rounded-full px-5 py-3 outline-none focus:border-pink-500">
+                                <input type="number" id="edit_store_p_stock" placeholder="จำนวนสต๊อก (Stock)" class="border border-gray-300 rounded-full px-5 py-3 outline-none focus:border-pink-500">
+                            </div>
+                            <textarea id="edit_store_p_details" placeholder="รายละเอียดสินค้า...." rows="4" class="w-full border border-gray-300 rounded-2xl px-5 py-4 outline-none focus:border-pink-500 resize-none"></textarea>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                            <div class="flex gap-6">
+                                <label class="flex items-center gap-2 cursor-pointer font-bold text-green-600"><input type="radio" name="edit_store_sale_status" value="open"> Sale Open</label>
+                                <label class="flex items-center gap-2 cursor-pointer font-bold text-red-600"><input type="radio" name="edit_store_sale_status" value="close"> Sale Close</label>
+                            </div>
+                            <div class="flex gap-3">
+                                <button onclick="closeEditStoreProductModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 px-6 rounded-full transition">ยกเลิก</button>
+                                <button onclick="saveEditProduct()" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-md transition" id="btn-save-edit-product">บันทึกการแก้ไข</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="tab-inner-stock" class="inner-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-gray-100 border-b border-gray-200">

@@ -1334,19 +1334,7 @@ let storeProductImages = [];
 let storeBannerImage = null;
 
 // สลับแท็บ เพิ่มสินค้า / สต๊อก / ออเดอร์
-window.switchStoreTab = function (tabName) {
-    document.querySelectorAll('.store-tab-content').forEach(el => el.classList.add('hidden'));
-    document.getElementById(`tab-store-${tabName}`).classList.remove('hidden');
 
-    document.getElementById('btn-store-product').className = 'flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200';
-    document.getElementById('btn-store-stock').className = 'flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200';
-    document.getElementById('btn-store-order').className = 'flex-1 py-3 bg-gray-100 text-gray-600 font-bold transition hover:bg-gray-200';
-
-    const activeBtn = document.getElementById(`btn-store-${tabName}`);
-    if (activeBtn) activeBtn.className = 'flex-1 py-3 bg-pink-500 text-white font-bold transition shadow-inner';
-
-    if (tabName === 'stock') loadStockData();
-};
 
 // Preview รูป Banner
 window.previewStoreBanner = function (input) {
@@ -1425,7 +1413,8 @@ window.loadStockData = async function () {
                         <td class="p-4 text-center"><span class="font-bold text-xl ${p.stock_balance > 0 ? 'text-gray-800' : 'text-red-500'}">${p.stock_balance}</span></td>
                         <td class="p-4 text-center space-x-2">
                             ${badge}
-                            <button onclick="deleteStoreProduct(${p.product_id})" class="ml-2 bg-red-100 text-red-600 hover:bg-red-500 hover:text-white px-4 py-2 rounded-lg font-bold text-sm transition">ลบ</button>
+                            <button onclick="editStoreProduct(${p.product_id})" class="ml-2 bg-blue-100 text-blue-600 hover:bg-blue-500 hover:text-white px-4 py-2 rounded-lg font-bold text-sm transition">แก้ไข</button>
+                            <button onclick="deleteStoreProduct(${p.product_id})" class="bg-red-100 text-red-600 hover:bg-red-500 hover:text-white px-4 py-2 rounded-lg font-bold text-sm transition">ลบ</button>
                         </td>
                     </tr>`;
             });
@@ -1471,7 +1460,7 @@ window.saveNewProduct = async function () {
             document.getElementById('store-banner-text').classList.remove('hidden');
             renderStoreImagePreviews();
             // ย้ายไปหน้าสต๊อก
-            switchStoreTab('stock');
+            switchInnerTab('stock');
         } else alert("Error: " + result.message);
     } catch (e) { alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์"); }
     finally { if (btn) { btn.innerText = 'บันทึกสินค้าใหม่'; btn.disabled = false; } }
@@ -1486,6 +1475,181 @@ window.deleteStoreProduct = async function (id) {
         const result = await res.json();
         if (result.status === 'success') loadStockData();
     } catch (e) { }
+};
+
+// ==========================================
+// 🌟 ระบบแก้ไขสินค้า (Edit Product)
+// ==========================================
+let editStoreProductImages = [];
+let editStoreBannerImage = null;
+let currentEditStoreProductData = null;
+
+window.editStoreProduct = async function (id) {
+    // 1. Fetch current data
+    try {
+        const res = await fetch('backend.php?action=get_store_products');
+        const result = await res.json();
+        if (result.status === 'success') {
+            const product = result.data.find(p => p.product_id == id);
+            if (!product) return alert("ไม่พบข้อมูลสินค้า");
+
+            currentEditStoreProductData = product;
+
+            // 2. Populate form
+            document.getElementById('edit_store_p_id').value = product.product_id;
+            document.getElementById('edit_store_p_name').value = product.name;
+            document.getElementById('edit_store_p_price').value = product.price;
+            document.getElementById('edit_store_p_stock').value = product.stock_balance;
+            document.getElementById('edit_store_p_details').value = product.description;
+
+            const radioOpen = document.querySelector('input[name="edit_store_sale_status"][value="open"]');
+            const radioClose = document.querySelector('input[name="edit_store_sale_status"][value="close"]');
+            if (product.sale_status === 'open') radioOpen.checked = true; else radioClose.checked = true;
+
+            // Reset images array for edit form
+            editStoreProductImages = [];
+            editStoreBannerImage = null;
+
+            // Banner
+            const bannerPreview = document.getElementById('edit-store-banner-preview');
+            const bannerText = document.getElementById('edit-store-banner-text');
+            if (product.image_banner) {
+                bannerPreview.src = product.image_banner;
+                bannerPreview.classList.remove('hidden');
+                bannerText.classList.add('hidden');
+            } else {
+                bannerPreview.src = '';
+                bannerPreview.classList.add('hidden');
+                bannerText.classList.remove('hidden');
+            }
+
+            // Gallery
+            const container = document.getElementById('edit-store-image-container');
+            container.innerHTML = '';
+            let parsedImages = [];
+            try {
+                if (product.image_products) parsedImages = JSON.parse(product.image_products) || [];
+            } catch (e) { }
+
+            // Render existing images from server URL
+            parsedImages.forEach((url, i) => {
+                editStoreProductImages.push({ type: 'existing', url: url });
+            });
+            renderEditStoreImagePreviews();
+
+            // 3. Show Modal
+            const modal = document.getElementById('modal-edit-store-product');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    } catch (e) { alert("เกิดข้อผิดพลาดในการโหลดข้อมูลสินค้า"); }
+};
+
+window.closeEditStoreProductModal = function () {
+    document.getElementById('modal-edit-store-product').classList.add('hidden');
+    document.body.style.overflow = '';
+};
+
+window.previewEditStoreBanner = function (input) {
+    if (input.files && input.files[0]) {
+        editStoreBannerImage = input.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const preview = document.getElementById('edit-store-banner-preview');
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+            document.getElementById('edit-store-banner-text').classList.add('hidden');
+        };
+        reader.readAsDataURL(editStoreBannerImage);
+    }
+};
+
+window.handleAddEditStoreImages = function (input) {
+    if (!input.files || input.files.length === 0) return;
+    const remainingSlots = 5 - editStoreProductImages.length;
+    if (remainingSlots <= 0) return alert("อัปโหลดเพิ่มไม่ได้แล้ว (สูงสุด 5 รูป)");
+
+    const filesToAdd = Array.from(input.files).slice(0, remainingSlots);
+    filesToAdd.forEach(file => {
+        editStoreProductImages.push({ type: 'new', file: file });
+    });
+
+    renderEditStoreImagePreviews();
+    input.value = ''; // รีเซ็ต input เผื่อเลือกไฟล์เดิมเพิ่มอีก
+};
+
+window.renderEditStoreImagePreviews = function () {
+    const container = document.getElementById('edit-store-image-container');
+    container.innerHTML = '';
+
+    editStoreProductImages.forEach((item, index) => {
+        if (item.type === 'existing') {
+            container.innerHTML += `
+                <div class="relative w-32 h-32 rounded-xl overflow-hidden border border-gray-200 shadow-sm flex-shrink-0 group">
+                    <img src="${item.url}" class="w-full h-full object-cover">
+                    <button onclick="removeEditStoreImage(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow">✕</button>
+                </div>`;
+        } else if (item.type === 'new') {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                container.innerHTML += `
+                    <div class="relative w-32 h-32 rounded-xl overflow-hidden border border-gray-200 shadow-sm flex-shrink-0 group">
+                        <img src="${e.target.result}" class="w-full h-full object-cover">
+                        <button onclick="removeEditStoreImage(${index})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow">✕</button>
+                    </div>`;
+            };
+            reader.readAsDataURL(item.file);
+        }
+    });
+};
+
+window.removeEditStoreImage = function (index) {
+    editStoreProductImages.splice(index, 1);
+    renderEditStoreImagePreviews();
+};
+
+window.saveEditProduct = async function () {
+    const id = document.getElementById('edit_store_p_id').value;
+    const name = document.getElementById('edit_store_p_name').value;
+    const price = document.getElementById('edit_store_p_price').value;
+    const stock = document.getElementById('edit_store_p_stock').value;
+    const details = document.getElementById('edit_store_p_details').value;
+    const status = document.querySelector('input[name="edit_store_sale_status"]:checked').value;
+
+    if (!name || !price || !stock) return alert("กรุณากรอกชื่อสินค้า ราคา และสต๊อกให้ครบถ้วน");
+
+    const btn = document.getElementById('btn-save-edit-product');
+    btn.innerText = 'กำลังบันทึก...'; btn.disabled = true;
+
+    const fd = new FormData();
+    fd.append('product_id', id);
+    fd.append('product_name', name);
+    fd.append('product_price', price);
+    fd.append('product_stock', stock);
+    fd.append('product_details', details);
+    fd.append('sale_status', status);
+
+    if (editStoreBannerImage) fd.append('image_banner', editStoreBannerImage);
+
+    // แยกรูปเก่าและรูปใหม่
+    editStoreProductImages.forEach(item => {
+        if (item.type === 'existing') {
+            fd.append('existing_images[]', item.url);
+        } else if (item.type === 'new') {
+            fd.append('product_images[]', item.file);
+        }
+    });
+
+    try {
+        const res = await fetch('backend.php?action=update_store_product', { method: 'POST', body: fd });
+        const result = await res.json();
+        if (result.status === 'success') {
+            alert('แก้ไขสินค้าสำเร็จ! 🎉');
+            closeEditStoreProductModal();
+            loadStockData();
+        } else alert("Error: " + result.message);
+    } catch (e) { alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์"); }
+    finally { btn.innerText = 'บันทึกการแก้ไข'; btn.disabled = false; }
 };
 
 // สั่งให้โหลดข้อมูลอัตโนมัติ เมื่อกดเมนู Store & Merch ทางซ้ายมือ

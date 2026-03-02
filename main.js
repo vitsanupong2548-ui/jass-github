@@ -2164,16 +2164,20 @@ document.addEventListener('click', function (e) {
 
         // เตรียมข้อมูลส่งไป Backend
         const fd = new FormData();
+        fd.append('fname', fname);
+        fd.append('lname', lname);
         fd.append('customer_name', fullName);
         fd.append('phone', phone);
         fd.append('email', email);
-        fd.append('address', fullAddress);
-        fd.append('cart_data', cart);
+        fd.append('address', address);
+        fd.append('province', province);
+        fd.append('zipcode', zip);
+        fd.append('cart_items', cart);
         fd.append('payment_method', paymentMethod); // ส่งวิธีชำระเงิน
         fd.append('slip', slipInput.files[0]); // ส่งไฟล์สลิปรูปภาพ 🌟
 
         // ยิง API บันทึกข้อมูล
-        fetch('backend.php?action=create_store_order', {
+        fetch('backend.php?action=submit_order', {
             method: 'POST',
             body: fd
         })
