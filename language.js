@@ -111,6 +111,13 @@ const siteTranslations = {
         "fest_tab_lineup": "LINE UP",
         "fest_tab_venue": "VENUE",
         "fest_tab_gallery": "GALLERY",
+        "store_bank_name": "Kasikornbank",
+        "store_bank_acc_name": "Account Name: Chiangmai Touch Co., Ltd.",
+        "store_bank_note": "* Please transfer money to the account above and upload the slip to confirm your order.",
+        "store_pp_scan": "Scan to pay to the account",
+        "store_pp_name": "Chiangmai Touch Co., Ltd.",
+        "store_pp_no": "No. 216-1-95146-6",
+        "store_upload_slip": "Upload Slip *",
     },
     th: {
         // ... (โค้ดเดิม 1-4) ...
@@ -216,7 +223,14 @@ const siteTranslations = {
         "fest_tab_book": "จองบัตร",
         "fest_tab_lineup": "ตารางเวลา",
         "fest_tab_venue": "สถานที่จัดงาน",
-        "fest_tab_gallery": "แกลลอรี่"
+        "fest_tab_gallery": "แกลลอรี่",
+        "store_bank_name": "ธนาคารกสิกรไทย",
+        "store_bank_acc_name": "ชื่อบัญชี: บจก. เชียงใหม่ทัช",
+        "store_bank_note": "* กรุณาโอนเงินเข้าบัญชีด้านบน และแนบสลิปเพื่อยืนยันคำสั่งซื้อ",
+        "store_pp_scan": "สแกนเพื่อชำระเงินเข้าบัญชี",
+        "store_pp_name": "บจก. เชียงใหม่ทัช",
+        "store_pp_no": "เลขที่ 216-1-95146-6",
+        "store_upload_slip": "แนบสลิปโอนเงิน *",
     }
 };
 
