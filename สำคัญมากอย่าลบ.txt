@@ -1,0 +1,5 @@
+User uusix5xzcgxym is created with password gbw3xhgag1ob
+
+
+
+ALTER TABLE `course_reviews` ADD `rating` INT(1) NOT NULL DEFAULT '5' AFTER `reviewer_name`;

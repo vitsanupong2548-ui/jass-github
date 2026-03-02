@@ -1,0 +1,11 @@
+[
+{"type":"header","version":"5.2.2","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"db5ovpgegfc6yz"},
+{"type":"table","name":"musicians","database":"db5ovpgegfc6yz","data":
+[
+{"id":"4","slot_number":"1","network_type":"artist_library","title":"HELLO","genre":"MOOO","details":"kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk","facebook":"https:\/\/www.facebook.com\/","whatsapp":"096454542","instagram":"","website":"","tiktok":"","email":"","video_link":"[\"https:\\\/\\\/www.youtube.com\\\/watch?v=xeLtkYELNwI\"]","banner_image":"uploads\/musicians\/banner_1771950548_699dd1d4dcc15.webp","profile_image":"uploads\/musicians\/profile_1771951567_699dd5cf50996.jpg"},
+{"id":"5","slot_number":"2","network_type":"artist_library","title":"TEST2.","genre":"BOOK NOW","details":"alksjdljf;alsdj;lfasjd;lfjslkjfmijlkjoijnoijoihjkjlsiemdnlskdur","facebook":"https:\/\/www.facebook.com\/","whatsapp":"","instagram":"https:\/\/www.facebook.com\/","website":"https:\/\/www.facebook.com\/","tiktok":"https:\/\/www.facebook.com\/","email":"https:\/\/www.facebook.com\/","video_link":"[\"https:\\\/\\\/www.youtube.com\\\/watch?v=zyZ6YWfZN2I\",\"https:\\\/\\\/www.youtube.com\\\/watch?v=zyZ6YWfZN2I\"]","banner_image":"uploads\/musicians\/banner_1771950067_699dcff30496a.webp","profile_image":"uploads\/musicians\/profile_1771951589_699dd5e5d54ea.jpg"},
+{"id":"6","slot_number":"1","network_type":"jazz_network","title":"ดดดดดดดดดดดดดดดดดดด","genre":"ะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะะ","details":"ดดดดดดดดดดดดดดดดดดดดดดดดดดดดดดดดด","facebook":"https:\/\/www.facebook.com\/","whatsapp":"0987463245","instagram":"https:\/\/www.facebook.com\/","website":"https:\/\/www.facebook.com\/","tiktok":"https:\/\/www.facebook.com\/","email":"https:\/\/www.facebook.com\/","video_link":"[\"https:\\\/\\\/www.youtube.com\\\/watch?v=zyZ6YWfZN2I\"]","banner_image":"uploads\/musicians\/banner_1771948761_699dcad9e5c92.jpg","profile_image":"uploads\/musicians\/profile_1771948761_699dcad9e5ebc.jpg"}
+]
+}
+]
