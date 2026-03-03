@@ -512,25 +512,44 @@ switch($action) {
             $layout = $content_layouts[$i] ?? 'col-1';
 
             if ($type === 'image') {
-                $file_key = "content_images_" . $i;
-                if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
-                    $ext = pathinfo($_FILES[$file_key]['name'], PATHINFO_EXTENSION);
-                    $filename = "cmb_content_" . time() . "_" . uniqid() . "." . $ext;
+                // 1. รับรูปฝั่ง EN
+                $file_key_en = "content_images_en_" . $i;
+                if (isset($_FILES[$file_key_en]) && $_FILES[$file_key_en]['error'] === UPLOAD_ERR_OK) {
+                    $ext = pathinfo($_FILES[$file_key_en]['name'], PATHINFO_EXTENSION);
+                    $filename = "cmb_en_" . time() . "_" . uniqid() . "." . $ext;
                     $target_file = $upload_dir . $filename;
-                    if (move_uploaded_file($_FILES[$file_key]['tmp_name'], $target_file)) {
+                    if (move_uploaded_file($_FILES[$file_key_en]['tmp_name'], $target_file)) {
                         $value_en = $target_file; 
-                        $value_th = $target_file; // รูปภาพใช้รูปเดียวกันทั้ง 2 ภาษา
                     }
-                } else {
-                    $value_th = $value_en; // กรณีไม่อัพรูปใหม่
                 }
-            } else if ($type === 'video') {
-                $value_th = $value_en; // วิดีโอใช้ลิงก์เดียวกัน
+                
+                // 2. รับรูปฝั่ง TH
+                $file_key_th = "content_images_th_" . $i;
+                if (isset($_FILES[$file_key_th]) && $_FILES[$file_key_th]['error'] === UPLOAD_ERR_OK) {
+                    $ext = pathinfo($_FILES[$file_key_th]['name'], PATHINFO_EXTENSION);
+                    $filename = "cmb_th_" . time() . "_" . uniqid() . "." . $ext;
+                    $target_file = $upload_dir . $filename;
+                    if (move_uploaded_file($_FILES[$file_key_th]['tmp_name'], $target_file)) {
+                        $value_th = $target_file; 
+                    }
+                }
+
+                // 🌟 ถ้าไม่ได้อัปโหลดรูป TH หรือเป็นค่าว่าง ให้ดึงรูป EN มาใช้แทนอัตโนมัติ
+                if (empty($value_th) || strpos($value_th, 'placehold.co') !== false) {
+                    $value_th = $value_en;
+                }
+                
+            } else if ($type === 'video' || $type === 'embed' || $type === 'iframe') {
+                // ถ้ากล่องพวกนี้ของ TH ว่างเปล่า ให้เอาของ EN ไปใช้แทนกันเหนียว
+                if (empty(trim($value_th))) {
+                    $value_th = $value_en; 
+                }
             }
             
             $content_array_en[] = ['type' => $type, 'value' => $value_en, 'layout' => $layout];
             $content_array_th[] = ['type' => $type, 'value' => $value_th, 'layout' => $layout];
         }
+        
         $details_json_en = json_encode($content_array_en, JSON_UNESCAPED_UNICODE);
         $details_json_th = json_encode($content_array_th, JSON_UNESCAPED_UNICODE);
 
@@ -555,7 +574,7 @@ switch($action) {
             
             echo json_encode(['status' => 'success', 'message' => 'บันทึกข้อมูล CMBigband สำเร็จ!']);
         } catch (Exception $e) {
-            echo json_encode(['status' => 'error', 'message' => 'เกิดข้อผิดพลาด: ' . $e->getMessage()]);
+            echo json_encode(['status' => 'error', 'message' => 'เกิดข้อผิดพลาด Database: ' . $e->getMessage()]);
         }
         break;
 

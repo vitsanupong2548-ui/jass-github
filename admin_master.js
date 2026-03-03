@@ -738,42 +738,178 @@ window.clickCourseSlot = async (slotNum, id) => {
 window.closeCourseForm = () => { document.getElementById('course-form-container')?.classList.add('hidden'); };
 window.deleteTargetCourse = async (id) => { if (!id) return; if (confirm('แน่ใจหรือไม่ที่จะลบคอร์สนี้?')) { const fd = new FormData(); fd.append('course_id', id); const res = await fetch(getApiUrl('delete_course'), fetchOptions('POST', fd)); const result = await res.json(); showToast(result.message); if (result.status === 'success') { fetchCourses(); closeCourseForm(); } } };
 
+// ==========================================
+// 🌟 1. ฟังก์ชันบันทึกข้อมูล Courses Library
+// ==========================================
 window.saveCourse = async () => {
     try {
         const fd = new FormData();
         fd.append('course_id', document.getElementById('edit-course-id').value);
         fd.append('slot_number', document.getElementById('edit-course-slot').value);
-        fd.append('title', document.getElementById('course-title').value); fd.append('title_th', document.getElementById('course-title-th').value);
-        fd.append('creator', document.getElementById('course-creator').value); fd.append('creator_th', document.getElementById('course-creator-th').value);
+        fd.append('title', document.getElementById('course-title').value); 
+        fd.append('title_th', document.getElementById('course-title-th').value);
+        fd.append('creator', document.getElementById('course-creator').value); 
+        fd.append('creator_th', document.getElementById('course-creator-th').value);
 
         const bFile = window.croppedImagesData['course-banner'] || document.getElementById('course-banner')?.files[0];
         if (bFile) fd.append('banner_image', bFile, window.croppedImagesData['course-banner'] ? 'banner.jpg' : bFile.name);
 
-        document.querySelectorAll('.course-item').forEach((item, index) => {
-            const type = item.getAttribute('data-type'); fd.append('content_types[]', type);
+        const items = document.querySelectorAll('.course-item');
+        for (let index = 0; index < items.length; index++) {
+            const item = items[index];
+            const type = item.getAttribute('data-type'); 
+            
+            fd.append('content_types[]', type);
             fd.append('content_layouts[]', item.querySelector('.course-layout-select').value);
-            if (['text', 'h2', 'h3', 'h4'].includes(type)) { fd.append('content_values[]', item.querySelector('.course-text-input').value); fd.append('content_values_th[]', item.querySelector('.course-text-input-th').value); }
-            else if (type === 'video') { fd.append('content_values[]', item.querySelector('.course-video-input').value); fd.append('content_values_th[]', item.querySelector('.course-video-input').value); }
-            else if (type === 'embed') { fd.append('content_values[]', item.querySelector('.course-embed-input').value); fd.append('content_values_th[]', item.querySelector('.course-embed-input').value); }
-            else if (type === 'iframe') { fd.append('content_values[]', item.querySelector('.course-iframe-input').value); fd.append('content_values_th[]', item.querySelector('.course-iframe-input').value); }
-            else if (type === 'image') {
-                const fEn = item.querySelector('.course-img-input-en'); const oEn = item.querySelector('.course-img-old-en');
-                const fTh = item.querySelector('.course-img-input-th'); const oTh = item.querySelector('.course-img-old-th');
-                
-                if (fEn && fEn.id && window.croppedImagesData[fEn.id]) { fd.append(`content_images_en_${index}`, window.croppedImagesData[fEn.id], 'img_en.jpg'); fd.append('content_values[]', `has_image_en`); }
-                else if (fEn && fEn.files[0]) { fd.append(`content_images_en_${index}`, fEn.files[0]); fd.append('content_values[]', `has_image_en`); }
-                else { fd.append('content_values[]', oEn ? oEn.value : ''); }
-
-                if (fTh && fTh.id && window.croppedImagesData[fTh.id]) { fd.append(`content_images_th_${index}`, window.croppedImagesData[fTh.id], 'img_th.jpg'); fd.append('content_values_th[]', `has_image_th`); }
-                else if (fTh && fTh.files[0]) { fd.append(`content_images_th_${index}`, fTh.files[0]); fd.append('content_values_th[]', `has_image_th`); }
-                else { fd.append('content_values_th[]', oTh ? oTh.value : ''); }
+            
+            if (['text', 'h2', 'h3', 'h4'].includes(type)) { 
+                fd.append('content_values[]', item.querySelector('.course-text-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.course-text-input-th').value); 
             }
-        });
+            else if (type === 'video') { 
+                fd.append('content_values[]', item.querySelector('.course-video-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.course-video-input').value); 
+            }
+            else if (type === 'embed') { 
+                fd.append('content_values[]', item.querySelector('.course-embed-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.course-embed-input').value); 
+            }
+            else if (type === 'iframe') { 
+                fd.append('content_values[]', item.querySelector('.course-iframe-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.course-iframe-input').value); 
+            }
+            else if (type === 'image') {
+                const fEn = item.querySelector('.course-img-input-en'); 
+                const oEn = item.querySelector('.course-img-old-en');
+                const fTh = item.querySelector('.course-img-input-th'); 
+                const oTh = item.querySelector('.course-img-old-th');
+                
+                // ส่งรูปเก่าไปยืนพื้นก่อน (แก้ปัญหาภาพหาย)
+                const oldValEn = oEn ? oEn.value : '';
+                const oldValTh = oTh ? oTh.value : '';
+                fd.append('content_values[]', oldValEn);
+                fd.append('content_values_th[]', oldValTh);
+
+                // ถ้ารูปใหม่มีการอัปโหลด ให้แนบไฟล์ทับไป
+                if (fEn && fEn.id && window.croppedImagesData[fEn.id]) { 
+                    fd.append(`content_images_en_${index}`, window.croppedImagesData[fEn.id], 'img_en.jpg'); 
+                } else if (fEn && fEn.files && fEn.files.length > 0) { 
+                    fd.append(`content_images_en_${index}`, fEn.files[0]); 
+                }
+
+                if (fTh && fTh.id && window.croppedImagesData[fTh.id]) { 
+                    fd.append(`content_images_th_${index}`, window.croppedImagesData[fTh.id], 'img_th.jpg'); 
+                } else if (fTh && fTh.files && fTh.files.length > 0) { 
+                    fd.append(`content_images_th_${index}`, fTh.files[0]); 
+                }
+            }
+        }
 
         showToast('กำลังบันทึกข้อมูล Course...');
-        const res = await fetch(getApiUrl('save_course'), fetchOptions('POST', fd)); const result = await res.json();
-        if (result.status === 'success') { showToast('บันทึกคอร์สเรียนสำเร็จ!'); fetchCourses(); closeCourseForm(); } else { showToast('ข้อผิดพลาด: ' + result.message); }
-    } catch (e) { }
+        const res = await fetch(getApiUrl('save_course'), fetchOptions('POST', fd)); 
+        const result = await res.json();
+        
+        if (result.status === 'success') { 
+            showToast('บันทึกคอร์สเรียนสำเร็จ!'); 
+            fetchCourses(); 
+            closeCourseForm(); 
+            window.croppedImagesData = {};
+        } else { 
+            showToast('ข้อผิดพลาด: ' + result.message); 
+        }
+    } catch (e) { 
+        console.error(e);
+        showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์'); 
+    }
+};
+
+// ==========================================
+// 🌟 2. ฟังก์ชันบันทึกข้อมูล CMSJ Bigband
+// ==========================================
+window.saveCMBigband = async () => {
+    try {
+        const fd = new FormData();
+        fd.append('title', document.getElementById('cmb-title').value); 
+        fd.append('title_th', document.getElementById('cmb-title-th').value);
+        fd.append('genre', document.getElementById('cmb-genre').value); 
+        fd.append('genre_th', document.getElementById('cmb-genre-th').value);
+        fd.append('facebook', document.getElementById('cmb-fb').value); 
+        fd.append('whatsapp', document.getElementById('cmb-wa').value);
+        fd.append('instagram', document.getElementById('cmb-ig').value); 
+        fd.append('website', document.getElementById('cmb-web').value);
+        fd.append('tiktok', document.getElementById('cmb-tk').value); 
+        fd.append('email', document.getElementById('cmb-email').value);
+
+        const bFile = window.croppedImagesData['cmb-banner'] || document.getElementById('cmb-banner')?.files[0];
+        const pFile = window.croppedImagesData['cmb-profile'] || document.getElementById('cmb-profile')?.files[0];
+        if (bFile) fd.append('banner_image', bFile, window.croppedImagesData['cmb-banner'] ? 'banner.jpg' : bFile.name);
+        if (pFile) fd.append('profile_image', pFile, window.croppedImagesData['cmb-profile'] ? 'profile.jpg' : pFile.name);
+
+        const items = document.querySelectorAll('.cmb-item');
+        for (let index = 0; index < items.length; index++) {
+            const item = items[index];
+            const type = item.getAttribute('data-type'); 
+            
+            fd.append('content_types[]', type);
+            fd.append('content_layouts[]', item.querySelector('.cmb-layout-select').value);
+            
+            if (['text', 'h2', 'h3', 'h4'].includes(type)) { 
+                fd.append('content_values[]', item.querySelector('.cmb-text-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.cmb-text-input-th').value); 
+            }
+            else if (type === 'video') { 
+                fd.append('content_values[]', item.querySelector('.cmb-video-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.cmb-video-input').value); 
+            }
+            else if (type === 'embed') { 
+                fd.append('content_values[]', item.querySelector('.cmb-embed-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.cmb-embed-input').value); 
+            }
+            else if (type === 'iframe') { 
+                fd.append('content_values[]', item.querySelector('.cmb-iframe-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.cmb-iframe-input').value); 
+            }
+            else if (type === 'image') {
+                const fEn = item.querySelector('.cmb-img-input-en'); 
+                const oEn = item.querySelector('.cmb-img-old-en');
+                const fTh = item.querySelector('.cmb-img-input-th'); 
+                const oTh = item.querySelector('.cmb-img-old-th');
+                
+                // ส่งรูปเก่าไปยืนพื้นก่อน (แก้ปัญหาภาพหาย)
+                const oldValEn = oEn ? oEn.value : '';
+                const oldValTh = oTh ? oTh.value : '';
+                fd.append('content_values[]', oldValEn);
+                fd.append('content_values_th[]', oldValTh);
+
+                // ถ้ารูปใหม่มีการอัปโหลด ให้แนบไฟล์ทับไป
+                if (fEn && fEn.id && window.croppedImagesData[fEn.id]) { 
+                    fd.append(`content_images_en_${index}`, window.croppedImagesData[fEn.id], 'img_en.jpg'); 
+                } else if (fEn && fEn.files && fEn.files.length > 0) { 
+                    fd.append(`content_images_en_${index}`, fEn.files[0]); 
+                }
+
+                if (fTh && fTh.id && window.croppedImagesData[fTh.id]) { 
+                    fd.append(`content_images_th_${index}`, window.croppedImagesData[fTh.id], 'img_th.jpg'); 
+                } else if (fTh && fTh.files && fTh.files.length > 0) { 
+                    fd.append(`content_images_th_${index}`, fTh.files[0]); 
+                }
+            }
+        }
+
+        showToast('กำลังบันทึกข้อมูล...');
+        const res = await fetch(getApiUrl('save_cmbigband'), fetchOptions('POST', fd)); 
+        const result = await res.json();
+        
+        if (result.status === 'success') { 
+            showToast('บันทึกข้อมูลสำเร็จ!'); 
+            window.croppedImagesData = {}; 
+        } else { 
+            showToast('ข้อผิดพลาด: ' + result.message); 
+        }
+    } catch (e) { 
+        console.error(e);
+        showToast('การเชื่อมต่อล้มเหลว'); 
+    }
 };
 //
 // =====================================================================
@@ -1040,34 +1176,91 @@ window.loadCmbData = async () => {
 window.saveCMBigband = async () => {
     try {
         const fd = new FormData();
-        fd.append('title', document.getElementById('cmb-title').value); fd.append('title_th', document.getElementById('cmb-title-th').value);
-        fd.append('genre', document.getElementById('cmb-genre').value); fd.append('genre_th', document.getElementById('cmb-genre-th').value);
-        fd.append('facebook', document.getElementById('cmb-fb').value); fd.append('whatsapp', document.getElementById('cmb-wa').value);
-        fd.append('instagram', document.getElementById('cmb-ig').value); fd.append('website', document.getElementById('cmb-web').value);
-        fd.append('tiktok', document.getElementById('cmb-tk').value); fd.append('email', document.getElementById('cmb-email').value);
+        fd.append('title', document.getElementById('cmb-title').value); 
+        fd.append('title_th', document.getElementById('cmb-title-th').value);
+        fd.append('genre', document.getElementById('cmb-genre').value); 
+        fd.append('genre_th', document.getElementById('cmb-genre-th').value);
+        fd.append('facebook', document.getElementById('cmb-fb').value); 
+        fd.append('whatsapp', document.getElementById('cmb-wa').value);
+        fd.append('instagram', document.getElementById('cmb-ig').value); 
+        fd.append('website', document.getElementById('cmb-web').value);
+        fd.append('tiktok', document.getElementById('cmb-tk').value); 
+        fd.append('email', document.getElementById('cmb-email').value);
 
         const bFile = window.croppedImagesData['cmb-banner'] || document.getElementById('cmb-banner')?.files[0];
         const pFile = window.croppedImagesData['cmb-profile'] || document.getElementById('cmb-profile')?.files[0];
         if (bFile) fd.append('banner_image', bFile, window.croppedImagesData['cmb-banner'] ? 'banner.jpg' : bFile.name);
         if (pFile) fd.append('profile_image', pFile, window.croppedImagesData['cmb-profile'] ? 'profile.jpg' : pFile.name);
 
-        document.querySelectorAll('.cmb-item').forEach((item, index) => {
-            const type = item.getAttribute('data-type'); fd.append('content_types[]', type);
+        const items = document.querySelectorAll('.cmb-item');
+        for (let index = 0; index < items.length; index++) {
+            const item = items[index];
+            const type = item.getAttribute('data-type'); 
+            
+            fd.append('content_types[]', type);
             fd.append('content_layouts[]', item.querySelector('.cmb-layout-select').value);
-            if (['text', 'h2', 'h3', 'h4'].includes(type)) { fd.append('content_values[]', item.querySelector('.cmb-text-input').value); fd.append('content_values_th[]', item.querySelector('.cmb-text-input-th').value); }
-            else if (type === 'video') { fd.append('content_values[]', item.querySelector('.cmb-video-input').value); fd.append('content_values_th[]', item.querySelector('.cmb-video-input').value); }
-            else if (type === 'image') {
-                const fInput = item.querySelector('.cmb-img-input'); const oldInput = item.querySelector('.cmb-img-old');
-                if (fInput && fInput.id && window.croppedImagesData[fInput.id]) { fd.append(`content_images_${index}`, window.croppedImagesData[fInput.id], 'img.jpg'); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); }
-                else if (fInput && fInput.files[0]) { fd.append(`content_images_${index}`, fInput.files[0]); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); }
-                else { fd.append('content_values[]', oldInput ? oldInput.value : ''); fd.append('content_values_th[]', oldInput ? oldInput.value : ''); }
+            
+            // ดักจับการส่งค่าทุกประเภทให้ครบถ้วน ป้องกัน Array พัง
+            if (['text', 'h2', 'h3', 'h4'].includes(type)) { 
+                fd.append('content_values[]', item.querySelector('.cmb-text-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.cmb-text-input-th').value); 
             }
-        });
+            else if (type === 'video') { 
+                fd.append('content_values[]', item.querySelector('.cmb-video-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.cmb-video-input').value); 
+            }
+            else if (type === 'embed') { 
+                fd.append('content_values[]', item.querySelector('.cmb-embed-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.cmb-embed-input').value); 
+            }
+            else if (type === 'iframe') { 
+                fd.append('content_values[]', item.querySelector('.cmb-iframe-input').value); 
+                fd.append('content_values_th[]', item.querySelector('.cmb-iframe-input').value); 
+            }
+            else if (type === 'image') {
+                const fEn = item.querySelector('.cmb-img-input-en'); 
+                const oEn = item.querySelector('.cmb-img-old-en');
+                const fTh = item.querySelector('.cmb-img-input-th'); 
+                const oTh = item.querySelector('.cmb-img-old-th');
+                
+                // รูป EN
+                if (fEn && fEn.id && window.croppedImagesData[fEn.id]) { 
+                    fd.append(`content_images_en_${index}`, window.croppedImagesData[fEn.id], 'img_en.jpg'); 
+                    fd.append('content_values[]', `has_image_en`); 
+                } else if (fEn && fEn.files && fEn.files.length > 0) { 
+                    fd.append(`content_images_en_${index}`, fEn.files[0]); 
+                    fd.append('content_values[]', `has_image_en`); 
+                } else { 
+                    fd.append('content_values[]', oEn ? oEn.value : ''); 
+                }
+
+                // รูป TH
+                if (fTh && fTh.id && window.croppedImagesData[fTh.id]) { 
+                    fd.append(`content_images_th_${index}`, window.croppedImagesData[fTh.id], 'img_th.jpg'); 
+                    fd.append('content_values_th[]', `has_image_th`); 
+                } else if (fTh && fTh.files && fTh.files.length > 0) { 
+                    fd.append(`content_images_th_${index}`, fTh.files[0]); 
+                    fd.append('content_values_th[]', `has_image_th`); 
+                } else { 
+                    fd.append('content_values_th[]', oTh ? oTh.value : ''); 
+                }
+            }
+        }
 
         showToast('กำลังบันทึกข้อมูล...');
-        const res = await fetch(getApiUrl('save_cmbigband'), fetchOptions('POST', fd)); const result = await res.json();
-        if (result.status === 'success') { showToast('บันทึกข้อมูลสำเร็จ!'); window.croppedImagesData = {}; } else showToast('ข้อผิดพลาด: ' + result.message);
-    } catch (e) { }
+        const res = await fetch(getApiUrl('save_cmbigband'), fetchOptions('POST', fd)); 
+        const result = await res.json();
+        
+        if (result.status === 'success') { 
+            showToast('บันทึกข้อมูลสำเร็จ!'); 
+            window.croppedImagesData = {}; 
+        } else { 
+            showToast('ข้อผิดพลาด: ' + result.message); 
+        }
+    } catch (e) { 
+        console.error("Save Error:", e);
+        showToast('การเชื่อมต่อล้มเหลว (กด F12 ดู Console Log)'); 
+    }
 };
 // =====================================================================
 // --- 8. Forum Q&A Management (Bulk Delete) ---

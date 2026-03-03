@@ -1,3 +1,4 @@
+
 window.homepageData = {};
 window.frontendMusicians = [];
 window.frontendEvents = [];
@@ -641,14 +642,19 @@ window.applyDataToDOM = async function (container) {
                                 if (Array.isArray(detailsArray)) {
                                     detailsArray.forEach(item => {
                                         let widthClass = 'w-full';
-                                        if (item.layout === 'col-2') widthClass = 'w-1/2';
-                                        else if (item.layout === 'col-3') widthClass = 'w-1/3';
-                                        else if (item.layout === 'col-4') widthClass = 'w-1/4';
+                                        // 🌟 ดึงค่า layout ถ้าข้อมูลเก่าไม่มี ให้ถือว่าเป็น col-1 ไว้ก่อน
+                                        let itemLayout = item.layout || 'col-1';
 
-                                        detailsHtml += `<div class="${widthClass} px-2 mb-6 flex flex-col justify-start">`;
+                                        // 🌟 เปลี่ยนจาก md: เป็น sm: เพื่อให้แบ่งคอลัมน์ได้ตั้งแต่หน้าจอเล็กลงมา
+                                        if (itemLayout === 'col-2') widthClass = 'w-full sm:w-1/2';
+                                        else if (itemLayout === 'col-3') widthClass = 'w-full sm:w-1/3';
+                                        else if (itemLayout === 'col-4') widthClass = 'w-full sm:w-1/2 lg:w-1/4';
+
+                                        // 🌟 เอา justify-start ออก เพื่อให้ flexbox ยืดกล่องอัตโนมัติ
+                                        detailsHtml += `<div class="${widthClass} px-2 mb-6 flex flex-col">`;
 
                                         if (item.type === 'text') {
-                                            detailsHtml += `<div class="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-[#050505] font-medium leading-relaxed w-full break-words">${item.value ? item.value.replace(/\n/g, '<br>') : ''}</div>`;
+                                            detailsHtml += `<div class="flex-1 prose prose-sm sm:prose-base lg:prose-lg max-w-none text-[#050505] font-medium leading-relaxed w-full break-words">${item.value ? item.value.replace(/\n/g, '<br>') : ''}</div>`;
                                         } else if (item.type === 'h2') {
                                             detailsHtml += `<h2 class="text-3xl sm:text-4xl font-header font-bold text-[#050505] mt-6 mb-4 w-full break-words leading-tight">${item.value}</h2>`;
                                         } else if (item.type === 'h3') {
@@ -656,12 +662,12 @@ window.applyDataToDOM = async function (container) {
                                         } else if (item.type === 'h4') {
                                             detailsHtml += `<h4 class="text-xl sm:text-2xl font-bold text-[#050505] mt-4 mb-2 w-full break-words leading-snug">${item.value}</h4>`;
                                         } else if (item.type === 'image') {
-                                            detailsHtml += `<img src="${item.value}" class="w-full h-auto object-cover rounded-2xl shadow-sm border border-gray-200">`;
+                                            // 🌟 เพิ่ม flex-1 ตรงนี้ เพื่อให้กล่องรูปภาพยืดเต็มความสูงของแถว
+                                            detailsHtml += `<div class="w-full flex-1 min-h-[250px] rounded-2xl overflow-hidden shadow-sm border border-gray-200 bg-gray-100"><img src="${item.value}" class="w-full h-full object-cover object-center"></div>`;
                                         } else if (item.type === 'video') {
                                             let vidSrc = item.value;
                                             let isVertical = false;
 
-                                            // เช็คว่าเป็น YouTube Shorts หรือไม่
                                             if (vidSrc.includes('youtube.com/shorts/')) {
                                                 vidSrc = vidSrc.replace('youtube.com/shorts/', 'youtube.com/embed/');
                                                 isVertical = true;
@@ -671,20 +677,16 @@ window.applyDataToDOM = async function (container) {
                                                 vidSrc = vidSrc.replace('youtu.be/', 'youtube.com/embed/');
                                             }
 
-                                            // ถ้าเป็นแนวตั้ง (Shorts)
+                                            // 🌟 เพิ่ม flex-1 ในวิดีโอเช่นกัน
                                             if (isVertical) {
-                                                // ปรับให้เป็น iframe แบบไม่ล็อก aspect ratio, จำกัดความกว้าง 400px และความสูง 700px (ขนาดมาตรฐานมือถือ)
-                                                detailsHtml += `<div class="w-full flex justify-center py-4"><iframe src="${vidSrc}" class="w-full max-w-[400px] h-[700px] rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe></div>`;
+                                                detailsHtml += `<div class="w-full flex-1 flex justify-center"><iframe src="${vidSrc}" class="w-full h-full min-h-[400px] max-w-[350px] rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe></div>`;
                                             } else {
-                                                // ถ้าเป็นแนวนอนปกติ
-                                                detailsHtml += `<iframe src="${vidSrc}" class="w-full aspect-video rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe>`;
+                                                detailsHtml += `<iframe src="${vidSrc}" class="w-full flex-1 min-h-[250px] aspect-video rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe>`;
                                             }
                                         } else if (item.type === 'embed') {
-                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${item.value}</div>`;
+                                            detailsHtml += `<div class="w-full flex-1 rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${item.value}</div>`;
                                         } else if (item.type === 'iframe') {
                                             let rawCode = item.value;
-
-                                            // Handle cases like Canva that wrap iframe in a restrictive div
                                             if (rawCode.includes('<div') && rawCode.includes('padding-top')) {
                                                 rawCode = rawCode.replace(/padding-top:\s*[^;]+;/g, 'padding-top: 0;');
                                                 rawCode = rawCode.replace(/height:\s*0;/g, 'height: auto;');
@@ -697,19 +699,16 @@ window.applyDataToDOM = async function (container) {
                                                 if (!rawCode.includes('height=')) rawCode = rawCode.replace('<iframe', '<iframe height="600"');
                                                 else rawCode = rawCode.replace(/height="[^"]*"/g, 'height="600"');
 
-                                                // Override inline absolute positioning from Canva that crushes the content
                                                 rawCode = rawCode.replace(/position:\s*absolute;/g, 'position: relative;');
 
-                                                // Guarantee max-width is 100% so documents like Google Docs don't overflow horizontally
                                                 if (rawCode.includes('style=')) {
                                                     rawCode = rawCode.replace('style="', 'style="width: 100% !important; max-width: 100vw !important; box-sizing: border-box; overflow: hidden !important; ');
                                                 } else {
                                                     rawCode = rawCode.replace('<iframe', '<iframe style="width: 100% !important; max-width: 100vw !important; box-sizing: border-box; overflow: hidden !important;"');
                                                 }
                                             }
-                                            detailsHtml += `<div class="block w-full max-w-full overflow-hidden shrink-0 rounded-xl shadow-sm my-4">${rawCode}</div>`;
+                                            detailsHtml += `<div class="block w-full flex-1 max-w-full overflow-hidden shrink-0 rounded-xl shadow-sm my-4">${rawCode}</div>`;
                                         }
-
 
                                         detailsHtml += `</div>`;
                                     });
@@ -934,13 +933,19 @@ window.applyDataToDOM = async function (container) {
                                 if (Array.isArray(detailsArray) && detailsArray.length > 0) {
                                     detailsArray.forEach(item => {
                                         let widthClass = 'w-full';
-                                        if (item.layout === 'col-2') widthClass = 'w-1/2';
-                                        else if (item.layout === 'col-3') widthClass = 'w-1/3';
-                                        else if (item.layout === 'col-4') widthClass = 'w-1/4';
+                                        // 🌟 ดึงค่า layout ถ้าข้อมูลเก่าไม่มี ให้ถือว่าเป็น col-1 ไว้ก่อน
+                                        let itemLayout = item.layout || 'col-1';
 
-                                        detailsHtml += `<div class="${widthClass} px-2 mb-6 flex flex-col justify-start">`;
+                                        // 🌟 เปลี่ยนจาก md: เป็น sm: เพื่อให้แบ่งคอลัมน์ได้ตั้งแต่หน้าจอเล็กลงมา
+                                        if (itemLayout === 'col-2') widthClass = 'w-full sm:w-1/2';
+                                        else if (itemLayout === 'col-3') widthClass = 'w-full sm:w-1/3';
+                                        else if (itemLayout === 'col-4') widthClass = 'w-full sm:w-1/2 lg:w-1/4';
+
+                                        // 🌟 เอา justify-start ออก เพื่อให้ flexbox ยืดกล่องอัตโนมัติ
+                                        detailsHtml += `<div class="${widthClass} px-2 mb-6 flex flex-col">`;
+
                                         if (item.type === 'text') {
-                                            detailsHtml += `<div class="prose prose-sm sm:prose-base lg:prose-lg max-w-none text-[#050505] font-medium leading-relaxed w-full break-words">${item.value ? item.value.replace(/\n/g, '<br>') : ''}</div>`;
+                                            detailsHtml += `<div class="flex-1 prose prose-sm sm:prose-base lg:prose-lg max-w-none text-[#050505] font-medium leading-relaxed w-full break-words">${item.value ? item.value.replace(/\n/g, '<br>') : ''}</div>`;
                                         } else if (item.type === 'h2') {
                                             detailsHtml += `<h2 class="text-3xl sm:text-4xl font-header font-bold text-[#050505] mt-6 mb-4 w-full break-words leading-tight">${item.value}</h2>`;
                                         } else if (item.type === 'h3') {
@@ -948,10 +953,12 @@ window.applyDataToDOM = async function (container) {
                                         } else if (item.type === 'h4') {
                                             detailsHtml += `<h4 class="text-xl sm:text-2xl font-bold text-[#050505] mt-4 mb-2 w-full break-words leading-snug">${item.value}</h4>`;
                                         } else if (item.type === 'image') {
-                                            detailsHtml += `<img src="${item.value}" class="w-full h-auto object-cover rounded-2xl shadow-sm border border-gray-200">`;
+                                            // 🌟 เพิ่ม flex-1 ตรงนี้ เพื่อให้กล่องรูปภาพยืดเต็มความสูงของแถว
+                                            detailsHtml += `<div class="w-full flex-1 min-h-[250px] rounded-2xl overflow-hidden shadow-sm border border-gray-200 bg-gray-100"><img src="${item.value}" class="w-full h-full object-cover object-center"></div>`;
                                         } else if (item.type === 'video') {
                                             let vidSrc = item.value;
                                             let isVertical = false;
+
                                             if (vidSrc.includes('youtube.com/shorts/')) {
                                                 vidSrc = vidSrc.replace('youtube.com/shorts/', 'youtube.com/embed/');
                                                 isVertical = true;
@@ -961,17 +968,16 @@ window.applyDataToDOM = async function (container) {
                                                 vidSrc = vidSrc.replace('youtu.be/', 'youtube.com/embed/');
                                             }
 
+                                            // 🌟 เพิ่ม flex-1 ในวิดีโอเช่นกัน
                                             if (isVertical) {
-                                                detailsHtml += `<div class="w-full flex justify-center"><iframe src="${vidSrc}" class="w-full max-w-[350px] aspect-[9/16] rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe></div>`;
+                                                detailsHtml += `<div class="w-full flex-1 flex justify-center"><iframe src="${vidSrc}" class="w-full h-full min-h-[400px] max-w-[350px] rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe></div>`;
                                             } else {
-                                                detailsHtml += `<iframe src="${vidSrc}" class="w-full aspect-video rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe>`;
+                                                detailsHtml += `<iframe src="${vidSrc}" class="w-full flex-1 min-h-[250px] aspect-video rounded-2xl shadow-sm" frameborder="0" allowfullscreen></iframe>`;
                                             }
                                         } else if (item.type === 'embed') {
-                                            detailsHtml += `<div class="w-full rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${item.value}</div>`;
+                                            detailsHtml += `<div class="w-full flex-1 rounded-xl overflow-hidden shadow-sm flex justify-center my-4">${item.value}</div>`;
                                         } else if (item.type === 'iframe') {
                                             let rawCode = item.value;
-
-                                            // Handle cases like Canva that wrap iframe in a restrictive div
                                             if (rawCode.includes('<div') && rawCode.includes('padding-top')) {
                                                 rawCode = rawCode.replace(/padding-top:\s*[^;]+;/g, 'padding-top: 0;');
                                                 rawCode = rawCode.replace(/height:\s*0;/g, 'height: auto;');
@@ -984,18 +990,18 @@ window.applyDataToDOM = async function (container) {
                                                 if (!rawCode.includes('height=')) rawCode = rawCode.replace('<iframe', '<iframe height="600"');
                                                 else rawCode = rawCode.replace(/height="[^"]*"/g, 'height="600"');
 
-                                                // Override inline absolute positioning from Canva that crushes the content
                                                 rawCode = rawCode.replace(/position:\s*absolute;/g, 'position: relative;');
 
-                                                // Guarantee max-width is 100% so documents like Google Docs don't overflow horizontally
                                                 if (rawCode.includes('style=')) {
                                                     rawCode = rawCode.replace('style="', 'style="width: 100% !important; max-width: 100vw !important; box-sizing: border-box; overflow: hidden !important; ');
                                                 } else {
                                                     rawCode = rawCode.replace('<iframe', '<iframe style="width: 100% !important; max-width: 100vw !important; box-sizing: border-box; overflow: hidden !important;"');
                                                 }
                                             }
-                                            detailsHtml += `<div class="block w-full max-w-full overflow-hidden shrink-0 rounded-xl shadow-sm my-4">${rawCode}</div>`;
+                                            detailsHtml += `<div class="block w-full flex-1 max-w-full overflow-hidden shrink-0 rounded-xl shadow-sm my-4">${rawCode}</div>`;
                                         }
+
+                                        detailsHtml += `</div>`;
                                     });
                                 } else {
                                     detailsHtml += `<div class="w-full px-2 text-gray-500 font-medium text-center py-8">${window.currentLang === 'th' ? 'ยังไม่มีรายละเอียด' : 'No details available'}</div>`;

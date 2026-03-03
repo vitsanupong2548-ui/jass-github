@@ -1,4 +1,8 @@
-/* ลบ font-family เดิมออก ปล่อยให้ Tailwind ในไฟล์ HTML จัดการ */
+/* ==========================================================================
+   Chiang Mai Jazz City - Main Stylesheet (style.css)
+   ========================================================================== */
+
+/* --- 1. Utilities (ซ่อน Scrollbar แต่ยังเลื่อนได้) --- */
 body {
     background-color: #050505;
     color: #E0E0E0;
@@ -19,7 +23,7 @@ body {
 }
 
 .main-container {
-    background-color: transparent; /* เปลี่ยนจากเดิมให้โปร่งใสกลืนกับพื้นหลังดำ */
+    background-color: transparent; 
     border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.1);
     padding: 25px;
@@ -27,24 +31,6 @@ body {
     box-sizing: border-box;
     margin-top: 1.5rem;
     transition: height 0.5s ease-in-out;
-}
-/* =======================================================
-   ระบบ Grid สำหรับการ์ด 6 สี (ย่อส่วนในมือถืออัตโนมัติ)
-======================================================= */
-.grid-container {
-    display: grid;
-    /* บังคับให้มือถือเป็น 2 คอลัมน์เสมอ (ใบที่ 1 คู่ 2, 3 คู่ 4) */
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem; /* ระยะห่างระหว่างการ์ดในมือถือ */
-    padding: 0.5rem;
-}
-
-/* หน้าจอ Tablet ให้ขยายระยะห่างขึ้น */
-@media (min-width: 640px) {
-    .grid-container {
-        gap: 1.5rem;
-        padding: 1rem;
-    }
 }
 
 /* หน้าจอคอมพิวเตอร์ให้เรียง 3 คอลัมน์ตามปกติ */
@@ -54,51 +40,66 @@ body {
     }
 }
 
-/* =======================================================
-   📱 ปรับขนาด "การ์ด" ให้เล็กลงเฉพาะตอนดูในมือถือ
-======================================================= */
+/* ==========================================================================
+   📱 2. Mobile Responsive (เฉพาะหน้าจอโทรศัพท์)
+   ========================================================================== */
 @media (max-width: 639px) {
-    .card {
-        padding: 1rem !important; /* ลดขอบด้านในการ์ดให้เล็กลง */
-        min-height: 110px; /* บังคับความสูงไม่ให้การ์ดยืดเกินไป */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center; /* จัดให้อยู่กึ่งกลาง */
-        text-align: center;
-    }
     
-    .card > div {
-        width: 100%;
+    /* --- 2.1 ปรับการ์ดหน้าหลัก (ยังไม่ได้กด) ให้เป็นกล่องจิ๋ว --- */
+    .grid-container {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+        padding: 5px !important;
     }
 
+    .card {
+        aspect-ratio: 1 / 1 !important;
+        padding: 1rem !important;
+        min-height: unset !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .card > div { width: 100%; }
+
     .card-header {
-        display: flex;
-        flex-direction: column; /* จับไอคอนให้อยู่ด้านบน ตัวหนังสืออยู่ด้านล่าง */
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        width: 100% !important;
+        gap: 0.5rem !important;
     }
 
     .card-header img {
-        width: 2.5rem; /* ย่อขนาดไอคอน */
-        height: 2.5rem;
-        margin: 0;
+        width: 2.5rem !important;
+        height: 2.5rem !important;
+        margin: 0 !important;
     }
 
     .card-header h2 {
-        font-size: 0.95rem; /* ย่อขนาดตัวอักษรหัวข้อ */
-        line-height: 1.2;
-        width: 100%;
+        font-size: 0.95rem !important;
+        line-height: 1.2 !important;
+        width: 100% !important;
     }
 
-    /* ซ่อนข้อความรายละเอียดยาวๆ และ ลูกศร เพื่อประหยัดพื้นที่ในมือถือ */
+    /* ซ่อนข้อความยาวๆ ตอนเป็นบัตรเล็ก */
     .card p[id^="dyn-card"], 
-    .arrow-link {
+    .card .arrow-link {
         display: none !important;
     }
+
+  
 }
-/**/
+
+/* ==========================================================================
+   3. Card Base Styles (รูปแบบปกติในคอม)
+   ========================================================================== */
 .card {
     color: #ffffff;
     border-radius: 16px;
@@ -298,7 +299,6 @@ body {
 
 @media (max-width: 768px) {
     .main-container { padding: 15px; border: none; }
-    .grid-container { grid-template-columns: 1fr; }
     .card { padding: 25px; }
     .clone-content,
     .card.clone.card-blue.is-expanded .event-detail-content { 
@@ -337,58 +337,51 @@ body {
 .content-visible {
     opacity: 1;
 }
-/* ซ่อน Scrollbar แต่ยังให้เลื่อนได้ปกติ */
-.hide-scrollbar::-webkit-scrollbar {
-    display: none; /* สำหรับ Chrome, Safari และ Opera */
-}
-.hide-scrollbar {
-    -ms-overflow-style: none;  /* สำหรับ IE และ Edge */
-    scrollbar-width: none;  /* สำหรับ Firefox */
-}
-/* ... โค้ดเดิม ... */
 
 /* =========================================
    ส่วนที่เพิ่มใหม่สำหรับ Visual Admin Banner Image
    ========================================= */
-
-/* ทำให้ตัว Overlay เป็น Flexbox เพื่อจัดไอคอนให้อยู่ตรงกลาง */
 .edit-bg-trigger {
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer; /* เปลี่ยนเคอร์เซอร์เป็นรูปมือ */
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-/* สร้างไอคอนกล้องถ่ายรูปด้วย CSS Pseudo-element ::after */
 .edit-bg-trigger::after {
-    content: "\f030"; /* รหัส Unicode ของไอคอนกล้อง (fa-camera) ใน Font Awesome */
-    font-family: "Font Awesome 6 Free"; /* เรียกใช้ฟอนต์ไอคอน */
-    font-weight: 900; /* ความหนาสำหรับ Solid icons */
-    font-size: 4rem; /* ขนาดไอคอน */
-    color: rgba(255, 255, 255, 0.8); /* สีขาว โปร่งแสงเล็กน้อย */
-    opacity: 0; /* ซ่อนไว้ก่อนในตอนแรก */
-    transform: scale(0.8); /* ย่อขนาดลงเล็กน้อยตอนซ่อน */
+    content: "\f030"; 
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 4rem; 
+    color: rgba(255, 255, 255, 0.8); 
+    opacity: 0; 
+    transform: scale(0.8);
     transition: all 0.3s ease-in-out;
-    pointer-events: none; /* เพื่อให้แน่ใจว่าการคลิกจะทะลุไปโดนตัว Trigger */
+    pointer-events: none; 
 }
 
-/* เมื่อเอาเมาส์ไปวาง (Hover) ให้ทำสิ่งเหล่านี้... */
 .edit-bg-trigger:hover {
-    background: rgba(0, 0, 0, 0.6) !important; /* ทำให้พื้นหลังมืดลงอีกนิด */
+    background: rgba(0, 0, 0, 0.6) !important; 
 }
 
-/* ...และแสดงไอคอนขึ้นมา */
 .edit-bg-trigger:hover::after {
-    opacity: 1; /* แสดงไอคอน */
-    transform: scale(1); /* ขยายขนาดกลับมาปกติ */
+    opacity: 1; 
+    transform: scale(1); 
 }
+
 /* =========================================
    ซ่อนแถบ Scrollbar แนวนอนและแนวตั้งทั้งหมด 
    แต่ยังให้เลื่อนได้ตามปกติ (Touch, Mouse, JS)
    ========================================= */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none; 
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+}
 
-/* สำหรับ Chrome, Safari, Opera, Edge (เวอร์ชันใหม่) */
 ::-webkit-scrollbar {
     width: 0px !important;
     height: 0px !important;
@@ -396,7 +389,6 @@ body {
     background: transparent !important;
 }
 
-/* สำหรับ Firefox, IE, Edge (เวอร์ชันเก่า) และบังคับใช้กับทุกแท็ก */
 * {
     -ms-overflow-style: none !important; 
     scrollbar-width: none !important; 

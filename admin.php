@@ -957,7 +957,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
    <script src="admin_master.js?v=2"></script>
     
 <script>
-window.changeLayout = (selectEl) => {
+    window.changeLayout = (selectEl) => {
         const item = selectEl.closest('.course-item, .cmb-item');
         item.classList.remove('w-full', 'w-1/2', 'w-1/3', 'w-1/4'); 
         const val = selectEl.value;
@@ -967,6 +967,10 @@ window.changeLayout = (selectEl) => {
         if(val === 'col-4') item.classList.add('w-1/4');
     };
 
+    // =======================================================
+    // 1. ฟังก์ชันสร้างกล่องของหน้า Course
+    // =======================================================
+    window.courseImgCounter = 0; 
     window.addCourseContent = (type, valEn = '', valTh = '', layout = 'col-1') => {
         const container = document.getElementById('course-content-container');
         if(container.classList.contains('space-y-4')) {
@@ -979,7 +983,6 @@ window.changeLayout = (selectEl) => {
         itemDiv.className = `course-item px-2 mb-4 transition-all duration-300 ${widthClass}`;
         itemDiv.setAttribute('data-type', type);
         
-        // 🌟 เพิ่มปุ่ม รูปมือ (✋) สำหรับใช้เมาส์ลากจัดเรียง (class="block-drag-handle")
         const controls = `
             <div class="absolute -top-3 -right-1 flex flex-col gap-1 z-50 items-center">
                 <button type="button" onclick="this.closest('.course-item').remove()" class="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow hover:bg-red-600 transition text-sm" title="ลบ">✕</button>
@@ -988,26 +991,27 @@ window.changeLayout = (selectEl) => {
             </div>`;
 
         let innerContent = '';
-       if (['text', 'h2', 'h3', 'h4'].includes(type)) {
+        if (['text', 'h2', 'h3', 'h4'].includes(type)) {
             innerContent = `
                 <div class="flex justify-start gap-3 items-center mb-2 px-1 border-b border-gray-100 pb-2 pr-10">
                     <span class="text-xs font-bold text-gray-500">รูปแบบข้อความ:</span>
-                    <select class="border border-gray-300 rounded px-2 py-1 text-xs font-bold text-blue-600 outline-none hover:border-blue-500 transition cursor-pointer" onchange="this.closest('.course-item, .cmb-item').setAttribute('data-type', this.value)">
+                    <select class="border border-gray-300 rounded px-2 py-1 text-xs font-bold text-blue-600 outline-none hover:border-blue-500 transition cursor-pointer" onchange="this.closest('.course-item').setAttribute('data-type', this.value)">
                         <option value="text" ${type==='text'?'selected':''}>¶ ย่อหน้าปกติ (Paragraph)</option>
                         <option value="h2" ${type==='h2'?'selected':''}>H2 - หัวข้อหลัก</option>
                         <option value="h3" ${type==='h3'?'selected':''}>H3 - หัวข้อรอง</option>
                         <option value="h4" ${type==='h4'?'selected':''}>H4 - หัวข้อย่อย</option>
                     </select>
                 </div>
-                <textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] ${container.id.includes('course') ? 'course' : 'cmb'}-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-en" placeholder="Details (EN)...">${valEn}</textarea><textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] ${container.id.includes('course') ? 'course' : 'cmb'}-text-input-th text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-th hidden" placeholder="รายละเอียด (TH)...">${valTh}</textarea>`;
+                <textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] course-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-en" placeholder="Details (EN)...">${valEn}</textarea>
+                <textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] course-text-input-th text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-th hidden" placeholder="รายละเอียด (TH)...">${valTh}</textarea>`;
         } else if (type === 'image') {
             window.courseImgCounter = (window.courseImgCounter || 0) + 1;
             const idx = window.courseImgCounter;
             
-            const pIdEn = `c-img-p-en-${idx}`; const iIdEn = `c-img-i-en-${idx}`; 
+            const pIdEn = `course-img-p-en-${idx}`; const iIdEn = `course-img-i-en-${idx}`; 
             const dEn = valEn ? valEn : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Image+(EN)';
             
-            const pIdTh = `c-img-p-th-${idx}`; const iIdTh = `c-img-i-th-${idx}`; 
+            const pIdTh = `course-img-p-th-${idx}`; const iIdTh = `course-img-i-th-${idx}`; 
             const dTh = valTh ? valTh : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Image+(TH)';
 
             innerContent = `
@@ -1035,10 +1039,8 @@ window.changeLayout = (selectEl) => {
         } else if (type === 'video') { 
             innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl course-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${valEn}">`; 
         } else if (type === 'embed') { 
-            // 🌟 เพิ่ม Embed
-            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-embed-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 break-all whitespace-pre-wrap resize-y" placeholder="วางโค้ด Embed (เช่น โค้ดจาก Facebook, Twitter, Spotify)">${valEn}</textarea>`;
+            innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-embed-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 break-all whitespace-pre-wrap resize-y" placeholder="วางโค้ด Embed (เช่น Facebook, Twitter, Spotify)">${valEn}</textarea>`;
         } else if (type === 'iframe') { 
-            // 🌟 เพิ่ม iFrame
             innerContent = `<textarea class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl min-h-[150px] course-iframe-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 break-all whitespace-pre-wrap resize-y" placeholder="วางโค้ด <iframe ...> (เช่น Google Maps หรือเว็บอื่น)">${valEn}</textarea>`;
         }
 
@@ -1047,7 +1049,12 @@ window.changeLayout = (selectEl) => {
         
         if (window.currentAdminLang === 'th') { itemDiv.querySelectorAll('.lang-en').forEach(el => el.classList.add('hidden')); itemDiv.querySelectorAll('.lang-th').forEach(el => el.classList.remove('hidden')); }
     };
- window.addCmbContent = (type, valEn = '', valTh = '', layout = 'col-1') => {
+
+    // =======================================================
+    // 2. ฟังก์ชันสร้างกล่องของหน้า CMSJ Bigband
+    // =======================================================
+    window.cmbImgCounter = 0;
+    window.addCmbContent = (type, valEn = '', valTh = '', layout = 'col-1') => {
         const container = document.getElementById('cmb-content-container');
         if(container.classList.contains('space-y-4')) {
             container.classList.remove('space-y-4'); container.className = 'flex flex-wrap -mx-2 items-stretch';
@@ -1067,22 +1074,51 @@ window.changeLayout = (selectEl) => {
             </div>`;
 
         let innerContent = '';
-     if (['text', 'h2', 'h3', 'h4'].includes(type)) {
+        if (['text', 'h2', 'h3', 'h4'].includes(type)) {
             innerContent = `
                 <div class="flex justify-start gap-3 items-center mb-2 px-1 border-b border-gray-100 pb-2 pr-10">
                     <span class="text-xs font-bold text-gray-500">รูปแบบข้อความ:</span>
-                    <select class="border border-gray-300 rounded px-2 py-1 text-xs font-bold text-blue-600 outline-none hover:border-blue-500 transition cursor-pointer" onchange="this.closest('.course-item, .cmb-item').setAttribute('data-type', this.value)">
+                    <select class="border border-gray-300 rounded px-2 py-1 text-xs font-bold text-blue-600 outline-none hover:border-blue-500 transition cursor-pointer" onchange="this.closest('.cmb-item').setAttribute('data-type', this.value)">
                         <option value="text" ${type==='text'?'selected':''}>¶ ย่อหน้าปกติ (Paragraph)</option>
                         <option value="h2" ${type==='h2'?'selected':''}>H2 - หัวข้อหลัก</option>
                         <option value="h3" ${type==='h3'?'selected':''}>H3 - หัวข้อรอง</option>
                         <option value="h4" ${type==='h4'?'selected':''}>H4 - หัวข้อย่อย</option>
                     </select>
                 </div>
-                <textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] ${container.id.includes('course') ? 'course' : 'cmb'}-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-en" placeholder="Details (EN)...">${valEn}</textarea><textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] ${container.id.includes('course') ? 'course' : 'cmb'}-text-input-th text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-th hidden" placeholder="รายละเอียด (TH)...">${valTh}</textarea>`;
+                <textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] cmb-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-en" placeholder="Details (EN)...">${valEn}</textarea>
+                <textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] cmb-text-input-th text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-th hidden" placeholder="รายละเอียด (TH)...">${valTh}</textarea>`;
         } else if (type === 'image') {
-            window.cmbImgCounter++; 
-            const previewId = `cmb-img-preview-${window.cmbImgCounter}`; const inputId = `cmb-img-input-${window.cmbImgCounter}`; const imgDisplay = valEn ? valEn : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
-            innerContent = `<div class="relative rounded-xl overflow-hidden bg-gray-200 h-full min-h-[150px] group flex items-center justify-center"><img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-cover relative z-0"><label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0"><span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 อัปโหลดรูป</span><input type="file" id="${inputId}" class="hidden cmb-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)"><input type="hidden" class="cmb-img-old" value="${valEn}"></label></div>`;
+            window.cmbImgCounter = (window.cmbImgCounter || 0) + 1;
+            const idx = window.cmbImgCounter;
+            
+            const pIdEn = `cmb-img-p-en-${idx}`; const iIdEn = `cmb-img-i-en-${idx}`; 
+            const dEn = valEn ? valEn : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Image+(EN)';
+            
+            const pIdTh = `cmb-img-p-th-${idx}`; const iIdTh = `cmb-img-i-th-${idx}`; 
+            const dTh = valTh ? valTh : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Image+(TH)';
+
+            innerContent = `
+                <div class="lang-en w-full h-full min-h-[150px]">
+                    <div class="relative rounded-xl overflow-hidden bg-gray-200 h-full group flex items-center justify-center">
+                        <img id="${pIdEn}" src="${dEn}" class="w-full h-full object-cover relative z-0">
+                        <label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0">
+                            <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 รูปภาพ (EN)</span>
+                            <input type="file" id="${iIdEn}" class="hidden cmb-img-input-en" accept="image/*" onchange="previewImage(this, '${pIdEn}', NaN)">
+                            <input type="hidden" class="cmb-img-old-en" value="${valEn}">
+                        </label>
+                    </div>
+                </div>
+                <div class="lang-th w-full h-full min-h-[150px] hidden">
+                    <div class="relative rounded-xl overflow-hidden bg-gray-200 h-full group flex items-center justify-center">
+                        <img id="${pIdTh}" src="${dTh}" class="w-full h-full object-cover relative z-0">
+                        <label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0">
+                            <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 รูปภาพ (TH)</span>
+                            <input type="file" id="${iIdTh}" class="hidden cmb-img-input-th" accept="image/*" onchange="previewImage(this, '${pIdTh}', NaN)">
+                            <input type="hidden" class="cmb-img-old-th" value="${valTh}">
+                        </label>
+                    </div>
+                </div>
+            `;
         } else if (type === 'video') { 
             innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl cmb-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${valEn}">`; 
         } else if (type === 'embed') { 
@@ -1096,7 +1132,6 @@ window.changeLayout = (selectEl) => {
 
         if (window.currentAdminLang === 'th') { itemDiv.querySelectorAll('.lang-en').forEach(el => el.classList.add('hidden')); itemDiv.querySelectorAll('.lang-th').forEach(el => el.classList.remove('hidden')); }
     };
-
 </script>
 <div id="slip-modal" class="hidden fixed inset-0 bg-black/80 z-[200] flex justify-center items-center py-4 backdrop-blur-sm" onclick="closeSlipModal()">
         <img id="slip-full-image" src="" class="max-w-[90%] max-h-[90vh] object-contain rounded-lg shadow-2xl cursor-zoom-out bg-white p-2">

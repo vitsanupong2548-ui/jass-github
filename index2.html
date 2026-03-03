@@ -18,6 +18,13 @@
 
     <script>
         tailwind.config = {
+            // 🌟 เพิ่ม safelist บังคับให้ Tailwind สร้างคลาสแบ่งคอลัมน์เตรียมไว้เสมอ
+            safelist: [
+                'w-full', 'w-1/2', 'w-1/3', 'w-1/4',
+                'sm:w-full', 'sm:w-1/2', 'sm:w-1/3', 'sm:w-1/4',
+                'md:w-full', 'md:w-1/2', 'md:w-1/3', 'md:w-1/4',
+                'lg:w-full', 'lg:w-1/2', 'lg:w-1/3', 'lg:w-1/4'
+            ],
             theme: {
                 extend: {
                     fontFamily: {
@@ -33,6 +40,8 @@
             }
         }
     </script>
+   
+
 </head>
 
 <body class="bg-[#050505] text-white p-4 sm:p-6 md:p-8 font-body min-h-screen flex flex-col">
@@ -190,74 +199,73 @@
 
         <main class="card-section-body">
             <div class="main-container bg-brand-bg border-white/10">
-               <div class="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 p-2 sm:p-6">
+              <div class="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 p-2 sm:p-6">
 
-                    <div class="card card-blue relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#festival-content">
+                    <div class="card card-blue relative rounded-2xl sm:rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#festival-content">
                         <div class="w-full flex flex-col items-center sm:items-start">
                             <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
-                                <img src="icon/1.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain filter brightness-0 invert">
-                                <h2 id="dyn-card1_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide">Festival<br>&amp; Event</h2>
+                                <img src="icon/1.webp" class="w-4 h-4 sm:w-14 sm:h-14 object-contain filter brightness-0 invert">
+                                <h2 id="dyn-card1_title" class="font-header font-bold text-sm sm:text-2xl leading-tight tracking-wide">Festival<br>&amp; Event</h2>
                             </div>
                             <p id="dyn-card1_desc" class="hidden sm:block font-body text-sm leading-relaxed text-white/80 mt-2">Experience the vibrant energy of Lanna-Jazz fusion live on stage. Discover our seasonal music festivals, see the event calendar, and book your tickets.</p>
                         </div>
                         <a href="#" class="arrow-link hidden sm:flex"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
 
-                    <div class="card card-yellow relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#artists-content">
+                    <div class="card card-yellow relative rounded-2xl sm:rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#artists-content">
                         <div class="w-full flex flex-col items-center sm:items-start">
                             <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
-                                <img src="icon/2.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain text-black">
-                                <h2 id="dyn-card2_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide text-black">Musician<br>Network</h2>
+                                <img src="icon/2.webp" class="w-8 h-8 sm:w-14 sm:h-14 object-contain text-black">
+                                <h2 id="dyn-card2_title" class="font-header font-bold text-sm sm:text-2xl leading-tight tracking-wide text-black">Musician<br>Network</h2>
                             </div>
                             <p id="dyn-card2_desc" class="hidden sm:block font-body text-sm leading-relaxed text-black/80 mt-2">Explore our roster of talented local and international artists. Read their biographies, listen to their music, and discover the faces behind the innovative Lanna-Jazz sound.</p>
                         </div>
                         <a href="#" class="arrow-link hidden sm:flex text-black border-black/30 hover:bg-black hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
 
-                    <div class="card card-green relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#courses-content">
+                    <div class="card card-green relative rounded-2xl sm:rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#courses-content">
                         <div class="w-full flex flex-col items-center sm:items-start">
                             <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
-                                <img src="icon/3.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain">
-                                <h2 id="dyn-card3_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide">Courses<br>Library</h2>
+                                <img src="icon/3.webp" class="w-8 h-8 sm:w-14 sm:h-14 object-contain">
+                                <h2 id="dyn-card3_title" class="font-header font-bold text-sm sm:text-2xl leading-tight tracking-wide">Courses<br>Library</h2>
                             </div>
                             <p id="dyn-card3_desc" class="hidden sm:block font-body text-sm leading-relaxed text-white/90 mt-2">Unlock your potential with our groundbreaking curriculum. Learn to blend traditional Lanna instruments with jazz theory through our modular online courses.</p>
                         </div>
                         <a href="#" class="arrow-link hidden sm:flex"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
 
-                    <div class="card card-gray relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#bigband-content">
+                    <div class="card card-gray relative rounded-2xl sm:rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#bigband-content">
                         <div class="w-full flex flex-col items-center sm:items-start">
                             <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
-                                <img src="icon/4.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain">
-                                <h2 id="dyn-card4_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide text-black">CMSJ<br>Bigband</h2>
+                                <img src="icon/4.webp" class="w-8 h-8 sm:w-14 sm:h-14 object-contain">
+                                <h2 id="dyn-card4_title" class="font-header font-bold text-sm sm:text-2xl leading-tight tracking-wide text-black">CMSJ<br>Bigband</h2>
                             </div>
                             <p id="dyn-card4_desc" class="hidden sm:block font-body text-sm leading-relaxed text-black/80 mt-2">Meet Chiang Mai's one-and-only big band. As our flagship ensemble, we fuse the soul of Lanna music with the power of a modern jazz orchestra.</p>
                         </div>
                         <a href="#" class="arrow-link hidden sm:flex text-black border-black/30 hover:bg-black hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
 
-                    <div class="card card-orange relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#forum-content">
+                    <div class="card card-orange relative rounded-2xl sm:rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#forum-content">
                         <div class="w-full flex flex-col items-center sm:items-start">
                             <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
-                                <img src="icon/5.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain">
-                                <h2 id="dyn-card5_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide text-white">Forum<br>Q&amp;A</h2>
+                                <img src="icon/5.webp" class="w-8 h-8 sm:w-14 sm:h-14 object-contain">
+                                <h2 id="dyn-card5_title" class="font-header font-bold text-sm sm:text-2xl leading-tight tracking-wide text-white">Forum<br>Q&amp;A</h2>
                             </div>
                             <p id="dyn-card5_desc" class="hidden sm:block font-body text-sm leading-relaxed text-white/90 mt-2">Join the conversation in our online community. This is a space for artists, students, and music lovers to ask questions and share knowledge.</p>
                         </div>
                         <a href="#" class="arrow-link hidden sm:flex"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
 
-                    <div class="card card-pink relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#store-content">
+                    <div class="card card-pink relative rounded-2xl sm:rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#store-content">
                         <div class="w-full flex flex-col items-center sm:items-start">
                             <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
-                                <img src="icon/6.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain">
-                                <h2 id="dyn-card6_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide text-white">Store<br>&amp; Merch</h2>
+                                <img src="icon/6.webp" class="w-8 h-8 sm:w-14 sm:h-14 object-contain">
+                                <h2 id="dyn-card6_title" class="font-header font-bold text-sm sm:text-2xl leading-tight tracking-wide text-white">Store<br>&amp; Merch</h2>
                             </div>
                             <p id="dyn-card6_desc" class="hidden sm:block font-body text-sm leading-relaxed text-white/90 mt-2">Take a piece of the festival home with you. Browse our exclusive collection of apparel, albums, and unique merchandise.</p>
                         </div>
                         <a href="#" class="arrow-link hidden sm:flex text-black border-black/30 hover:bg-black hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
-
                 </div>
             </div>
         </main>
@@ -1379,10 +1387,9 @@
         </div>
     </div>
 
-    <script src="script.js?v=12345"></script>
-    <script src="main.js?v=12345"></script>
-    <script src="language.js?v=12345"></script>
-
+   <script src="script.js?v=99999"></script>
+    <script src="main.js?v=99999"></script>
+    <script src="language.js?v=99999"></script>
 </body>
 
 </html>

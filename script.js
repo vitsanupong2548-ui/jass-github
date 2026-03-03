@@ -504,7 +504,8 @@ function addEventDetailListeners(container) {
         });
     }
 
-    container.querySelectorAll('.artist-link, .event-link, .course-link, .forum-link, .store-link, .bigband-link').forEach(link => {
+    // 🌟 นำ .course-link และ .bigband-link ออกจากตรงนี้ เพื่อไม่ให้มันไปล้างโค้ดทำงานหลัก
+    container.querySelectorAll('.artist-link, .event-link, .forum-link, .store-link').forEach(link => {
         const newLink = link.cloneNode(true); 
         link.parentNode.replaceChild(newLink, link);
         
@@ -512,36 +513,18 @@ function addEventDetailListeners(container) {
             e.preventDefault();
             e.stopPropagation();
 
-            // 🌟 1. ดักล็อกอิน "เฉพาะคอร์สเรียน" เท่านั้น! 🌟
-            if (!window.isUserLoggedIn && newLink.classList.contains('course-link')) {
-                const authModal = document.getElementById('auth-modal');
-                const loginContainer = document.getElementById('login-form-container');
-                const registerContainer = document.getElementById('register-form-container');
-                
-                if(loginContainer) loginContainer.classList.remove('hidden');
-                if(registerContainer) registerContainer.classList.add('hidden');
-                if(authModal) authModal.classList.remove('hidden');
-                return; // หยุดการทำงาน เฉพาะคอร์สเรียน
-            }
-
-            // 🌟 2. ถ้าเป็นหน้าอื่น หรือล็อกอินแล้ว ให้ทำงานต่อ 🌟
             const mainContainer = document.querySelector('.main-container');
             if (mainContainer && !mainContainer.dataset.initialHeight) {
                 mainContainer.dataset.initialHeight = mainContainer.offsetHeight;
                 mainContainer.style.height = `${mainContainer.offsetHeight * 2.5}px`; 
             }
 
-            // 🌟 3. ตรวจสอบว่าคลิกที่ปุ่มไหน แล้วเปิดหน้าต่างรายละเอียดของอันนั้น 🌟
             if (newLink.classList.contains('event-link')) {
                 showEventDetailContent(newLink.getAttribute('data-event-index') || '1');
-            } else if (newLink.classList.contains('course-link')) {
-                window.showCourseDetailContent(newLink.getAttribute('data-course-index') || '1');
             } else if (newLink.classList.contains('forum-link')) {
                 window.showForumDetailContent(newLink.getAttribute('data-forum-index') || '1');
             } else if (newLink.classList.contains('store-link')) {
                 window.showStoreDetailContent(newLink.getAttribute('data-store-index') || '1');
-            } else if (newLink.classList.contains('bigband-link')) {
-                window.showBigbandDetailContent();
             } else if (newLink.classList.contains('artist-link')) {
                 const match = newLink.querySelector('img[id^="dyn-"]')?.id.match(/dyn-(artist|partner)(\d+)/);
                 if(match) {
@@ -551,7 +534,6 @@ function addEventDetailListeners(container) {
         });
     });
 }
-
 // ----------------------------------------------------------------------
 // ระบบดึงข้อมูลจาก Database มาหยอดลง DOM (เฉพาะหน้า Event)
 // ----------------------------------------------------------------------
