@@ -34,11 +34,28 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
-<body class="h-screen flex overflow-hidden">
+<body class="h-screen flex flex-col md:flex-row overflow-hidden bg-[#f3f4f6]">
 
-   <aside class="w-64 bg-white border-r border-gray-200 flex flex-col h-full z-10" id="sidebar">
-        <div class="p-6"><a href="index2.html" class="flex flex-col hover:opacity-80 transition"><h1 class="text-2xl font-bold">Admin Panel</h1><span class="text-xs text-blue-500 mt-1">🏠 ไปหน้าเว็บไซต์หลัก</span></a></div>
-        <nav class="flex-1 overflow-y-auto">
+    <div class="md:hidden bg-white border-b border-gray-200 p-4 flex justify-between items-center z-40 shadow-sm sticky top-0">
+        <h1 class="text-xl font-bold text-gray-800">Admin Panel</h1>
+        <button id="mobile-menu-btn" onclick="openAdminSidebar()" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition shadow-sm border border-gray-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#1f2937">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+    </div>
+
+    <div id="admin-sidebar-backdrop" onclick="closeAdminSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden backdrop-blur-sm transition-opacity opacity-0 cursor-pointer"></div>
+
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 transform -translate-x-full md:translate-x-0 w-64 bg-white border-r border-gray-200 flex flex-col h-full z-50 transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none">
+        <div class="p-6 flex justify-between items-center">
+            <a href="index2.html" class="flex flex-col hover:opacity-80 transition">
+                <h1 class="text-2xl font-bold">Admin Panel</h1>
+                <span class="text-xs text-blue-500 mt-1">🏠 ไปหน้าเว็บไซต์หลัก</span>
+            </a>
+           <button id="close-sidebar-btn" onclick="closeAdminSidebar()" class="md:hidden p-1 bg-gray-100 rounded-full hover:bg-gray-200">
+        </div>
+        <nav class="flex-1 overflow-y-auto hide-scrollbar">
             <ul class="space-y-1">
                 <li><a href="#" data-target="section-admin" class="nav-link block px-6 py-3 font-semibold bg-gray-100 text-gray-800">Admin (User Mgt.)</a></li>
                 <li><a href="#" data-target="section-festival" class="nav-link block px-6 py-3 font-semibold hover:bg-blue-100 text-gray-800">Festival & Event</a></li>
@@ -51,12 +68,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 </li>
                 <li><a href="#" data-target="section-courses" class="nav-link block px-6 py-3 font-semibold hover:bg-green-100 text-gray-800">Courses Library</a></li>
                 <li><a href="#" data-target="section-cmbigband" class="nav-link block px-6 py-3 font-semibold hover:bg-gray-200 text-gray-800">CMBigband</a></li>
-                
                 <li><a href="#" data-target="section-forum" class="nav-link block px-6 py-3 font-semibold hover:bg-orange-100 text-gray-800">Forum Q&A</a></li>
                 <li><a href="#" data-target="section-store" class="nav-link block px-6 py-3 font-semibold hover:bg-pink-100 text-gray-800">Store & Merch</a></li>
-                
-                
-               <li>
+                <li>
                     <a href="#" data-target="section-ticket" class="nav-link block px-6 py-3 font-semibold hover:bg-blue-100 text-gray-800 flex justify-between items-center">Ticket Mgt.</a>
                     <ul class="pl-10 space-y-1 mt-1 text-sm text-gray-600">
                         <li><a href="#" onclick="switchTab('section-ticket'); switchInnerTab('ticket-dashboard');" class="block py-1 hover:text-black">Event Dashboard</a></li>
@@ -71,7 +85,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         </div>
     </aside>
 
-    <main class="flex-1 h-full overflow-y-auto bg-white relative" id="main-content">
+    <main class="flex-1 h-full overflow-y-auto bg-white relative w-full" id="main-content">
         
         <section id="section-admin" class="content-section p-8 max-w-6xl mx-auto">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">จัดการสมาชิก (User Management)</h2>
@@ -87,8 +101,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                     <button id="btn-action-delete" disabled class="bg-red-500 text-white px-6 py-2 rounded-lg font-bold shadow-sm opacity-50 cursor-not-allowed hover:bg-red-600 transition flex items-center gap-2">🗑️ ลบผู้ใช้</button>
                 </div>
             </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                <table class="w-full text-left border-collapse cursor-pointer">
+           <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto w-full hide-scrollbar">
+                 <table class="w-full min-w-[600px] text-left border-collapse cursor-pointer">
                     <thead><tr class="bg-gray-50 text-gray-700 text-sm uppercase tracking-wider border-b border-gray-200"><th class="p-4 font-bold w-16 text-center">ID</th><th class="p-4 font-bold">ชื่อผู้ใช้ (Username / Email)</th><th class="p-4 font-bold w-32 text-center">บทบาท (Role)</th></tr></thead>
                     <tbody id="user-table-body" class="text-gray-800"></tbody>
                 </table>
@@ -105,8 +119,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             <div class="p-8 max-w-4xl mx-auto space-y-8">
                 <div class="mb-10 bg-white border rounded-2xl shadow-sm p-6">
                     <h3 class="text-2xl font-bold mb-4 border-b pb-2 text-gray-800">รายการ Event ทั้งหมดในระบบ</h3>
-                    <div class="overflow-hidden rounded-xl border">
-                        <table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto w-full hide-scrollbar rounded-xl border">
+                        <table class="w-full min-w-[600px] text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-100 border-b">
                                     <th class="p-4 font-semibold text-gray-600">ID</th>
@@ -254,8 +268,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             <div class="p-8 max-w-5xl mx-auto">
                 <div class="mb-10 bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
                     <h3 class="text-xl font-extrabold mb-4 border-b border-gray-200 pb-3 text-gray-900">ตารางรายชื่อศิลปินและเครือข่ายทั้งหมด</h3>
-                    <div class="overflow-hidden rounded-xl border border-gray-200">
-                        <table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto w-full hide-scrollbar rounded-xl border border-gray-200">
+                        <table class="w-full min-w-[600px] text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-100 border-b border-gray-200 text-sm">
                                     <th class="p-4 font-bold text-gray-700">ID / ช่อง</th>
@@ -441,8 +455,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 <div id="course-main-wrapper" class="space-y-10">
                     <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
                         <h3 class="text-xl font-extrabold mb-4 border-b border-gray-200 pb-3 text-gray-900">ตารางรายชื่อคอร์สเรียนทั้งหมด</h3>
-                        <div class="overflow-hidden rounded-xl border border-gray-200">
-                            <table class="w-full text-left border-collapse">
+                        <div class="overflow-x-auto w-full hide-scrollbar rounded-xl border border-gray-200">
+                            <table class="w-full min-w-[600px] text-left border-collapse">
                                 <thead>
                                     <tr class="bg-gray-100 border-b border-gray-200 text-sm">
                                         <th class="p-4 font-bold text-gray-700">ID / ช่อง</th>
@@ -694,8 +708,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 </button>
             </div>
             
-            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-                <table class="w-full text-left border-collapse cursor-pointer">
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-x-auto w-full hide-scrollbar">
+                <table class="w-full min-w-[700px] text-left border-collapse cursor-pointer">
                     <thead>
                         <tr class="bg-orange-100 border-b border-orange-200 text-sm">
                             <th class="p-4 font-bold text-gray-800 w-24 text-center">เลือก</th>
@@ -759,8 +773,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 </div>
             </div>
 
-            <div id="tab-inner-stock" class="inner-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                <table class="w-full text-left border-collapse">
+           <div id="tab-inner-stock" class="inner-tab-content hidden bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto w-full hide-scrollbar">
+                <table class="w-full min-w-[600px] text-left border-collapse">
                     <thead class="bg-gray-100 border-b border-gray-200">
                         <tr><th class="p-4 w-16 text-center">No.</th><th class="p-4">สินค้า (Product)</th><th class="p-4 text-center">คงเหลือ (Balance)</th><th class="p-4 text-center">จัดการ</th></tr>
                     </thead>
@@ -987,9 +1001,37 @@ window.changeLayout = (selectEl) => {
                 </div>
                 <textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] ${container.id.includes('course') ? 'course' : 'cmb'}-text-input text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-en" placeholder="Details (EN)...">${valEn}</textarea><textarea class="w-full border-none px-4 py-2 outline-none focus:ring-0 rounded-xl min-h-[120px] ${container.id.includes('course') ? 'course' : 'cmb'}-text-input-th text-sm font-semibold placeholder-gray-400 h-full bg-gray-50 lang-th hidden" placeholder="รายละเอียด (TH)...">${valTh}</textarea>`;
         } else if (type === 'image') {
-            courseImgCounter++; 
-            const previewId = `course-img-preview-${courseImgCounter}`; const inputId = `course-img-input-${courseImgCounter}`; const imgDisplay = valEn ? valEn : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Click+to+Add+Image';
-            innerContent = `<div class="relative rounded-xl overflow-hidden bg-gray-200 h-full min-h-[150px] group flex items-center justify-center"><img id="${previewId}" src="${imgDisplay}" class="w-full h-full object-cover relative z-0"><label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0"><span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 อัปโหลดรูป</span><input type="file" id="${inputId}" class="hidden course-img-input" accept="image/*" onchange="previewImage(this, '${previewId}', NaN)"><input type="hidden" class="course-img-old" value="${valEn}"></label></div>`;
+            window.courseImgCounter = (window.courseImgCounter || 0) + 1;
+            const idx = window.courseImgCounter;
+            
+            const pIdEn = `c-img-p-en-${idx}`; const iIdEn = `c-img-i-en-${idx}`; 
+            const dEn = valEn ? valEn : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Image+(EN)';
+            
+            const pIdTh = `c-img-p-th-${idx}`; const iIdTh = `c-img-i-th-${idx}`; 
+            const dTh = valTh ? valTh : 'https://placehold.co/800x400/e5e7eb/a3a3a3?text=Image+(TH)';
+
+            innerContent = `
+                <div class="lang-en w-full h-full min-h-[150px]">
+                    <div class="relative rounded-xl overflow-hidden bg-gray-200 h-full group flex items-center justify-center">
+                        <img id="${pIdEn}" src="${dEn}" class="w-full h-full object-cover relative z-0">
+                        <label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0">
+                            <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 รูปภาพ (EN)</span>
+                            <input type="file" id="${iIdEn}" class="hidden course-img-input-en" accept="image/*" onchange="previewImage(this, '${pIdEn}', NaN)">
+                            <input type="hidden" class="course-img-old-en" value="${valEn}">
+                        </label>
+                    </div>
+                </div>
+                <div class="lang-th w-full h-full min-h-[150px] hidden">
+                    <div class="relative rounded-xl overflow-hidden bg-gray-200 h-full group flex items-center justify-center">
+                        <img id="${pIdTh}" src="${dTh}" class="w-full h-full object-cover relative z-0">
+                        <label class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10 m-0">
+                            <span class="bg-white/90 text-gray-800 px-4 py-2 rounded-full font-bold shadow-md hover:bg-white transition text-sm">📷 รูปภาพ (TH)</span>
+                            <input type="file" id="${iIdTh}" class="hidden course-img-input-th" accept="image/*" onchange="previewImage(this, '${pIdTh}', NaN)">
+                            <input type="hidden" class="course-img-old-th" value="${valTh}">
+                        </label>
+                    </div>
+                </div>
+            `;
         } else if (type === 'video') { 
             innerContent = `<input type="text" class="w-full border-none px-4 py-3 outline-none focus:ring-0 rounded-xl course-video-input text-sm font-semibold placeholder-gray-400 bg-gray-50" placeholder="วางลิงก์ Youtube / Vimeo" value="${valEn}">`; 
         } else if (type === 'embed') { 

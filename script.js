@@ -769,3 +769,4 @@ window.applyDataToDOM = async function(container) {
         } catch (error) { console.error('Error fetching events:', error); }
     }
 };
+

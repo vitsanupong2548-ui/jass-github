@@ -37,7 +37,7 @@
 
 <body class="bg-[#050505] text-white p-4 sm:p-6 md:p-8 font-body min-h-screen flex flex-col">
 
-    <div id="mobile-menu-container" class="hidden fixed inset-0 z-[200]">
+  <div id="mobile-menu-container" class="hidden fixed inset-0 z-[200]">
         <div id="menu-backdrop"
             class="absolute inset-0 bg-black bg-opacity-75 transition-opacity duration-300 ease-in-out opacity-0"></div>
         <div id="menu-panel"
@@ -45,64 +45,52 @@
             <div class="flex justify-between items-center mb-12">
                 <img src="icon/chiangmaijazzcity.webp" alt="Logo" class="h-10 w-auto object-contain">
                 <button id="close-menu-btn"
-                    class="w-10 h-10 border border-gray-600 rounded-full flex items-center justify-center hover:bg-white/10 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
+                    class="w-10 h-10 border border-gray-600 rounded-full flex items-center justify-center hover:bg-white/10 transition text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
+            
             <nav class="flex-grow">
                 <ul class="space-y-6">
-                    <li><a href="#"
-                            class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300 border-b border-white/20 pb-2"
-                            data-trigger="#festival-content">Festival</a></li>
-                    <li><a href="#"
-                            class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300"
-                            data-trigger="#festival-content">Event</a></li>
-                    <li><a href="#"
-                            class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300"
-                            data-trigger="#festival-content">Booking</a></li>
-                    <li><a href="#"
-                            class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300"
-                            data-trigger="#artists-content">Artists</a></li>
-                    <li><a href="#"
-                            class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300"
-                            data-trigger="#artists-content">Network</a></li>
-                    <li><a href="#"
-                            class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300"
-                            data-trigger="#courses-content">Courses</a></li>
-                    <li><a href="#"
-                            class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300"
-                            data-trigger="#bigband-content">Big Band</a></li>
-                    <li><a href="#"
-                            class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300"
-                            data-trigger="#forum-content">Forum</a></li>
-                    <li><a href="#"
-                            class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300"
-                            data-trigger="#store-content">Store</a></li>
+                    <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300 border-b border-white/20 pb-2" data-trigger="#festival-content">Festival</a></li>
+                    <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#festival-content">Event</a></li>
+                    <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#festival-content">Booking</a></li>
+                    <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#artists-content">Artists</a></li>
+                    <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#artists-content">Network</a></li>
+                    <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#courses-content">Courses</a></li>
+                    <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#bigband-content">Big Band</a></li>
+                    <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#forum-content">Forum</a></li>
+                    <li><a href="#" class="nav-trigger text-3xl font-menu font-light text-white block hover:text-gray-300" data-trigger="#store-content">Store</a></li>
                 </ul>
             </nav>
+
             <div class="mt-8 border-t border-white/20 pt-8 flex flex-col gap-4">
-                <button id="mobile-auth-btn"
-                    class="text-left font-menu font-light text-2xl text-white hover:text-gray-300 transition-colors">Log
-                    in</button>
+                
+                <div class="flex items-center justify-center gap-4 text-white font-bold text-2xl bg-white/5 w-full py-4 rounded-xl border border-white/10 mb-2">
+                    <button onclick="switchFrontLang(this, 'en')" class="hover:text-[#ef5f4d] transition focus:text-[#ef5f4d]">EN</button>
+                    <span class="text-gray-600 font-light">|</span>
+                    <button onclick="switchFrontLang(this, 'th')" class="hover:text-[#ef5f4d] transition focus:text-[#ef5f4d]">TH</button>
+                </div>
+
+                <button id="mobile-auth-btn" class="w-full text-center font-menu font-bold text-xl text-white bg-white/10 py-3 rounded-xl hover:bg-white/20 transition-colors">Log in</button>
+                <button id="mobile-logout-btn" class="hidden w-full text-center font-menu font-bold text-xl text-red-500 bg-red-500/10 py-3 rounded-xl hover:bg-red-500/20 transition-colors">Log out</button>
+
                 <a href="admin.php" id="mobile-admin-btn"
-                    class="hidden text-left text-yellow-400 font-menu font-bold text-xl hover:text-yellow-300 transition-colors flex items-center gap-2">
+                    class="hidden w-full text-center text-[#ffc107] font-menu font-bold text-xl hover:text-yellow-300 bg-[#ffc107]/10 py-3 border border-[#ffc107]/20 rounded-xl transition-colors items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287-.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                            clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
                     </svg>
                     Admin Panel
                 </a>
             </div>
         </div>
     </div>
+   
 
     <div id="main-content" class="max-w-7xl mx-auto w-full flex-grow">
-        <header class="flex justify-between items-center mb-12 md:mb-16">
+       <header class="flex justify-between items-center mb-12 md:mb-16">
             <img id="dyn-logo_main" src="icon/chiangmaijazzcity.webp" class="h-12 w-auto object-contain cursor-pointer">
             <div class="hidden lg:flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-2 w-1/3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-3" fill="none"
@@ -117,25 +105,27 @@
             <nav class="flex items-center space-x-4 md:space-x-6">
                 <button class="nav-trigger hidden sm:block border border-gray-400 text-white font-menu font-light px-6 py-2 rounded-full hover:bg-white hover:text-black transition-colors" data-trigger="#festival-content">Book</button>
 
-                <a href="admin.php" id="admin-panel-btn"
-                    class="hidden text-yellow-400 font-menu font-bold text-lg hover:text-yellow-300 transition-colors flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287-.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    Admin
-                </a>
+                <div class="hidden md:flex items-center space-x-4 md:space-x-6">
+                    <a href="admin.php" id="admin-panel-btn"
+                        class="hidden text-yellow-400 font-menu font-bold text-lg hover:text-yellow-300 transition-colors flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Admin
+                    </a>
 
-                <button id="header-auth-btn" class="font-menu font-light text-xl hover:text-gray-300 cursor-pointer">Log
-                    in</button>
+                    <button id="header-auth-btn" class="font-menu font-light text-xl hover:text-gray-300 cursor-pointer">Log in</button>
+                    <button id="header-logout-btn" class="hidden font-menu font-light text-xl text-red-500 hover:text-red-400 cursor-pointer">Log out</button>
 
-                <div class="flex items-center gap-2 ml-2 text-sm font-bold tracking-wider font-menu">
-                    <button class="front-lang-btn text-[#ef5f4d] border-b-2 border-[#ef5f4d] pb-0.5"
-                        onclick="switchFrontLang(this, 'en')">EN</button>
-                    <span class="text-gray-600 font-light">|</span>
-                    <button class="front-lang-btn text-gray-400 hover:text-white transition pb-0.5"
-                        onclick="switchFrontLang(this, 'th')">TH</button>
+                    <div class="flex items-center gap-2 ml-2 text-sm font-bold tracking-wider font-menu">
+                        <button class="front-lang-btn text-[#ef5f4d] border-b-2 border-[#ef5f4d] pb-0.5"
+                            onclick="switchFrontLang(this, 'en')">EN</button>
+                        <span class="text-gray-600 font-light">|</span>
+                        <button class="front-lang-btn text-gray-400 hover:text-white transition pb-0.5"
+                            onclick="switchFrontLang(this, 'th')">TH</button>
+                    </div>
                 </div>
 
                 <button id="menu-toggle" class="p-2 hover:bg-white/10 rounded-full transition-colors ml-2">
@@ -154,11 +144,9 @@
 
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 mb-12 md:mb-16 items-start">
             <div class="flex flex-col items-start gap-8">
-                <h1 id="dyn-hero_title"
-                    class="text-5xl sm:text-6xl lg:text-7xl font-header font-normal leading-[1] tracking-tight">The Soul
-                    of Lanna,<br>The Heart of Jazz</h1>
+                <h1 id="dyn-hero_title" class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-header font-normal leading-[1.1] tracking-tight">The Soul of Lanna,<br>The Heart of Jazz</h1>
              <a href="#" id="btn-learn-more"
-    class="inline-flex items-center gap-3 text-lg font-body font-normal hover:text-gray-300 group">
+                    class="inline-flex items-center gap-3 text-lg font-body font-normal hover:text-gray-300 group">
                     Learn More
                     <div
                         class="w-8 h-8 rounded-full border border-white flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
@@ -202,106 +190,74 @@
 
         <main class="card-section-body">
             <div class="main-container bg-brand-bg border-white/10">
-                <div class="grid-container">
-                    <div class="card card-blue" data-target="#festival-content">
-                        <div>
-                            <div class="card-header">
-                                <img src="icon/1.webp" class="w-14 h-14 object-contain filter brightness-0 invert">
-                                <h2 id="dyn-card1_title" class="font-header font-medium">Festival<br>& Event</h2>
+               <div class="w-full grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 p-2 sm:p-6">
+
+                    <div class="card card-blue relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#festival-content">
+                        <div class="w-full flex flex-col items-center sm:items-start">
+                            <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
+                                <img src="icon/1.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain filter brightness-0 invert">
+                                <h2 id="dyn-card1_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide">Festival<br>&amp; Event</h2>
                             </div>
-                            <p id="dyn-card1_desc" class="font-body text-sm leading-relaxed text-white/80">Experience
-                                the vibrant energy of Lanna-Jazz fusion live on stage. Discover our seasonal music
-                                festivals, see the event calendar, and book your tickets.</p>
+                            <p id="dyn-card1_desc" class="hidden sm:block font-body text-sm leading-relaxed text-white/80 mt-2">Experience the vibrant energy of Lanna-Jazz fusion live on stage. Discover our seasonal music festivals, see the event calendar, and book your tickets.</p>
                         </div>
-                        <a href="#" class="arrow-link"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg></a>
+                        <a href="#" class="arrow-link hidden sm:flex"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
-                    <div class="card card-yellow" data-target="#artists-content">
-                        <div>
-                            <div class="card-header">
-                                <img src="icon/2.webp" class="w-14 h-14 object-contain">
-                                <h2 id="dyn-card2_title" class="font-header font-medium">Musician<br>Network</h2>
+
+                    <div class="card card-yellow relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#artists-content">
+                        <div class="w-full flex flex-col items-center sm:items-start">
+                            <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
+                                <img src="icon/2.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain text-black">
+                                <h2 id="dyn-card2_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide text-black">Musician<br>Network</h2>
                             </div>
-                            <p id="dyn-card2_desc" class="font-body text-sm leading-relaxed text-black/80">Explore our
-                                roster of talented local and international artists. Read their biographies, listen to
-                                their music, and discover the faces behind the innovative Lanna-Jazz sound.</p>
+                            <p id="dyn-card2_desc" class="hidden sm:block font-body text-sm leading-relaxed text-black/80 mt-2">Explore our roster of talented local and international artists. Read their biographies, listen to their music, and discover the faces behind the innovative Lanna-Jazz sound.</p>
                         </div>
-                        <a href="#" class="arrow-link text-black border-black/30 hover:bg-black hover:text-white"><svg
-                                xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg></a>
+                        <a href="#" class="arrow-link hidden sm:flex text-black border-black/30 hover:bg-black hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
-                    <div class="card card-green" data-target="#courses-content">
-                        <div>
-                            <div class="card-header">
-                                <img src="icon/3.webp" class="w-14 h-14 object-contain">
-                                <h2 id="dyn-card3_title" class="font-header font-medium">Courses<br>Library</h2>
+
+                    <div class="card card-green relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#courses-content">
+                        <div class="w-full flex flex-col items-center sm:items-start">
+                            <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
+                                <img src="icon/3.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain">
+                                <h2 id="dyn-card3_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide">Courses<br>Library</h2>
                             </div>
-                            <p id="dyn-card3_desc" class="font-body text-sm leading-relaxed text-white/90">Unlock your
-                                potential with our groundbreaking curriculum. Learn to blend traditional Lanna
-                                instruments with jazz theory through our modular online courses.</p>
+                            <p id="dyn-card3_desc" class="hidden sm:block font-body text-sm leading-relaxed text-white/90 mt-2">Unlock your potential with our groundbreaking curriculum. Learn to blend traditional Lanna instruments with jazz theory through our modular online courses.</p>
                         </div>
-                        <a href="#" class="arrow-link"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg></a>
+                        <a href="#" class="arrow-link hidden sm:flex"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
-                    <div class="card card-gray" data-target="#bigband-content">
-                        <div>
-                            <div class="card-header">
-                                <img src="icon/4.webp" class="w-14 h-14 object-contain">
-                                <h2 id="dyn-card4_title" class="font-header font-medium">CMSJ<br>Bigband</h2>
+
+                    <div class="card card-gray relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#bigband-content">
+                        <div class="w-full flex flex-col items-center sm:items-start">
+                            <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
+                                <img src="icon/4.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain">
+                                <h2 id="dyn-card4_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide text-black">CMSJ<br>Bigband</h2>
                             </div>
-                            <p id="dyn-card4_desc" class="font-body text-sm leading-relaxed text-black/80">Meet Chiang
-                                Mai's one-and-only big band. As our flagship ensemble, we fuse the soul of Lanna music
-                                with the power of a modern jazz orchestra.</p>
+                            <p id="dyn-card4_desc" class="hidden sm:block font-body text-sm leading-relaxed text-black/80 mt-2">Meet Chiang Mai's one-and-only big band. As our flagship ensemble, we fuse the soul of Lanna music with the power of a modern jazz orchestra.</p>
                         </div>
-                        <a href="#" class="arrow-link text-black border-black/30 hover:bg-black hover:text-white"><svg
-                                xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg></a>
+                        <a href="#" class="arrow-link hidden sm:flex text-black border-black/30 hover:bg-black hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
-                    <div class="card card-orange" data-target="#forum-content">
-                        <div>
-                            <div class="card-header">
-                                <img src="icon/5.webp" class="w-14 h-14 object-contain">
-                                <h2 id="dyn-card5_title" class="font-header font-medium">Forum<br>Q&A</h2>
+
+                    <div class="card card-orange relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#forum-content">
+                        <div class="w-full flex flex-col items-center sm:items-start">
+                            <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
+                                <img src="icon/5.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain">
+                                <h2 id="dyn-card5_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide text-white">Forum<br>Q&amp;A</h2>
                             </div>
-                            <p id="dyn-card5_desc" class="font-body text-sm leading-relaxed text-white/90">Join the
-                                conversation in our online community. This is a space for artists, students, and music
-                                lovers to ask questions and share knowledge.</p>
+                            <p id="dyn-card5_desc" class="hidden sm:block font-body text-sm leading-relaxed text-white/90 mt-2">Join the conversation in our online community. This is a space for artists, students, and music lovers to ask questions and share knowledge.</p>
                         </div>
-                        <a href="#" class="arrow-link"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg></a>
+                        <a href="#" class="arrow-link hidden sm:flex"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
-                    <div class="card card-pink" data-target="#store-content">
-                        <div>
-                            <div class="card-header">
-                                <img src="icon/6.webp" class="w-14 h-14 object-contain">
-                                <h2 id="dyn-card6_title" class="font-header font-medium">Store<br>& Merch</h2>
+
+                    <div class="card card-pink relative rounded-[1.5rem] overflow-hidden cursor-pointer flex flex-col justify-center items-center text-center aspect-square sm:aspect-auto sm:block sm:text-left p-4 sm:p-8 transition-transform hover:scale-[1.02]" data-target="#store-content">
+                        <div class="w-full flex flex-col items-center sm:items-start">
+                            <div class="card-header flex flex-col sm:flex-row items-center gap-2 sm:gap-5 mb-0 sm:mb-4">
+                                <img src="icon/6.webp" class="w-10 h-10 sm:w-14 sm:h-14 object-contain">
+                                <h2 id="dyn-card6_title" class="font-header font-bold text-[13px] sm:text-2xl leading-tight tracking-wide text-white">Store<br>&amp; Merch</h2>
                             </div>
-                            <p id="dyn-card6_desc" class="font-body text-sm leading-relaxed text-white/90">Take a piece
-                                of the festival home with you. Browse our exclusive collection of apparel, albums, and
-                                unique merchandise.</p>
+                            <p id="dyn-card6_desc" class="hidden sm:block font-body text-sm leading-relaxed text-white/90 mt-2">Take a piece of the festival home with you. Browse our exclusive collection of apparel, albums, and unique merchandise.</p>
                         </div>
-                        <a href="#" class="arrow-link text-black border-black/30 hover:bg-black hover:text-white"><svg
-                                xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg></a>
+                        <a href="#" class="arrow-link hidden sm:flex text-black border-black/30 hover:bg-black hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
                     </div>
+
                 </div>
             </div>
         </main>

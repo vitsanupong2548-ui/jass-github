@@ -93,7 +93,39 @@ document.getElementById('logout-btn')?.addEventListener('click', async () => {
         window.location.href = 'index2.html';
     }
 });
+// =====================================================================
+// --- ระบบจัดการ Responsive (เปิด-ปิดเมนูมือถือ) แบบการันตีทำงาน 100% ---
+// =====================================================================
+window.openAdminSidebar = function() {
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('admin-sidebar-backdrop');
+    if(sidebar) sidebar.classList.remove('-translate-x-full');
+    if(backdrop) {
+        backdrop.classList.remove('hidden');
+        setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+    }
+};
 
+window.closeAdminSidebar = function() {
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('admin-sidebar-backdrop');
+    if(sidebar) sidebar.classList.add('-translate-x-full');
+    if(backdrop) {
+        backdrop.classList.add('opacity-0');
+        setTimeout(() => backdrop.classList.add('hidden'), 300);
+    }
+};
+
+// ปิดเมนูอัตโนมัติเมื่อกดเลือกเมนูย่อย
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('#sidebar .nav-link, #sidebar .pl-10 a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth < 768) { // ถ้าเป็นจอมือถือ
+                window.closeAdminSidebar();
+            }
+        });
+    });
+});
 // --- สั่งให้โหลดตารางข้อมูลผู้ใช้งานทันทีที่เปิดหน้า Admin ---
 document.addEventListener('DOMContentLoaded', () => {
     fetchUsers();
@@ -725,10 +757,16 @@ window.saveCourse = async () => {
             else if (type === 'embed') { fd.append('content_values[]', item.querySelector('.course-embed-input').value); fd.append('content_values_th[]', item.querySelector('.course-embed-input').value); }
             else if (type === 'iframe') { fd.append('content_values[]', item.querySelector('.course-iframe-input').value); fd.append('content_values_th[]', item.querySelector('.course-iframe-input').value); }
             else if (type === 'image') {
-                const fInput = item.querySelector('.course-img-input'); const oldInput = item.querySelector('.course-img-old');
-                if (fInput && fInput.id && window.croppedImagesData[fInput.id]) { fd.append(`content_images_${index}`, window.croppedImagesData[fInput.id], 'img.jpg'); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); }
-                else if (fInput && fInput.files[0]) { fd.append(`content_images_${index}`, fInput.files[0]); fd.append('content_values[]', `has_image`); fd.append('content_values_th[]', `has_image`); }
-                else { fd.append('content_values[]', oldInput ? oldInput.value : ''); fd.append('content_values_th[]', oldInput ? oldInput.value : ''); }
+                const fEn = item.querySelector('.course-img-input-en'); const oEn = item.querySelector('.course-img-old-en');
+                const fTh = item.querySelector('.course-img-input-th'); const oTh = item.querySelector('.course-img-old-th');
+                
+                if (fEn && fEn.id && window.croppedImagesData[fEn.id]) { fd.append(`content_images_en_${index}`, window.croppedImagesData[fEn.id], 'img_en.jpg'); fd.append('content_values[]', `has_image_en`); }
+                else if (fEn && fEn.files[0]) { fd.append(`content_images_en_${index}`, fEn.files[0]); fd.append('content_values[]', `has_image_en`); }
+                else { fd.append('content_values[]', oEn ? oEn.value : ''); }
+
+                if (fTh && fTh.id && window.croppedImagesData[fTh.id]) { fd.append(`content_images_th_${index}`, window.croppedImagesData[fTh.id], 'img_th.jpg'); fd.append('content_values_th[]', `has_image_th`); }
+                else if (fTh && fTh.files[0]) { fd.append(`content_images_th_${index}`, fTh.files[0]); fd.append('content_values_th[]', `has_image_th`); }
+                else { fd.append('content_values_th[]', oTh ? oTh.value : ''); }
             }
         });
 

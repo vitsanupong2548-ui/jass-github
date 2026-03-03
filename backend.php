@@ -633,24 +633,39 @@ switch($action) {
             $value_th = $content_values_th[$i] ?? '';
             $layout = $content_layouts[$i] ?? 'col-1'; 
 
-            if ($type === 'image') {
-                $file_key = "content_images_" . $i;
-                if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
-                    $ext = pathinfo($_FILES[$file_key]['name'], PATHINFO_EXTENSION);
-                    $filename = "course_content_" . time() . "_" . uniqid() . "." . $ext;
+           if ($type === 'image') {
+                // 1. รับรูปฝั่ง EN
+                $file_key_en = "content_images_en_" . $i;
+                if (isset($_FILES[$file_key_en]) && $_FILES[$file_key_en]['error'] === UPLOAD_ERR_OK) {
+                    $ext = pathinfo($_FILES[$file_key_en]['name'], PATHINFO_EXTENSION);
+                    $filename = "course_en_" . time() . "_" . uniqid() . "." . $ext;
                     if (!is_dir("uploads/courses")) mkdir("uploads/courses", 0777, true);
                     $target_file = "uploads/courses/" . $filename;
-                    if (move_uploaded_file($_FILES[$file_key]['tmp_name'], $target_file)) {
+                    if (move_uploaded_file($_FILES[$file_key_en]['tmp_name'], $target_file)) {
                         $value_en = $target_file; 
-                        $value_th = $target_file;
                     }
-                } else {
+                }
+                
+                // 2. รับรูปฝั่ง TH
+                $file_key_th = "content_images_th_" . $i;
+                if (isset($_FILES[$file_key_th]) && $_FILES[$file_key_th]['error'] === UPLOAD_ERR_OK) {
+                    $ext = pathinfo($_FILES[$file_key_th]['name'], PATHINFO_EXTENSION);
+                    $filename = "course_th_" . time() . "_" . uniqid() . "." . $ext;
+                    if (!is_dir("uploads/courses")) mkdir("uploads/courses", 0777, true);
+                    $target_file = "uploads/courses/" . $filename;
+                    if (move_uploaded_file($_FILES[$file_key_th]['tmp_name'], $target_file)) {
+                        $value_th = $target_file; 
+                    }
+                }
+
+                // 🌟 ถ้าไม่ได้อัปโหลดรูป TH ให้ดึงรูป EN มาใช้แทนอัตโนมัติ
+                if (empty($value_th) || strpos($value_th, 'placehold.co') !== false) {
                     $value_th = $value_en;
                 }
+                
             } else if ($type === 'video') {
                 $value_th = $value_en;
             }
-            
             $content_array_en[] = ['type' => $type, 'value' => $value_en, 'layout' => $layout];
             $content_array_th[] = ['type' => $type, 'value' => $value_th, 'layout' => $layout];
         }

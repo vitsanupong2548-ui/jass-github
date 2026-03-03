@@ -415,7 +415,7 @@ window.applyDataToDOM = async function (container) {
                                         <p class="text-xs text-gray-600 font-medium leading-snug break-words whitespace-pre-line">${t.details || ''}</p>
                                         ${(stockAmount > 0 && isOpen) ? `<p class="text-[11px] font-bold text-[#10a349] mt-1">${leftText}</p>` : ''}
                                     </div>
-                                    <div class="flex items-center justify-between w-full sm:w-auto gap-4 shrink-0 mt-2 sm:mt-0">
+                                   <div class="flex flex-row items-center justify-between w-full sm:w-auto gap-4 shrink-0 mt-3 sm:mt-0 border-t sm:border-t-0 border-gray-100 pt-3 sm:pt-0">
                                         <span class="text-xl font-bold text-black" data-price="${t.price}" data-ticket-id="${t.id}">${Number(t.price).toLocaleString('en-US')} THB</span>
                                         ${ticketControls}
                                     </div>
@@ -2632,3 +2632,117 @@ window.copyBankAccount = function (text, btnElement) {
         });
     }
 };
+
+// =====================================================================
+// --- ระบบจัดการล็อคอิน & ควบคุมปุ่ม Header / Mobile Menu ---
+// =====================================================================
+
+// ประกาศตัวแปรเพื่อเก็บสถานะล็อคอิน (ใช้ร่วมกับไฟล์อื่นๆ ได้)
+window.isUserLoggedIn = false; 
+
+// ฟังก์ชันเช็คสถานะการล็อคอินจาก Backend
+window.checkAuthStatus = async function() {
+    try {
+        const res = await fetch('backend.php?action=check_auth');
+        const result = await res.json();
+        
+        // --- ตัวแปรปุ่มบนแถบ Header (หน้าจอคอม) ---
+        const headerAuthBtn = document.getElementById('header-auth-btn');
+        const headerLogoutBtn = document.getElementById('header-logout-btn');
+        const adminBtn = document.getElementById('admin-panel-btn');
+        
+        // --- ตัวแปรปุ่มในเมนูสไลด์ (หน้าจอมือถือ) ---
+        const mobileAuthBtn = document.getElementById('mobile-auth-btn');
+        const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+        const mobileAdminBtn = document.getElementById('mobile-admin-btn');
+
+        if (result.status === 'success' && result.logged_in) {
+            window.isUserLoggedIn = true;
+
+            // 🌟 ล็อคอินแล้ว: ซ่อนปุ่ม Log in, โชว์ปุ่ม Log out
+            if(headerAuthBtn) headerAuthBtn.classList.add('hidden');
+            if(headerLogoutBtn) headerLogoutBtn.classList.remove('hidden');
+            if(mobileAuthBtn) mobileAuthBtn.classList.add('hidden');
+            if(mobileLogoutBtn) mobileLogoutBtn.classList.remove('hidden');
+
+            // 🌟 ถ้าเป็น Admin: โชว์ปุ่มเข้าหน้า Admin Panel
+            if (result.role === 'admin') {
+                if(adminBtn) adminBtn.classList.remove('hidden');
+                if(mobileAdminBtn) {
+                    mobileAdminBtn.classList.remove('hidden');
+                    mobileAdminBtn.classList.add('flex'); // บังคับให้เป็น flex เพื่อให้ไอคอนจัดเรียงสวยงาม
+                }
+            }
+        } else {
+            window.isUserLoggedIn = false;
+
+            // 🌟 ยังไม่ล็อคอิน: โชว์ปุ่ม Log in, ซ่อนส่วนอื่นๆ
+            if(headerAuthBtn) headerAuthBtn.classList.remove('hidden');
+            if(headerLogoutBtn) headerLogoutBtn.classList.add('hidden');
+            if(adminBtn) adminBtn.classList.add('hidden');
+            
+            if(mobileAuthBtn) mobileAuthBtn.classList.remove('hidden');
+            if(mobileLogoutBtn) mobileLogoutBtn.classList.add('hidden');
+            if(mobileAdminBtn) {
+                mobileAdminBtn.classList.add('hidden');
+                mobileAdminBtn.classList.remove('flex');
+            }
+        }
+    } catch (e) {
+        console.log('Error checking auth status', e);
+        window.isUserLoggedIn = false;
+    }
+};
+
+// ----------------------------------------------------------------------
+// ผูก Event ให้ปุ่ม Log in / Log out ทำงาน
+// ----------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // โหลดเช็คสถานะทันทีที่หน้าเว็บเปิดขึ้นมา
+    checkAuthStatus();
+
+    // 1. ปุ่มเปิดหน้าต่าง Log In (Header คอม)
+    const headerAuthBtn = document.getElementById('header-auth-btn');
+    if (headerAuthBtn) {
+        headerAuthBtn.addEventListener('click', () => {
+            document.getElementById('auth-modal').classList.remove('hidden');
+            document.getElementById('login-form-container').classList.remove('hidden');
+            document.getElementById('register-form-container').classList.add('hidden');
+        });
+    }
+
+    // 2. ปุ่มเปิดหน้าต่าง Log In (เมนูมือถือ)
+    const mobileAuthBtn = document.getElementById('mobile-auth-btn');
+    if (mobileAuthBtn) {
+        mobileAuthBtn.addEventListener('click', () => {
+            // ปิดเมนูมือถือก่อน
+            const closeMenuBtn = document.getElementById('close-menu-btn');
+            if (closeMenuBtn) closeMenuBtn.click();
+
+            // เปิด Modal
+            document.getElementById('auth-modal').classList.remove('hidden');
+            document.getElementById('login-form-container').classList.remove('hidden');
+            document.getElementById('register-form-container').classList.add('hidden');
+        });
+    }
+
+    // 3. ฟังก์ชันออกจากระบบ (Log Out)
+    const logoutAction = async () => {
+        if (!confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) return;
+        try { 
+            await fetch('backend.php?action=logout'); 
+            window.location.reload(); 
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    // ผูกปุ่ม Log Out ทั้งของคอมและมือถือ
+    const headerLogoutBtn = document.getElementById('header-logout-btn');
+    if (headerLogoutBtn) headerLogoutBtn.addEventListener('click', logoutAction);
+
+    const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+    if (mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', logoutAction);
+
+});

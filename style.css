@@ -28,15 +28,77 @@ body {
     margin-top: 1.5rem;
     transition: height 0.5s ease-in-out;
 }
-
+/* =======================================================
+   ระบบ Grid สำหรับการ์ด 6 สี (ย่อส่วนในมือถืออัตโนมัติ)
+======================================================= */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    column-gap: 25px;
-    row-gap: 15px;
-    width: 100%;
+    /* บังคับให้มือถือเป็น 2 คอลัมน์เสมอ (ใบที่ 1 คู่ 2, 3 คู่ 4) */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem; /* ระยะห่างระหว่างการ์ดในมือถือ */
+    padding: 0.5rem;
 }
 
+/* หน้าจอ Tablet ให้ขยายระยะห่างขึ้น */
+@media (min-width: 640px) {
+    .grid-container {
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+}
+
+/* หน้าจอคอมพิวเตอร์ให้เรียง 3 คอลัมน์ตามปกติ */
+@media (min-width: 1024px) {
+    .grid-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* =======================================================
+   📱 ปรับขนาด "การ์ด" ให้เล็กลงเฉพาะตอนดูในมือถือ
+======================================================= */
+@media (max-width: 639px) {
+    .card {
+        padding: 1rem !important; /* ลดขอบด้านในการ์ดให้เล็กลง */
+        min-height: 110px; /* บังคับความสูงไม่ให้การ์ดยืดเกินไป */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center; /* จัดให้อยู่กึ่งกลาง */
+        text-align: center;
+    }
+    
+    .card > div {
+        width: 100%;
+    }
+
+    .card-header {
+        display: flex;
+        flex-direction: column; /* จับไอคอนให้อยู่ด้านบน ตัวหนังสืออยู่ด้านล่าง */
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .card-header img {
+        width: 2.5rem; /* ย่อขนาดไอคอน */
+        height: 2.5rem;
+        margin: 0;
+    }
+
+    .card-header h2 {
+        font-size: 0.95rem; /* ย่อขนาดตัวอักษรหัวข้อ */
+        line-height: 1.2;
+        width: 100%;
+    }
+
+    /* ซ่อนข้อความรายละเอียดยาวๆ และ ลูกศร เพื่อประหยัดพื้นที่ในมือถือ */
+    .card p[id^="dyn-card"], 
+    .arrow-link {
+        display: none !important;
+    }
+}
+/**/
 .card {
     color: #ffffff;
     border-radius: 16px;
